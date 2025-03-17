@@ -1,0 +1,64 @@
+<!-- header -->
+<app-header title="Iniciar sesión"></app-header>  
+
+<ion-content [fullscreen]="true">
+<div class="form">
+
+    <!-- Logo -->
+    <app-logo></app-logo>
+
+
+    <!-- Formulario -->
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+        <app-custom-input icon="person-outline" 
+                            label="Cédula" 
+                            type="number" 
+                            autocomplete="identificacion"
+                            [control]="loginForm.controls.identificacion">
+        </app-custom-input>
+
+        <!-- Errores -->
+        <div class="error"
+            *ngIf="loginForm.controls.identificacion.errors && loginForm.controls.identificacion.touched">
+            <span *ngIf="loginForm.controls.identificacion.errors?.['required']">  La cédula es obligatoria</span>
+            <span *ngIf="loginForm.controls.identificacion.errors?.['minlength']"> La cédula debe tener al menos 8 caracteres</span>
+            <span *ngIf="loginForm.controls.identificacion.errors?.['maxlength']"> La cédula debe tener máximo  10 caracteres</span>
+            <span *ngIf="loginForm.controls.identificacion.errors?.['pattern']">   La cédula debe contener solo números</span>
+        </div>
+
+        <app-custom-input icon="lock-closed-outline" 
+                label="Contraseña" 
+                type="password"
+                [control]="loginForm.controls.password">
+        </app-custom-input>
+
+        <div class="error" *ngIf="loginForm.controls.password.errors && loginForm.controls.password.touched">
+            <span *ngIf="loginForm.controls.password.errors?.['required']">La contraseña es obligatoria</span>
+        </div>
+
+
+        <!-- Links de referencia -->
+        <p class="small"><a href="" routerLink="forgot-password">¿Olvidaste tu contraseña?</a></p>
+
+        <!-- Boton de Ingreso -->
+        <ion-button expand="block" mode="ios" class="submit" type="submit" [disabled]="loginForm.invalid">
+            Ingresar
+        </ion-button>
+        
+    </form>
+
+
+
+
+    <p class="small">¿Aún no tienes cuenta? <a href="" routerLink="sign-up">Registrate</a></p>
+
+</div>
+
+
+
+    <!-- para saber si estan conectados los campos de auth con el html de custom-input component -->
+    <!-- {{  loginForm.value.identificacion }}
+    {{  loginForm.value | json }} -->
+
+</ion-content>

@@ -35,3 +35,32 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+
+/* Errores del usuario en formularios */
+.error{
+    color: red;
+    font-size: 11px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+
+/* Modal */
+ion-modal.modal::part(content) {
+    --height: 600px !important;
+    width: 800px ;
+
+}
+
+
+/* Ajustes para los campos de entrada */
+app-custom-input input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border 0.3s;
+}

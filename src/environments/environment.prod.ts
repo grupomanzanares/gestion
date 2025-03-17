@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  apiUrl: 'https://gmanzanares.com.co/api_manzanares/'  
+
 };
