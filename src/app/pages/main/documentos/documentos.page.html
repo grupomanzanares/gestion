@@ -1,0 +1,66 @@
+<app-header title="Documentos" [showMenu]="true"></app-header>
+<app-side-menu [section]="'menu'"></app-side-menu>
+
+<ion-content id="main-content">
+
+  <div class="table-wrapper" >
+    <table class="sync-table">
+      <thead>
+        <tr>
+          <th>Asignar</th>
+          <th>Identificacion del emisor</th>
+          <th>Emisor</th>
+          <th>Empresa</th>
+          <th>Tipo de documento</th>
+          <th>N° de documento</th>
+          <th>Tipo de compra</th>
+          <th>Valor total</th>
+          <th>Fecha estado comercial</th>
+          <th>CUFE/CUDE</th>
+          <th>Url PDF</th>
+          <th>Centro de costo</th>
+          <th>Observación Responsable</th>
+          <th>Observación Contable</th>
+          <th>Estado</th>
+          <th>Conciliado</th>
+          <th>Responsable</th>
+          <!-- <th>Habilitado</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of documentos">
+          <td *ngIf="!item.responsable">
+            <ion-checkbox (click)="modalAsignacion(item)"></ion-checkbox>
+          </td>
+          <td *ngIf="item.responsable">
+            <!-- Opcionalmente podrías mostrar un ícono de check o algo visual -->
+            <ion-icon name="checkmark-outline" size="large" color="success"></ion-icon>
+          </td>
+          <td>{{ item.emisor }}</td>
+          <td>{{ item.nombreEmisor }}</td>
+          <td>{{ item.empresaInfo?.nombre }}</td>
+          <td>{{ item.tipo }}</td>
+          <td>{{ item.numero }}</td>
+          <td>{{ item.compras_tipo?.nombre }}</td>
+          <td>{{ item.valor | currency:'USD'  }}</td>
+          <td>{{ item.fecha | date:'shortDate' }}</td>
+          <td>{{ item.cufe }}</td>
+          <td>{{ item.urlPdf }}</td>
+          <td>{{ item.ccosto }}</td>
+          <td>{{ item.observacionResponsable }}</td>
+          <td>{{ item.observacionContable }}</td>
+          <td>{{ item.compras_estado?.nombre }}</td>
+          <td>{{ item.conciliado }}</td>
+          <td>{{ item.responsable?.name }}</td>
+          <!-- <td>{{ item.habilitado }}</td> -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="modalRegister()" size="small" color="success">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

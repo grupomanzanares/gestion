@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment.prod';
@@ -14,7 +14,7 @@ export class AuthService {
 
   constructor(private http: HttpClient, 
     private router: Router,
-    private _storageService: StorageService) { }
+    private storageService: StorageService) { }
 
   /** Logearse */  
   login(identificacion: number, password: string): Observable<any> {
@@ -27,7 +27,6 @@ export class AuthService {
       })
     );
   }
-
 
   /** Registrarse */
   register(userData: any): Observable<any> {
@@ -45,7 +44,10 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('manzanares-token')
     localStorage.removeItem('manzanares-user')
-    this.router.navigateByUrl('/auth')
+    // localStorage.removeItem('manzanares-rol')
+    setTimeout(() => {
+      window.location.href = '/auth'; //Redirige asegurando que no se pueda volver atrás
+    }, 100);
   }
 
   /**Conocer Estado de Autenticacion */

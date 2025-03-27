@@ -25,8 +25,8 @@ export class AuthPage implements OnInit {
   /** Paso 1 : Definir el Formulario y sus campos */
   /** loginForm se relaciona en el aut.page.html */
   public loginForm = new FormGroup({
-    identificacion: new FormControl<number | null>(null, [Validators.required, Validators.minLength(8), Validators.maxLength(10), Validators.pattern('^[0-9]*$'),]),
-    password: new FormControl<string | null>(null,[Validators.required,Validators.minLength(10)]),
+    identificacion: new FormControl(null, [Validators.required, Validators.minLength(8), Validators.maxLength(10), Validators.pattern('^[0-9]*$'),]),
+    password: new FormControl(null,[Validators.required, Validators.minLength(10), Validators.maxLength(18)]),
   });
 
   constructor( 
@@ -68,10 +68,11 @@ export class AuthPage implements OnInit {
           const userName = response.user?.name || 'Usuario';
           this._storageService.save('manzanares-user', response.user)  // Guarda el token y usuario en localStorage
           this._storageService.save('manzanares-token', response.token)  // Guarda el token y usuario en localStorage
+          // this._storageService.save('manzanares-rol', response.rol)  
           // this._router.navigate(['home']); // Redireccionar al home
           this._router.navigateByUrl('main');
           this.loginForm.reset();         // Limpia el formulario
-          this._toastService.presentToast('people-outline',`Bienvenid@ : ${response.user.name}`, 'success', 'top');
+          this._toastService.presentToast('people-outline',`Bienvenid@ ${response.user.name}`, 'success', 'top');
         } else {
           this._toastService.presentToast('alert-circle-outline','Error inesperado. Intenta nuevamente.', 'danger', 'top');
           console.error('Token faltante en la respuesta:', response);

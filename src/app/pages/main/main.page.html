@@ -1,13 +1,43 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>main</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header title="Menu"></app-header>
+<app-side-menu *ngIf="showMenu"></app-side-menu>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">main</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="logout-button-container">
+    <ion-button (click)="logout()" color="danger" class="logout-button">
+      <ion-icon name="log-out-outline" size="large" slot="end"></ion-icon>
+      Cerrar sesión
+    </ion-button>
+  </div>
+  <ion-grid fixed>
+    <ion-row class="ion-margin-top">
+      <ion-col size="6">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="person-outline" size="large"></ion-icon>
+            <ion-card-title>Mi Perfile</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['profile']" routerLinkActive="router-link-active" expand="block" shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a Perfil
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="document-text-outline" size="large"></ion-icon>
+            <ion-card-title>Subir Documentos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['documentos']" routerLinkActive="router-link-active" expand="block" shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a Perfil
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

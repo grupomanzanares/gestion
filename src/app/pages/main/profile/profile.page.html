@@ -1,13 +1,39 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>profile</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header title="Perfil" [showMenu]="true"></app-header>
+<app-side-menu [section]="'menu'"></app-side-menu>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">profile</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content id="main-content">
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col size="12">
+        <app-custom-input icon="person-outline" label="Nombre" type="text" autocomplete="name"
+          [control]="inputs.controls.name"></app-custom-input>
+      </ion-col>
+      <ion-col size="12">
+        <app-custom-input icon="mail-outline" label="Email" type="text" autocomplete="email"
+          [control]="inputs.controls.email"></app-custom-input>
+      </ion-col>
+      <ion-col size="12">
+        <app-custom-input icon="call-outline" label="Telefono" type="number" autocomplete="celphone"
+          [control]="inputs.controls.celphone"></app-custom-input>
+      </ion-col>
+      <ion-col size="12">
+        <app-custom-input icon="lock-closed-outline" label="Contraseña" type="password"
+          [control]="inputs.controls.password">
+        </app-custom-input>
+
+        <div class="error"
+        *ngIf="inputs.controls.password.errors && inputs.controls.password.touched">
+        <span *ngIf="inputs.controls.password.errors?.['required']">La contraseña es
+          obligatoria</span> <br>
+        <span *ngIf="inputs.controls.password.errors?.['minlength']">La contraseña debe tener almenos
+          10 caracteres</span> <br>
+        <span *ngIf="inputs.controls.password.errors?.['maxlength']">La contraseña debe tener maximo
+          18 caracteres</span>
+      </div>
+      </ion-col>
+    </ion-row>
+    <ion-button (click)="updateUser()" expand="block" shape="round">
+      Editar
+    </ion-button>
+  </ion-grid>
 </ion-content>

@@ -1,5 +1,4 @@
 <ion-header class="ion-no-border">
-
   <ion-toolbar color="primary">
     <!-- Boton cerrar para cuando es una ventana modal -->
     <ion-buttons slot="start">
@@ -11,13 +10,13 @@
 
     
     <ion-buttons slot="start" *ngIf="showMenu"> <!-- Botón de menú dinámico -->
-      <ion-menu-button menu="MenuPrincipal"></ion-menu-button>
+      <ion-menu-button menu="first"></ion-menu-button>
     </ion-buttons>
 
     <!-- Titulo -->
-    <ion-title >
+    <ion-title class="ion-text-center">
       <strong>{{ title }} </strong>
-      <div class="software"><span class="extrabold">Manzanares</span> <span class="normal">Gestion</span></div>
+      <div class="software"><span class="extrabold">Manzanares </span> <span class="normal">Gestion</span></div>
     </ion-title>
 
   </ion-toolbar>

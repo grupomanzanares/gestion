@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from './components/header/header.component';
 import { CustomInputComponent } from './components/custom-input/custom-input.component';
 import { LogoComponent } from './components/logo/logo.component';
+import { SideMenuComponent } from './components/side-menu/side-menu.component';
 
 /** Importamos componetes de Ionic */
 import { IonicModule } from '@ionic/angular';
@@ -13,6 +14,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 import { RouterModule } from '@angular/router';
+import { LoadFileComponent } from './components/load-file/load-file.component';
+import { RecepcionComponent } from './components/recepcion/recepcion.component';
 
 /**  Componentes */
 
@@ -23,9 +26,9 @@ import { RouterModule } from '@angular/router';
 
 
 @NgModule({
-  declarations: [ HeaderComponent, CustomInputComponent, LogoComponent,  ],
+  declarations: [ HeaderComponent, CustomInputComponent, LogoComponent, SideMenuComponent, LoadFileComponent, RecepcionComponent  ],
   imports: [ CommonModule, IonicModule, ReactiveFormsModule, FormsModule, RouterModule ],
-  exports:[ReactiveFormsModule, HeaderComponent, CustomInputComponent, LogoComponent ,  ]
+  exports:[ReactiveFormsModule, HeaderComponent, CustomInputComponent, LogoComponent , SideMenuComponent, LoadFileComponent, RecepcionComponent  ]
 })
 
 

@@ -1,0 +1,29 @@
+<app-header title="Cargar archivos"></app-header>
+
+<ion-content>
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col size="12">
+        <ion-button expand="block" fill="clear" shape="round" (click)="fileInput.click()">
+          <ion-icon name="document-attach-outline" slot="start"></ion-icon>
+          Selecciona Archivo
+        </ion-button>
+
+        <!-- input oculto -->
+        <input type="file" #fileInput (change)="onFileChange($event)" accept=".xls,.xlsx,.csv" hidden>
+      </ion-col>
+      <ion-col class="ion-margin" size="12">
+        <ion-text *ngIf="selectedFileName">
+          Archivo seleccionado: {{ selectedFileName }}
+        </ion-text>
+      </ion-col>
+      <ion-col size="12">
+        <ion-button  expand="block" (click)="uploadFile()" shape="round">
+          <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+          Subir archivo
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

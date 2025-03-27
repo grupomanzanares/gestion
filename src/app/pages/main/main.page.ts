@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-main',
@@ -6,11 +8,20 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./main.page.scss'],
   standalone: false
 })
-export class MainPage implements OnInit {
+export class MainPage {
 
-  constructor() { }
+  showMenu: boolean = false
 
-  ngOnInit() {
+  constructor(private auth: AuthService, private router: Router) { 
+    this.router.events.subscribe((event: any) => {
+      if (event.url) {
+        this.showMenu = event.url.startsWith('/main/')
+      }
+    })
+  }
+
+  logout() {
+    this.auth.logout()
   }
 
 }

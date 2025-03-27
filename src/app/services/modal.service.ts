@@ -6,18 +6,18 @@ import { ModalController, ModalOptions } from '@ionic/angular';
 })
 export class ModalService {
 
-constructor(private modalCtrl: ModalController) { }
+    constructor(private modalCtrl: ModalController) { }
 
-async openModal(options: ModalOptions ) {
-    const modal = await this.modalCtrl.create(options);
-    await modal.present();
+    async openModal(options: ModalOptions) {
+        const modal = await this.modalCtrl.create(options);
+        await modal.present();
 
-    const { data } = await modal.onWillDismiss();
+        const { data } = await modal.onWillDismiss();
 
-    if(data) return data
-}
+        if (data) return data
+    }
 
-dismissModal(data?: any){
-    return this.modalCtrl.dismiss(data)
-}
+    dismissModal(data?: any) {
+        return this.modalCtrl.dismiss(data)
+    }
 }

@@ -24,6 +24,4 @@ export class StorageService {
 }
 
 
-
-
 /***ionic g service services/storage */

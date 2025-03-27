@@ -14,7 +14,7 @@ export class AuthRedirectGuard implements CanActivate{
 
   canActivate(): boolean {
     if (this._authService.isAuthenticated()) {
-      // Si el usuario está autenticado, redirige a 'home'
+      // Si el usuario está autenticado, redirige a 'main'
       this._router.navigateByUrl('/main');
       return false; // Esta en el proceso de autenticacion y  esta autenticado entonces lo envia a Home, para que no tenga que autenticarse
     }
