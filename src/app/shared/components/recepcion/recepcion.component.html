@@ -4,29 +4,37 @@
   <ion-grid fixed>
     <ion-row>
       <ion-col size="6">
-        <app-custom-input icon="business-outline" label="Empresa" type="text" autocomplete="empresa" [control]="inputs.controls.empresa"></app-custom-input>
-      </ion-col>      
-      <ion-col size="6">
-        <app-custom-input icon="business-outline" label="Empresa" type="text" autocomplete="empresa" [control]="inputs.controls.empresaInfo"></app-custom-input>
-      </ion-col>
-      <ion-col size="12">
-        <app-custom-input icon="id-card-outline" label="Identificacion del emisor" type="text" autocomplete="emisor" [control]="inputs.controls.emisor"></app-custom-input>
-      </ion-col>
-      <ion-col size="12">
-        <app-custom-input icon="person-outline" label="Emisor" type="text" autocomplete="nombreEmisor" [control]="inputs.controls.nombreEmisor"></app-custom-input>
-      </ion-col>
-      <ion-col size="12">
-        <app-custom-input icon="document-text-outline" label="Tipo de documento" type="text" autocomplete="tipo" [control]="inputs.controls.tipo"></app-custom-input>
+        <app-custom-input icon="business-outline" label="Empresa" type="text" autocomplete="empresa"
+          [control]="inputs.controls.empresa"></app-custom-input>
       </ion-col>
       <ion-col size="6">
-        <app-custom-input icon="barcode-outline" label="Numero de documento" type="text" autocomplete="numero" [control]="inputs.controls.numero"></app-custom-input>
+        <app-custom-input icon="business-outline" label="Empresa" type="text" autocomplete="empresa"
+          [control]="inputs.controls.empresaInfo"></app-custom-input>
+      </ion-col>
+      <ion-col size="12">
+        <app-custom-input icon="id-card-outline" label="Identificacion del emisor" type="text" autocomplete="emisor"
+          [control]="inputs.controls.emisor"></app-custom-input>
+      </ion-col>
+      <ion-col size="12">
+        <app-custom-input icon="person-outline" label="Emisor" type="text" autocomplete="nombreEmisor"
+          [control]="inputs.controls.nombreEmisor"></app-custom-input>
+      </ion-col>
+      <ion-col size="12">
+        <app-custom-input icon="document-text-outline" label="Tipo de documento" type="text" autocomplete="tipo"
+          [control]="inputs.controls.tipo"></app-custom-input>
       </ion-col>
       <ion-col size="6">
-        <app-custom-input icon="wallet-outline" label="Valor total" type="text" autocomplete="valor" [control]="inputs.controls.valor"></app-custom-input>
+        <app-custom-input icon="barcode-outline" label="Numero de documento" type="text" autocomplete="numero"
+          [control]="inputs.controls.numero"></app-custom-input>
+      </ion-col>
+      <ion-col size="6">
+        <app-custom-input icon="wallet-outline" label="Valor total" type="text" autocomplete="valor"
+          [control]="inputs.controls.valor"></app-custom-input>
       </ion-col>
       <ion-col size="6">
         <ion-item class="ion-margin-top">
-          <ion-select interface="popover" placeholder="Seleccionar tipo de compra" [formControl]="inputs.controls.tipoCompraId">
+          <ion-select interface="popover" placeholder="Seleccionar tipo de compra"
+            [formControl]="inputs.controls.tipoCompraId">
             <ion-select-option *ngFor="let item of compras" [value]="item.id">
               {{ item.nombre }}
             </ion-select-option>
@@ -35,12 +43,26 @@
       </ion-col>
       <ion-col size="6">
         <ion-item class="ion-margin-top">
-          <ion-select interface="popover" placeholder="Seleccionar el responsable" [formControl]="inputs.controls.responsableId">
+          <ion-select interface="popover" placeholder="Seleccionar el responsable"
+            [formControl]="inputs.controls.responsableId">
             <ion-select-option *ngFor="let item of responsables" [value]="item.id">
               {{ item.name }}
             </ion-select-option>
           </ion-select>
         </ion-item>
+      </ion-col>
+      <ion-col size="12">
+        <ion-button expand="block" class="ion-margin-top" shape="round" (click)="fileInput.click()">
+          <ion-icon name="document-attach-outline" slot="start"></ion-icon>
+          Selecciona el pdf
+        </ion-button>
+
+        <input type="file" #fileInput (change)="onFileChange($event)" accept=".pdf" hidden>
+      </ion-col>
+      <ion-col class="ion-margin" size="12">
+        <ion-text *ngIf="selectedFileName">
+          Archivo seleccionado: {{ selectedFileName }}
+        </ion-text>
       </ion-col>
       <ion-col size="6">
         <ion-button class="ion-margin-top" (click)="update()" expand="block" shape="round">

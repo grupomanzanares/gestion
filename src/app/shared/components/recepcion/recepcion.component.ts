@@ -15,6 +15,7 @@ export class RecepcionComponent  implements OnInit {
 
   compras: any [] = []
   responsables: any [] = []
+  selectedFileName: string = '';
 
   public inputs = new FormGroup({
     emisor: new FormControl(null, [Validators.required]),
@@ -94,5 +95,13 @@ export class RecepcionComponent  implements OnInit {
       }
     })
   }
+
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFileName = file.name;
+      // Aquí haces lo que necesites con el archivo
+    }
+  } 
 
 }
