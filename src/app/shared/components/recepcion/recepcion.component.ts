@@ -125,12 +125,15 @@ export class RecepcionComponent  implements OnInit {
 
 
     /** Paso 3:  Cargar los datos a modificar en el formData */
-    const fields  = [ 'id', 'tipoCompraId', 'responsableId'];
+    const fields  = [  'tipoCompraId', 'responsableId', 'emisor', 'numero'];
     fields .forEach(field => {
       if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
         formData.append(field, this.inputs.get(field).value);
       }
     });
+
+
+    formData.append('id',  this.documento.id);
     formData.append('userMod', this.user.identificacion);
     formData.append('estadoId', '2');
     
