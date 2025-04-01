@@ -16,22 +16,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { LoadFileComponent } from './components/load-file/load-file.component';
 import { RecepcionComponent } from './components/recepcion/recepcion.component';
+import { AutorizadorComponent } from './components/autorizador/autorizador.component';
 
 /**  Componentes */
 
-
-
-
-
-
-
 @NgModule({
-  declarations: [ HeaderComponent, CustomInputComponent, LogoComponent, SideMenuComponent, LoadFileComponent, RecepcionComponent  ],
+  declarations: [ HeaderComponent, CustomInputComponent, LogoComponent, SideMenuComponent, LoadFileComponent, RecepcionComponent, AutorizadorComponent  ],
   imports: [ CommonModule, IonicModule, ReactiveFormsModule, FormsModule, RouterModule ],
-  exports:[ReactiveFormsModule, HeaderComponent, CustomInputComponent, LogoComponent , SideMenuComponent, LoadFileComponent, RecepcionComponent  ]
+  exports:[ReactiveFormsModule, HeaderComponent, CustomInputComponent, LogoComponent , SideMenuComponent, LoadFileComponent, RecepcionComponent, AutorizadorComponent ]
 })
-
-
 
 export class SharedModule { }
 

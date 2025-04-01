@@ -43,6 +43,23 @@ export class MasterService {
     )
   }
 
+  getWo(endpoint: string, nit: number): Observable<any> {
+    const url = `${this.apiUrl}${endpoint}/por-nit/${nit}`
+    const token = this.storageService.get('manzanares-token')
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.get<any>(url, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error en la autenticacion: ', error)
+        return throwError(() => new Error('Error al traer los datos. Intente nuevamente'))
+      })
+    )
+  }
+
   getId (endpoint: string, id: number) {
     const url = `${this.apiUrl}${endpoint}/${id}`
     const token = this.storageService.get('manzanares-token')
@@ -116,7 +133,5 @@ export class MasterService {
 
 
 }
-
-
 
 /**  ionic g service services/manzanares/master */

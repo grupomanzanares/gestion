@@ -1,8 +1,7 @@
-<app-header title="Documentos" [showMenu]="true"></app-header>
+<app-header title="Autorizar" [showMenu]="true"></app-header>
 <app-side-menu></app-side-menu>
 
 <ion-content id="main-content">
-
   <div class="table-wrapper" >
     <table class="sync-table">
       <thead>
@@ -29,10 +28,10 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of documentos">
-          <td *ngIf="item.compras_estado?.id === 1">
-            <ion-checkbox (click)="modalAsignacion(item)"></ion-checkbox>
+          <td *ngIf="item.compras_estado?.id === 2">
+            <ion-checkbox (click)="modalAutorizador(item)"></ion-checkbox>
           </td>
-          <td *ngIf="item.compras_estado?.id !== 1">
+          <td *ngIf="item.compras_estado?.id !== 2">
             <ion-icon name="checkmark-outline" size="large" color="success"></ion-icon>
           </td>
           
@@ -61,10 +60,4 @@
       </tbody>
     </table>
   </div>
-
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="modalRegister()" size="small" color="success">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
 </ion-content>

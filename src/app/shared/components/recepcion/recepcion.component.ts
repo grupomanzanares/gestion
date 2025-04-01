@@ -12,11 +12,11 @@ import { ToastService } from 'src/app/services/toast.service';
   styleUrls: ['./recepcion.component.scss'],
   standalone: false
 })
-export class RecepcionComponent  implements OnInit {
+export class RecepcionComponent implements OnInit {
   @Input() documento: any
 
-  compras: any [] = []
-  responsables: any [] = []
+  compras: any[] = []
+  responsables: any[] = []
   selectedFileName: string = '';
   selectedFile: File | null = null;
 
@@ -34,11 +34,11 @@ export class RecepcionComponent  implements OnInit {
     responsableId: new FormControl(null, [Validators.required])
   })
 
-  constructor(private master: MasterService, 
-              private masterTable: MasterTableService,
-              private modalCtrl: ModalController, 
-              private toast: ToastService,
-              private storage: StorageService) { }
+  constructor(private master: MasterService,
+    private masterTable: MasterTableService,
+    private modalCtrl: ModalController,
+    private toast: ToastService,
+    private storage: StorageService) { }
 
   ngOnInit() {
     /** Datos del usuario  */
@@ -70,7 +70,7 @@ export class RecepcionComponent  implements OnInit {
     })
   }
 
-  getDatos(){
+  getDatos() {
     if (this.documento) {
       this.inputs.patchValue({
         emisor: this.documento.emisor,
@@ -81,7 +81,7 @@ export class RecepcionComponent  implements OnInit {
         numero: this.documento.numero,
         valor: this.documento.valor,
         tipoCompraId: this.documento.tipoCompraId,
-        responsableId: this.documento.responsableId 
+        responsableId: this.documento.responsableId
       });
     }
   }
@@ -110,7 +110,6 @@ export class RecepcionComponent  implements OnInit {
 
   update() {
 
-
     /** Paso 1: Validar Formulario */
     if (this.inputs.invalid) {
       console.warn('Formulario inválido');
@@ -118,35 +117,32 @@ export class RecepcionComponent  implements OnInit {
       return;
     }
 
-    
     /***  Paso 2:  Crear FormData  */
     const formData = new FormData();
 
-
-
     /** Paso 3:  Cargar los datos a modificar en el formData */
-    const fields  = [  'tipoCompraId', 'responsableId', 'emisor', 'numero'];
-    fields .forEach(field => {
+    const fields = ['tipoCompraId', 'responsableId', 'emisor', 'numero'];
+    fields.forEach(field => {
       if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
         formData.append(field, this.inputs.get(field).value);
       }
     });
 
-
-    formData.append('id',  this.documento.id);
+    formData.append('id', this.documento.id);
     formData.append('userMod', this.user.identificacion);
     formData.append('estadoId', '2');
-    
+
 
     /**  Paso 4: Adjuntar el archivo PDF si existe*/
     if (this.selectedFile) {
       formData.append('archivo', this.selectedFile, this.selectedFile.name);
     }
 
-    this.masterTable.update( 'compras_reportadas',formData).subscribe({
+    this.masterTable.update('compras_reportadas', formData).subscribe({
       next: (res) => {
         this.toast.presentToast('checkmark-outline', 'Tipo de compra y Responsable añadidos correctamente', 'success', 'top')
         this.modalCtrl.dismiss(true)
+        console.log(res)
       },
       error: (err) => {
         console.error('Error al actualizar documento:', err);
@@ -161,6 +157,6 @@ export class RecepcionComponent  implements OnInit {
       this.selectedFile = file;
 
     }
-  } 
+  }
 
 }

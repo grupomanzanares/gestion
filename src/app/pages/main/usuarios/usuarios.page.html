@@ -1,0 +1,112 @@
+<app-header title="Usuarios" [showMenu]="true"></app-header>
+<app-side-menu></app-side-menu>
+
+<ion-content id="main-content">
+  <ion-grid fixed>
+    <div *ngIf="!showForm">
+      <ion-row>
+        <ion-col size="6" *ngFor="let item of usuarios">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>{{ item.name }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p><strong>Email:</strong> {{ item.email }}</p>
+              <p><strong>Identificacion</strong> {{ item.identificacion }}</p>
+              <p><strong>Telefono:</strong> {{ item.celphone }}</p>
+            </ion-card-content>
+            <ion-row class="ion-justify-content-center">
+              <ion-col size="auto">
+                <ion-button fill="clear" color="warning" (click)="update(item)">
+                  <ion-icon name="create-outline" slot="start"></ion-icon> Editar
+                </ion-button>
+              </ion-col>
+              <ion-col size="auto">
+                <ion-button fill="clear" color="danger" (click)="delete(item.id)">
+                  <ion-icon name="trash-outline" slot="start"></ion-icon> Eliminar
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </div>
+
+    <div *ngIf="showForm" [formGroup]="inputs">
+      <ion-grid fixed>
+        <ion-row>
+          <ion-col size="12">
+            <app-custom-input icon="clipboard-outline" label="Ingresa el name de la actividad" type="text"
+              autocomplete="name" [control]="inputs.controls.name">
+            </app-custom-input>
+            <div class="error" *ngIf="inputs.controls.name.errors && inputs.controls.name.touched">
+              <span *ngIf="inputs.controls.name.errors?.['required']">El nombre es obligatorio</span>
+              <span *ngIf="inputs.controls.name.errors?.['minlength']">Debe tener al menos 3 caracteres</span>
+            </div>
+          </ion-col>
+
+          <ion-col size="12">
+            <app-custom-input icon="id-card-outline" label="Cédula" type="text" autocomplete="identificacion"
+              [control]="inputs.controls.identificacion">
+            </app-custom-input>
+
+            <div class="error" *ngIf="inputs.controls.identificacion.errors && inputs.controls.identificacion.touched">
+              <span *ngIf="inputs.controls.identificacion.errors?.['required']">La cédula es obligatoria</span>
+              <span *ngIf="inputs.controls.identificacion.errors?.['minlength']">La cédula debe tener al menos 8
+                caracteres</span>
+              <span *ngIf="inputs.controls.identificacion.errors?.['maxlength']">La cédula debe tener maximo 10
+                caracteres</span>
+              <span *ngIf="inputs.controls.identificacion.errors?.['pattern']">La cédula debe contener solo
+                numeros</span>
+            </div>
+          </ion-col>
+
+          <ion-col size="12">
+            <app-custom-input icon="mail-outline" label="Email" type="text" autocomplete="email"
+              [control]="inputs.controls.email">
+            </app-custom-input>
+
+            <div class="error" *ngIf="inputs.controls.email.errors && inputs.controls.email.touched">
+              <span *ngIf="inputs.controls.email.errors?.['required']">El correo electronico es obligatorio</span>
+              <span *ngIf="inputs.controls.email.errors?.['email']">Por favor ingresa un correo electronico
+                valido</span>
+            </div>
+          </ion-col>
+
+          <ion-col size="12">
+            <app-custom-input icon="phone-portrait-outline" label="Celular" type="text" autocomplete="celphone"
+              [control]="inputs.controls.celphone">
+            </app-custom-input>
+
+            <div class="error" *ngIf="inputs.controls.celphone.errors && inputs.controls.celphone.touched">
+              <span *ngIf="inputs.controls.celphone.errors?.['required']">El telefono es obligatorio</span>
+              <span *ngIf="inputs.controls.celphone.errors?.['minlength']">El telefono debe tener 10
+                numeros</span>
+              <span *ngIf="inputs.controls.celphone.errors?.['maxlength']">El telefono debe tener 10
+                numeros</span>
+              <span *ngIf="inputs.controls.celphone.errors?.['pattern']">El telefono solo debe contener
+                numeros</span>
+            </div>
+          </ion-col>
+          <ion-col size="12">
+            <ion-item class="ion-margin">
+              <ion-label position="floating">Rol</ion-label>
+              <ion-select interface="popover" placeholder="Rol"
+              [formControl]="inputs.controls.rolId">
+                <ion-select-option *ngFor="let rol of roles" [value]="rol.id">
+                  {{ rol.name }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-button class="ion-margin" (click)="updateUser()" expand="block" color="primary">
+          Guardar cambios
+        </ion-button>
+        <ion-button class="ion-margin" expand="block" color="danger" (click)="onCloseForm()">
+          Volver
+        </ion-button>
+      </ion-grid>
+    </div>
+  </ion-grid>
+</ion-content>

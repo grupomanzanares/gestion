@@ -24,6 +24,7 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
+
       <ion-col size="6">
         <ion-card class="ion-padding">
           <ion-card-header class="ion-align-items-center">
@@ -33,7 +34,22 @@
           <ion-card-content>
             <ion-button [routerLink]="['documentos']" routerLinkActive="router-link-active" expand="block" shape="round">
               <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
-              Ir a Perfil
+              Ir a documentos
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="create-outline" size="large"></ion-icon>
+            <ion-card-title>Autorizar Documentos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['autorizar']" routerLinkActive="router-link-active" expand="block" shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a autorizar
             </ion-button>
           </ion-card-content>
         </ion-card>
