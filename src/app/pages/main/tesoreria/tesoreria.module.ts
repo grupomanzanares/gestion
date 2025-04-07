@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ContabilizarPageRoutingModule } from './contabilizar-routing.module';
+import { TesoreriaPageRoutingModule } from './tesoreria-routing.module';
 
-import { ContabilizarPage } from './contabilizar.page';
+import { TesoreriaPage } from './tesoreria.page';
 import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
@@ -14,9 +14,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    ContabilizarPageRoutingModule,
+    TesoreriaPageRoutingModule,
     SharedModule
   ],
-  declarations: [ContabilizarPage]
+  declarations: [TesoreriaPage]
 })
-export class ContabilizarPageModule {}
+export class TesoreriaPageModule {}

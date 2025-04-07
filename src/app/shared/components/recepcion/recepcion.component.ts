@@ -19,6 +19,8 @@ export class RecepcionComponent implements OnInit {
   responsables: any[] = []
   selectedFileName: string = '';
   selectedFile: File | null = null;
+  responsableFiltrados: any[] = []
+  searchResponsable: string = ''
 
   user = {} as any;
 
@@ -66,6 +68,7 @@ export class RecepcionComponent implements OnInit {
     this.master.get("users").subscribe({
       next: (data) => {
         this.responsables = data
+        this.responsableFiltrados = [...this.responsables]
       }
     })
   }
@@ -84,28 +87,6 @@ export class RecepcionComponent implements OnInit {
         responsableId: this.documento.responsableId
       });
     }
-  }
-
-  update_master() {
-    if (this.inputs.invalid) {
-      console.warn('Formulario inválido');
-      return;
-    }
-    const id = this.documento.id
-    const datos = {
-      ...this.inputs.value,
-      estadoId: 2
-    };
-
-    this.master.update(datos, 'compras_reportadas', id).subscribe({
-      next: (res) => {
-        this.toast.presentToast('checkmark-outline', 'Tipo de compra y Responsable añadidos correctamente', 'success', 'top')
-        this.modalCtrl.dismiss(true)
-      },
-      error: (err) => {
-        console.error('Error al actualizar documento:', err);
-      }
-    })
   }
 
   update() {
@@ -157,6 +138,17 @@ export class RecepcionComponent implements OnInit {
       this.selectedFile = file;
 
     }
+  }
+
+  search(){
+    const search = this.searchResponsable.toLowerCase()
+    this.responsableFiltrados = this.responsables.filter(responsable => responsable.name.toLowerCase().startsWith(search))
+  }
+
+  selectResponsable(responsable: any) {
+    this.searchResponsable = responsable.name;
+    this.inputs.get('responsableId')?.setValue(responsable.id);
+    this.responsableFiltrados = []; 
   }
 
 }

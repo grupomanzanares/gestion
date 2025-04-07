@@ -27,6 +27,14 @@ const routes: Routes = [
   {
     path: 'contabilizar',
     loadChildren: () => import('./contabilizar/contabilizar.module').then( m => m.ContabilizarPageModule)
+  },
+  {
+    path: 'trazabilidad',
+    loadChildren: () => import('./trazabilidad/trazabilidad.module').then( m => m.TrazabilidadPageModule)
+  },
+  {
+    path: 'tesoreria',
+    loadChildren: () => import('./tesoreria/tesoreria.module').then( m => m.TesoreriaPageModule)
   }
 
 

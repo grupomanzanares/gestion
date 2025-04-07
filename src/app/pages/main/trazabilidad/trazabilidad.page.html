@@ -1,0 +1,164 @@
+<app-header title="Trazabilidad" [showMenu]="true"></app-header>
+<app-side-menu></app-side-menu>
+
+<ion-content id="main-content">
+  <!-- Botón para mostrar/ocultar filtros -->
+  <div class="ion-margin" *ngIf="!showForm">
+    <ion-button expand="block" style="--background: #00a4f3;" (click)="toggleFilters()">
+      {{ showFilters ? 'Ocultar Filtros' : 'Buscar' }}
+    </ion-button>
+  </div>
+
+  <!-- Contenedor de Filtros -->
+  <div *ngIf="showFilters" class="ion-margin">
+    <ion-grid>
+      <ion-row>
+        <!-- Fecha Inicio -->
+        <ion-col size="6">
+          <ion-item>
+            <ion-label position="stacked">Fecha Inicio</ion-label>
+            <ion-datetime-button datetime="datetime-start" class="ion-margin"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="datetime-start" presentation="date" [(ngModel)]="filterStartDate"
+                  (ionChange)="onDateChange('start', $event.detail.value)"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+        </ion-col>
+        <!-- Fecha Fin -->
+        <ion-col size="6">
+          <ion-item>
+            <ion-label position="stacked">Fecha Fin</ion-label>
+            <ion-datetime-button datetime="datetime-end" class="ion-margin"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="datetime-end" presentation="date" [(ngModel)]="filterEndDate"
+                  (ionChange)="onDateChange('end', $event.detail.value)"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+        </ion-col>
+
+      <!-- Centro de Costo -->
+      <ion-col size="6">
+        <ion-item>
+          <ion-label position="stacked">Centro de Costo</ion-label>
+          <ion-select interface="popover" [(ngModel)]="filterCentroCosto" placeholder="Selecciona centro de costo">
+            <ion-select-option *ngFor="let centro of centros" [value]="centro.nombre">
+              {{ centro.nombre }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+
+      <!-- Responsable -->
+      <ion-col size="6">
+        <ion-item>
+          <ion-label position="stacked">Responsable</ion-label>
+          <ion-select interface="popover" [(ngModel)]="filterResponsable" placeholder="Selecciona responsable">
+            <ion-select-option *ngFor="let responsable of responsables" [value]="responsable.name">
+              {{ responsable.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+
+      <!-- Tipo de Compra -->
+      <ion-col size="6">
+        <ion-item>
+          <ion-label position="stacked">Tipo de Compra</ion-label>
+          <ion-select interface="popover" [(ngModel)]="filterTipoCompra" placeholder="Selecciona tipo de compra">
+            <ion-select-option *ngFor="let tipo of tpcompras" [value]="tipo.nombre">
+              {{ tipo.nombre }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+
+      <!-- Estado -->
+      <ion-col size="6">
+        <ion-item>
+          <ion-label position="stacked">Estado</ion-label>
+          <ion-select interface="popover" [(ngModel)]="filterEstado" placeholder="Selecciona estado">
+            <ion-select-option *ngFor="let estado of estados" [value]="estado.nombre">
+              {{ estado.nombre }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+
+      <!-- Botones -->
+        <ion-col size="6">
+          <ion-button expand="block" color="primary" (click)="applyFilters()">Aplicar Filtros</ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button expand="block" color="light" (click)="resetFilters()">Limpiar Filtros</ion-button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12">
+          <ion-button expand="block" color="success" (click)="exportToExcel()">
+            <ion-icon name="download-outline" slot="start"></ion-icon>
+            Exportar a Excel
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      
+    </ion-grid>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="sync-table">
+      <thead>
+        <tr>
+          <th>Identificacion del emisor</th>
+          <th>Emisor</th>
+          <th>Empresa</th>
+          <th>Tipo de documento</th>
+          <th>N° de documento</th>
+          <th>Tipo de compra</th>
+          <th>Valor total</th>
+          <th>Fecha estado comercial</th>
+          <th>CUFE/CUDE</th>
+          <th>Url PDF</th>
+          <th>Centro de costo</th>
+          <th>Observación Responsable</th>
+          <th>Observación Contable</th>
+          <th>Observacion Tesoreria</th>
+          <th>Estado</th>
+          <th>Conciliado</th>
+          <th>Responsable</th>
+          <!-- <th>Habilitado</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of documentos">
+          <td>{{ item.emisor }}</td>
+          <td>{{ item.nombreEmisor }}</td>
+          <td>{{ item.empresaInfo?.nombre }}</td>
+          <td>{{ item.tipo }}</td>
+          <td>{{ item.numero }}</td>
+          <td>{{ item.compras_tipo?.nombre }}</td>
+          <td>{{ item.valor | currency:'USD' }}</td>
+          <td>{{ item.fecha | date:'shortDate' }}</td>
+          <td>{{ item.cufe }}</td>
+          <td>
+            <a *ngIf="item.urlPdf" (click)="union(item)" style="color: blue; cursor: pointer;">
+              Ver PDF
+            </a>
+          </td>
+          <td>{{ item.ccosto }} {{ item.ccostoNombre }} </td>
+          <td>{{ item.observacionResponsable }}</td>
+          <td>{{ item.observacionContable }}</td>
+          <td>{{ item.observacionTesoreria }}</td>
+          <td>{{ item.compras_estado?.nombre }}</td>
+          <td>{{ item.conciliado }}</td>
+          <td>{{ item.responsable?.name }}</td>
+          <!-- <td>{{ item.habilitado }}</td> -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ion-content>

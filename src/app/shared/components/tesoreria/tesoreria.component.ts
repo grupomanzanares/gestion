@@ -1,26 +1,22 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { MasterService } from 'src/app/services/gestion/master.service';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { environment } from 'src/environments/environment.prod';
 
 @Component({
-  selector: 'app-autorizador',
-  templateUrl: './autorizador.component.html',
-  styleUrls: ['./autorizador.component.scss'],
+  selector: 'app-tesoreria',
+  templateUrl: './tesoreria.component.html',
+  styleUrls: ['./tesoreria.component.scss'],
   standalone: false
 })
-export class AutorizadorComponent implements OnInit {
+export class TesoreriaComponent implements OnInit {
+
   @Input() documento: any
 
-  selectedFileName: string = '';
-  selectedFile: File | null = null;
-  centros: any[] = []
-
-  user = {} as any;
+  user = {} as any
 
   public inputs = new FormGroup({
     emisor: new FormControl(null, [Validators.required]),
@@ -28,23 +24,22 @@ export class AutorizadorComponent implements OnInit {
     empresa: new FormControl(null, [Validators.required]),
     empresaInfo: new FormControl(null, [Validators.required]),
     tipo: new FormControl(null, [Validators.required]),
-    compras_tipo: new FormControl(null, [Validators.required]),
     numero: new FormControl(null, [Validators.required]),
     valor: new FormControl(null, [Validators.required]),
-    observacionResponsable: new FormControl(null, [Validators.required]),
+    observacionTesoreria: new FormControl(null, [Validators.required]),
     urlpdf: new FormControl(null, [Validators.required]),
     ccosto: new FormControl(null, [Validators.required])
   })
 
-  constructor(private master: MasterService, private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService) { }
+  constructor(private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService) { }
 
   ngOnInit() {
     this.user = this.storage.get('manzanares-user')
     this.getDatos()
-    this.getCentro()
   }
 
   getDatos() {
+    console.log(this.documento)
     if (this.documento) {
       this.inputs.patchValue({
         emisor: this.documento.emisor,
@@ -52,14 +47,11 @@ export class AutorizadorComponent implements OnInit {
         empresa: this.documento.empresa,
         empresaInfo: this.documento.empresaInfo?.nombre || this.documento.empresa,
         tipo: this.documento.tipo,
-        compras_tipo: this.documento.compras_tipo?.nombre,
         numero: this.documento.numero,
         valor: this.documento.valor,
         urlpdf: this.documento.urlPdf,
-        ccosto: this.documento.ccostoId
+        ccosto: this.documento.ccostoNombre
       });
-
-      console.log(this.documento)
 
       this.inputs.controls.emisor.disable()
       // this.inputs.controls.nombreEmisor.disable()
@@ -68,7 +60,7 @@ export class AutorizadorComponent implements OnInit {
       this.inputs.controls.tipo.disable()
       this.inputs.controls.numero.disable()
       this.inputs.controls.valor.disable()
-      this.inputs.controls.compras_tipo.disable()
+      this.inputs.controls.ccosto.disable()
     }
   }
 
@@ -94,15 +86,6 @@ export class AutorizadorComponent implements OnInit {
     }
   }
 
-  getCentro() {
-    const nit = this.documento.empresa
-    this.master.getWo('ccostos', nit).subscribe({
-      next: (data) => {
-        this.centros = [data]
-      }
-    })
-  }
-
   update() {
     if (this.inputs.invalid) {
       console.warn('Formulario inválido');
@@ -112,27 +95,22 @@ export class AutorizadorComponent implements OnInit {
 
     const formData = new FormData();
 
-    const fields = ['observacionResponsable', 'ccosto']
+    const fields = ['observacionTesoreria']
     fields.forEach(field => {
       if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
         formData.append(field, this.inputs.get(field).value);
       }
     })
+
     formData.append('id', this.documento.id)
     formData.append('userMod', this.user.identificacion);
-
-    if (this.documento.compras_tipo?.id === 1) {
-      formData.append('estadoId', '3');
-    } else {
-      formData.append('estadoId', '6');
-    }
-
+    formData.append('tesoreria', 'true');
 
     console.log('datos enviados', formData)
 
     this.masterTable.update('compras_reportadas', formData).subscribe({
       next: (res) => {
-        this.toast.presentToast('checkmark-outline', 'Autorizado con exito', 'success', 'top')
+        this.toast.presentToast('checkmark-outline', 'Aceptado en tesoreria con exito', 'success', 'top')
         this.modalCtrl.dismiss(true)
         console.log(res)
       },
@@ -142,10 +120,10 @@ export class AutorizadorComponent implements OnInit {
     })
   }
 
-  decline(){
+  decline() {
     const formData = new FormData();
 
-    const fields = ['observacionResponsable']
+    const fields = ['observacionContable']
     fields.forEach(field => {
       if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
         formData.append(field, this.inputs.get(field).value);
@@ -154,7 +132,7 @@ export class AutorizadorComponent implements OnInit {
 
     formData.append('id', this.documento.id)
     formData.append('userMod', this.user.identificacion);
-    formData.append('estadoId', '1');
+    formData.append('estadoId', '4');
 
     console.log('datos enviados', formData)
 

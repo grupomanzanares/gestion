@@ -30,7 +30,6 @@ export class DocumentosPage implements OnInit {
     })
   }
 
-
   /**VentanaModal para crear o modificar */
   async modalRegister() {
 

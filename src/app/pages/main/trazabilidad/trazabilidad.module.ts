@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ContabilizarPageRoutingModule } from './contabilizar-routing.module';
+import { TrazabilidadPageRoutingModule } from './trazabilidad-routing.module';
 
-import { ContabilizarPage } from './contabilizar.page';
+import { TrazabilidadPage } from './trazabilidad.page';
 import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
@@ -14,9 +14,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    ContabilizarPageRoutingModule,
+    TrazabilidadPageRoutingModule,
     SharedModule
   ],
-  declarations: [ContabilizarPage]
+  declarations: [TrazabilidadPage]
 })
-export class ContabilizarPageModule {}
+export class TrazabilidadPageModule {}

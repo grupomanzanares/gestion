@@ -5,7 +5,7 @@ import { StorageService } from 'src/app/services/storage.service';
   selector: 'app-side-menu',
   templateUrl: './side-menu.component.html',
   styleUrls: ['./side-menu.component.scss'],
-  standalone : false
+  standalone: false
 })
 export class SideMenuComponent implements OnInit {
 
@@ -16,9 +16,8 @@ export class SideMenuComponent implements OnInit {
 
   ngOnInit() {
     const user = this.storage.get('manzanares-user');
-    this.rol = user?.rolId;     
+    this.rol = user?.rolId;
     this.updateMenuItems()
-    console.log(this.rol)
   }
 
   updateMenuItems() {
@@ -30,15 +29,48 @@ export class SideMenuComponent implements OnInit {
           { label: 'Subir Documentos', icon: 'document-text-outline', route: '/main/documentos' },
           { label: 'Usuarios', icon: 'people-outline', route: '/main/usuarios' },
           { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' },
+          { label: 'Contabilizar', icon: 'calculator-outline', route: '/main/contabilizar' },
+          { label: 'Tesoreria', icon: 'card-outline', route: '/main/tesoreria' },
+          { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
         ];
         break;
-        
-        case 2:
-          this.menuItems = [
-            { label: 'Inicio', icon: 'home-outline', route: '/main' },
-            { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' }
-          ]
-          break;
+
+      case 2:
+        this.menuItems = [
+          { label: 'Inicio', icon: 'home-outline', route: '/main' },
+          { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
+          { label: 'Subir Documentos', icon: 'document-text-outline', route: '/main/documentos' },
+          { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
+        ]
+        break;
+
+      case 3:
+        this.menuItems = [
+          { label: 'Inicio', icon: 'home-outline', route: '/main' },
+          { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
+          { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' },
+          { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
+        ];
+        break;
+
+      case 4:
+        this.menuItems = [
+          { label: 'Inicio', icon: 'home-outline', route: '/main' },
+          { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
+          { label: 'Contabilizar', icon: 'calculator-outline', route: '/main/contabilizar' },
+          { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
+        ]
+        break
+
+      case 5:
+        this.menuItems = [
+          { label: 'Inicio', icon: 'home-outline', route: '/main' },
+          { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
+          { label: 'Tesoreria', icon: 'card-outline', route: '/main/tesoreria' },
+          { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
+        ]
+        break
+
       default:
         this.menuItems = [
           { label: 'Inicio', icon: 'home-outline', route: '/main' },

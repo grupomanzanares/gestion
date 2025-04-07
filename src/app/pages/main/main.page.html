@@ -54,6 +54,52 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
+
+      <ion-col size="6">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="calculator-outline" size="large"></ion-icon>
+            <ion-card-title>Contabilizar Documentos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['autorizar']" routerLinkActive="router-link-active" expand="block" shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a contabilizar
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="analytics-outline" size="large"></ion-icon>
+            <ion-card-title>Trazabilidad</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['trazabilidad']" routerLinkActive="router-link-active" expand="block" shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a trazabilidad
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="card-outline" size="large"></ion-icon>
+            <ion-card-title>Tesoreria</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['tesoreria']" routerLinkActive="router-link-active" expand="block" shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a tesoreria
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
     </ion-row>
   </ion-grid>
 </ion-content>
