@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MasterService } from 'src/app/services/gestion/master.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { ContabilidadComponent } from 'src/app/shared/components/contabilidad/contabilidad.component';
+import { LoadFileComponent } from 'src/app/shared/components/load-file/load-file.component';
 import { environment } from 'src/environments/environment.prod';
 
 @Component({

@@ -1,0 +1,48 @@
+<app-header title="Conciliacion" [showMenu]="true"></app-header>
+<app-side-menu></app-side-menu>
+
+<ion-content id="main-content">
+
+  <div class="table-wrapper" >
+    <table class="sync-table">
+      <thead>
+        <tr>
+          <th>Identificacion del emisor</th>
+          <th>Emisor</th>
+          <th>Empresa</th>
+          <th>Tipo de documento</th>
+          <th>N° de documento</th>
+          <th>Fecha</th>
+          <th>CUFE/CUDE</th>
+          <th>Valor total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of documentos">
+          <!-- <td *ngIf="item.compras_estado?.id === 1">
+            <ion-checkbox (click)="modalAsignacion(item)"></ion-checkbox>
+          </td>
+          <td *ngIf="item.compras_estado?.id !== 1">
+            <ion-icon name="checkmark-outline" size="large" color="success"></ion-icon>
+          </td> -->
+          
+          <td>{{ item.emisor }}</td>
+          <td>{{ item.nombreEmisor }}</td>
+          <td>{{ item.empresa }}</td>
+          <td>{{ item.tipo }}</td>
+          <td>{{ item.numero }}</td>
+          <td>{{ item.fecha | date:'shortDate' }}</td>
+          <td>{{ item.cufe }}</td>
+          <td>{{ item.valor | currency:'USD'  }}</td>
+          <!-- <td>{{ item.habilitado }}</td> -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+        <ion-fab-button (click)="modalRegister()" size="small" color="success">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+</ion-content>

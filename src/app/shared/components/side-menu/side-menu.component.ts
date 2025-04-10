@@ -27,14 +27,15 @@ export class SideMenuComponent implements OnInit {
           { label: 'Inicio', icon: 'home-outline', route: '/main' },
           { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
           { label: 'Subir Documentos', icon: 'document-text-outline', route: '/main/documentos' },
-          { label: 'Usuarios', icon: 'people-outline', route: '/main/usuarios' },
           { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' },
           { label: 'Contabilizar', icon: 'calculator-outline', route: '/main/contabilizar' },
           { label: 'Tesoreria', icon: 'card-outline', route: '/main/tesoreria' },
           { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
+          { label: 'Conciliacion', icon: 'build-outline', route: '/main/conciliacion' },
+          { label: 'Usuarios', icon: 'people-outline', route: '/main/usuarios' },
         ];
         break;
-
+        
       case 2:
         this.menuItems = [
           { label: 'Inicio', icon: 'home-outline', route: '/main' },
@@ -49,6 +50,7 @@ export class SideMenuComponent implements OnInit {
           { label: 'Inicio', icon: 'home-outline', route: '/main' },
           { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
           { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' },
+          { label: 'Conciliacion', icon: 'build-outline', route: '/main/conciliacion' },
           { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
         ];
         break;

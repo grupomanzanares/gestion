@@ -1,42 +1,43 @@
 import { Component, OnInit } from '@angular/core';
 import { MasterService } from 'src/app/services/gestion/master.service';
 import { ModalService } from 'src/app/services/modal.service';
-import { ToastService } from 'src/app/services/toast.service';
-import { TesoreriaComponent } from 'src/app/shared/components/tesoreria/tesoreria.component';
+import { ConciliacionComponent } from 'src/app/shared/components/conciliacion/conciliacion.component';
 import { environment } from 'src/environments/environment.prod';
 
 @Component({
-  selector: 'app-tesoreria',
-  templateUrl: './tesoreria.page.html',
-  styleUrls: ['./tesoreria.page.scss'],
+  selector: 'app-conciliacion',
+  templateUrl: './conciliacion.page.html',
+  styleUrls: ['./conciliacion.page.scss'],
   standalone: false
 })
-export class TesoreriaPage implements OnInit {
+export class ConciliacionPage implements OnInit {
 
   documentos: any[] = []
 
-  constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService) { }
+  constructor(private master: MasterService, private modalService: ModalService) { }
 
   ngOnInit() {
     this.get()
   }
 
   get() {
-    this.master.get('compras_reportadas').subscribe({
+    this.master.get("registros_dian").subscribe({
       next: (data) => {
-        this.documentos = data.filter((item: any) => item.compras_estado?.id === 5 && item.tesoreria === false)
+        this.documentos = data
+        console.log(this.documentos)
       }
     })
   }
-  
-  async modalAsignacion(item: any) {
+
+  async modalRegister() {
+
     try {
       let success = await this.modalService.openModal({
-        component: TesoreriaComponent,
-        componentProps: { documento: item },
+        component: ConciliacionComponent,
         cssClass: 'modal'
       });
-      if (success) this.get()
+
+      if (success) this.get();
     } catch (error) {
       console.error('Error al abrir el modal:', error);
     }

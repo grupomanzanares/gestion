@@ -25,7 +25,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size="6">
+      <ion-col size="6" *ngIf="rol === 1 || rol === 2">
         <ion-card class="ion-padding">
           <ion-card-header class="ion-align-items-center">
             <ion-icon name="document-text-outline" size="large"></ion-icon>
@@ -40,7 +40,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size="6">
+      <ion-col size="6" *ngIf="rol === 1 || rol === 3">
         <ion-card class="ion-padding">
           <ion-card-header class="ion-align-items-center">
             <ion-icon name="create-outline" size="large"></ion-icon>
@@ -55,16 +55,31 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size="6">
+      <ion-col size="6" *ngIf="rol === 1 || rol === 4">
         <ion-card class="ion-padding">
           <ion-card-header class="ion-align-items-center">
             <ion-icon name="calculator-outline" size="large"></ion-icon>
             <ion-card-title>Contabilizar Documentos</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-button [routerLink]="['autorizar']" routerLinkActive="router-link-active" expand="block" shape="round">
+            <ion-button [routerLink]="['contabilizar']" routerLinkActive="router-link-active" expand="block" shape="round">
               <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
               Ir a contabilizar
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" *ngIf="rol === 1 || rol === 5">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="card-outline" size="large"></ion-icon>
+            <ion-card-title>Tesoreria</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['tesoreria']" routerLinkActive="router-link-active" expand="block" shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a tesoreria
             </ion-button>
           </ion-card-content>
         </ion-card>
@@ -85,20 +100,39 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size="6">
+      <ion-col size="6" *ngIf="rol === 1 || rol === 4">
         <ion-card class="ion-padding">
           <ion-card-header class="ion-align-items-center">
-            <ion-icon name="card-outline" size="large"></ion-icon>
-            <ion-card-title>Tesoreria</ion-card-title>
+            <ion-icon name="build-outline" size="large"></ion-icon>
+            <ion-card-title>Conciliacion</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-button [routerLink]="['tesoreria']" routerLinkActive="router-link-active" expand="block" shape="round">
+            <ion-button [routerLink]="['conciliacion']" routerLinkActive="router-link-active" expand="block" shape="round">
               <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
-              Ir a tesoreria
+              Ir a Conciliacion
             </ion-button>
           </ion-card-content>
         </ion-card>
       </ion-col>
+
+      <ion-col size="12" *ngIf="rol === null">
+        <ion-card color="light" class="ion-padding" style="text-align: center;">
+          <ion-card-header>
+            <ion-icon name="help-circle-outline" size="large" style="font-size: 48px; color: var(--ion-color-primary);"></ion-icon>
+            <ion-card-title class="ion-text-center" style="margin-top: 8px;">
+              ¿Necesitas acceso?
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            Tu rol aún no está definido en el sistema.<br />
+            Por favor, comunícate con el área de sistemas para obtener acceso.
+          </ion-card-content>
+          <ion-button expand="block" color="primary" fill="outline" class="ion-margin-top" href="TIPRACTICAS@gmanzanares.com" disabled>
+            <ion-icon slot="start" name="chatbubbles-outline"></ion-icon>
+            Contactar sistemas
+          </ion-button>
+        </ion-card>
+      </ion-col>      
 
     </ion-row>
   </ion-grid>

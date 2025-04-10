@@ -19,13 +19,14 @@ import { RecepcionComponent } from './components/recepcion/recepcion.component';
 import { AutorizadorComponent } from './components/autorizador/autorizador.component';
 import { ContabilidadComponent } from './components/contabilidad/contabilidad.component';
 import { TesoreriaComponent } from './components/tesoreria/tesoreria.component';
+import { ConciliacionComponent } from './components/conciliacion/conciliacion.component';
 
 /**  Componentes */
 
 @NgModule({
-  declarations: [ HeaderComponent, CustomInputComponent, LogoComponent, SideMenuComponent, LoadFileComponent, RecepcionComponent, AutorizadorComponent, ContabilidadComponent, TesoreriaComponent ],
+  declarations: [ HeaderComponent, CustomInputComponent, LogoComponent, SideMenuComponent, LoadFileComponent, RecepcionComponent, AutorizadorComponent, ContabilidadComponent, TesoreriaComponent, ConciliacionComponent ],
   imports: [ CommonModule, IonicModule, ReactiveFormsModule, FormsModule, RouterModule ],
-  exports:[ReactiveFormsModule, HeaderComponent, CustomInputComponent, LogoComponent , SideMenuComponent, LoadFileComponent, RecepcionComponent, AutorizadorComponent, ContabilidadComponent, TesoreriaComponent ]
+  exports:[ReactiveFormsModule, HeaderComponent, CustomInputComponent, LogoComponent , SideMenuComponent, LoadFileComponent, RecepcionComponent, AutorizadorComponent, ContabilidadComponent, TesoreriaComponent, ConciliacionComponent ]
 })
 
 export class SharedModule { }

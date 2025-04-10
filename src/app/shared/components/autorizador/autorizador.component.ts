@@ -50,7 +50,7 @@ export class AutorizadorComponent implements OnInit {
         emisor: this.documento.emisor,
         nombreEmisor: this.documento.nombreEmisor,
         empresa: this.documento.empresa,
-        empresaInfo: this.documento.empresaInfo?.nombre || this.documento.empresa,
+        empresaInfo: this.documento.empresaInfo?.nombre,
         tipo: this.documento.tipo,
         compras_tipo: this.documento.compras_tipo?.nombre,
         numero: this.documento.numero,
@@ -58,17 +58,7 @@ export class AutorizadorComponent implements OnInit {
         urlpdf: this.documento.urlPdf,
         ccosto: this.documento.ccostoId
       });
-
       console.log(this.documento)
-
-      this.inputs.controls.emisor.disable()
-      // this.inputs.controls.nombreEmisor.disable()
-      this.inputs.controls.empresa.disable()
-      this.inputs.controls.empresaInfo.disable()
-      this.inputs.controls.tipo.disable()
-      this.inputs.controls.numero.disable()
-      this.inputs.controls.valor.disable()
-      this.inputs.controls.compras_tipo.disable()
     }
   }
 
@@ -98,7 +88,8 @@ export class AutorizadorComponent implements OnInit {
     const nit = this.documento.empresa
     this.master.getWo('ccostos', nit).subscribe({
       next: (data) => {
-        this.centros = [data]
+        this.centros = data
+        console.log(data)
       }
     })
   }
@@ -142,7 +133,7 @@ export class AutorizadorComponent implements OnInit {
     })
   }
 
-  decline(){
+  decline() {
     const formData = new FormData();
 
     const fields = ['observacionResponsable']

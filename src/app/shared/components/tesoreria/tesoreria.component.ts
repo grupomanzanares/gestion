@@ -52,15 +52,6 @@ export class TesoreriaComponent implements OnInit {
         urlpdf: this.documento.urlPdf,
         ccosto: this.documento.ccostoNombre
       });
-
-      this.inputs.controls.emisor.disable()
-      // this.inputs.controls.nombreEmisor.disable()
-      this.inputs.controls.empresa.disable()
-      this.inputs.controls.empresaInfo.disable()
-      this.inputs.controls.tipo.disable()
-      this.inputs.controls.numero.disable()
-      this.inputs.controls.valor.disable()
-      this.inputs.controls.ccosto.disable()
     }
   }
 

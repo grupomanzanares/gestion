@@ -19,7 +19,8 @@ export class CustomInputComponent  implements OnInit {
   @Input() label: string = '';
   @Input() control: FormControl
   @Input() options: { id: number, name: string }[] = []; // Aquí se definen las opciones de filtro
-
+  @Input() readonly: boolean = false;
+  
   isPassword: boolean = false;   /* Para los campos que sean de tipo password */
   hide: boolean = true;
 

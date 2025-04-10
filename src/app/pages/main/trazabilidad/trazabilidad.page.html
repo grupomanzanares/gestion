@@ -46,7 +46,7 @@
           <ion-label position="stacked">Centro de Costo</ion-label>
           <ion-select interface="popover" [(ngModel)]="filterCentroCosto" placeholder="Selecciona centro de costo">
             <ion-select-option *ngFor="let centro of centros" [value]="centro.nombre">
-              {{ centro.nombre }}
+              {{ centro.codigo }} {{ centro.nombre }}
             </ion-select-option>
           </ion-select>
         </ion-item>

@@ -12,7 +12,8 @@ const routes: Routes = [
   {
     path: 'profile',
     loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule), canActivate: [AuthGuard]
-  },  {
+  },
+  {
     path: 'documentos',
     loadChildren: () => import('./documentos/documentos.module').then( m => m.DocumentosPageModule)
   },
@@ -35,9 +36,11 @@ const routes: Routes = [
   {
     path: 'tesoreria',
     loadChildren: () => import('./tesoreria/tesoreria.module').then( m => m.TesoreriaPageModule)
+  },
+  {
+    path: 'conciliacion',
+    loadChildren: () => import('./conciliacion/conciliacion.module').then( m => m.ConciliacionPageModule)
   }
-
-
 ];
 
 @NgModule({
