@@ -44,63 +44,79 @@ export class ConciliacionComponent implements OnInit {
 
         this.dataExel = jsonData.map((row: any) => ({
           cufe: row["CUFE/CUDE"],
-          numero: row.Prefijo + row.Folio,
+          numero: (row.Prefijo ?? '') + (row.Folio ?? '') || row["Número"] || '',
           fecha: this.convertirFecha(row["Fecha Emisión"]),
-          emisor: row["NIT Emisor"],
-          nombreEmisor: row["Nombre Emisor"],
-          empresa: row["NIT Receptor"],
-          nombreEmpresa: row["Nombre Receptor"],
-          valor: Number(row[" Total "]) || 0,
+          emisor: row["NIT Receptor"],
+          nombreEmisor: row["Nombre Receptor"],
+          empresa: row["NIT Emisor"],
+          // valor: Number(row[" Total "]) || 0,
+          valor: row.Total,
           tipo: row["Tipo de documento"],
           user: user.name,
           userMod: user.name,
         }));
-        this.dataFiltrada = this.dataExel.filter(item => item.tipo?.toString().trim().toLowerCase() === "factura electrónica" || item.tipo?.toString().trim().toLowerCase() === 'nota de crédito electrónica');
-        console.log('Filtrados (factura electrónica):', this.dataFiltrada);
+        this.dataFiltrada = this.dataExel.filter(item => item.tipo?.toString().trim().toLowerCase() === "factura electrónica" || item.tipo?.toString().trim().toLowerCase() === "nota de crédito electrónica" || item.tipo?.toString().trim().toLowerCase() === "nota debito electrónica" || item.tipo?.toString().trim().toLowerCase() === "factura electrónica de contingencia DIAN" || item.tipo?.toString().trim().toLowerCase() === "factura electrónica de contingencia" || item.tipo?.toString().trim().toLowerCase() === "documento equivalente post");
+        console.log('Filtrados', this.dataFiltrada);
       }
       reader.readAsArrayBuffer(file)
     }
   }
-
   convertirFecha(fechaStr: string): string {
     if (!fechaStr) return '';
 
-    // Verifica si la fecha viene en formato número de Excel
+    // Si es número de Excel
     if (!isNaN(Number(fechaStr))) {
       const fechaExcel = XLSX.SSF.parse_date_code(Number(fechaStr));
-      return new Date(fechaExcel.y, fechaExcel.m - 1, fechaExcel.d, fechaExcel.H, fechaExcel.M, fechaExcel.S).toISOString();
+      const fechaJs = new Date(fechaExcel.y, fechaExcel.m - 1, fechaExcel.d, fechaExcel.H, fechaExcel.M, fechaExcel.S);
+      return fechaJs.toISOString().replace('T', ' ').split('.')[0]; // YYYY-MM-DD HH:mm:ss
     }
 
-    // Si viene como texto, intenta formatearla
-    const partes = fechaStr.split(" ");
-    if (partes.length === 2) {
-      const [fecha, hora] = partes;
-      const horaLimpia = hora.replace(/:/g, "-"); // Reemplaza ":" en milisegundos
-      return `${fecha}T${horaLimpia}`;
+    // Si viene como string "DD-MM-YYYY"
+    const regex = /^(\d{2})-(\d{2})-(\d{4})$/;
+    const match = fechaStr.match(regex);
+    if (match) {
+      const [, day, month, year] = match;
+      return `${year}-${month}-${day} 00:00:00`;
     }
 
-    return fechaStr; // Si falla, devuelve el valor original
+    // Si viene como "YYYY-MM-DD HH:mm:ss", lo dejamos igual
+    return fechaStr;
   }
-
 
   uploadFile() {
     if (this.dataFiltrada.length === 0) {
       this.toast.presentToast('alert-outline', 'No hay facturas electrónicas para subir', 'danger', 'top');
       return;
     }
-  
+
+    // Validación: eliminar registros incompletos
+    this.dataFiltrada = this.dataFiltrada.filter(item =>
+      item.cufe && item.numero && item.fecha && item.emisor && item.empresa && !isNaN(item.valor)
+    );
+
+    console.log('Total a subir luego de filtro final:', this.dataFiltrada.length);
+
+    // Detección de CUFEs duplicados
+    const cufes = this.dataFiltrada.map(item => item.cufe);
+    const duplicados = cufes.filter((cufe, index, self) => self.indexOf(cufe) !== index);
+    if (duplicados.length > 0) {
+      console.warn('CUFEs duplicados detectados (no serán subidos si el backend los rechaza):', duplicados);
+    }
+
     const chunkSize = 100;
     const totalChunks = Math.ceil(this.dataFiltrada.length / chunkSize);
     let chunksEnviados = 0;
-  
+
     for (let i = 0; i < this.dataFiltrada.length; i += chunkSize) {
       const chunk = this.dataFiltrada.slice(i, i + chunkSize);
-  
+
       this.master.createtow('registros_dian', chunk).subscribe({
-        next: () => {
+        next: (res) => {
           chunksEnviados++;
           console.log(`Chunk ${chunksEnviados}/${totalChunks} subido con éxito`);
-  
+          console.log('Datos enviados:', chunk);
+          console.log('Respuesta del backend:', res);
+
           if (chunksEnviados === totalChunks) {
             this.toast.presentToast('checkmark-outline', 'Todos los datos se subieron correctamente', 'success', 'top');
             this.modalCtrl.dismiss(true);
@@ -112,5 +128,6 @@ export class ConciliacionComponent implements OnInit {
         }
       });
     }
-  }  
+  }
+
 }

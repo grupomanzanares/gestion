@@ -24,7 +24,7 @@ export class ConciliacionPage implements OnInit {
     this.master.get("registros_dian").subscribe({
       next: (data) => {
         this.documentos = data
-        console.log(this.documentos)
+        console.log(data)
       }
     })
   }

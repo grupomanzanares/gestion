@@ -25,7 +25,6 @@ export class SignUpPage implements OnInit {
         email: new FormControl(null, [Validators.email]),
         celphone: new FormControl(null, [Validators.minLength(8), Validators.maxLength(10), Validators.pattern('^[0-9]*$')]),
         password: new FormControl(null, [Validators.required, Validators.minLength(10), Validators.maxLength(18)]),
-        rolId: new FormControl(null, [Validators.required])
   });
 
   constructor(   private _router: Router,

@@ -10,7 +10,7 @@
   </div>
   <ion-grid fixed>
     <ion-row class="ion-margin-top">
-      <ion-col size="6">
+      <ion-col size="6" *ngIf="rol === 1 || rol === 2 || rol === 3 || rol === 4 || rol === 5">
         <ion-card class="ion-padding">
           <ion-card-header class="ion-align-items-center">
             <ion-icon name="person-outline" size="large"></ion-icon>
@@ -85,7 +85,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size="6">
+      <ion-col size="6" *ngIf="rol === 1 || rol === 2 || rol === 3 || rol === 4 || rol === 5">
         <ion-card class="ion-padding">
           <ion-card-header class="ion-align-items-center">
             <ion-icon name="analytics-outline" size="large"></ion-icon>
@@ -127,7 +127,7 @@
             Tu rol aún no está definido en el sistema.<br />
             Por favor, comunícate con el área de sistemas para obtener acceso.
           </ion-card-content>
-          <ion-button expand="block" color="primary" fill="outline" class="ion-margin-top" href="TIPRACTICAS@gmanzanares.com" disabled>
+          <ion-button expand="block" color="primary" fill="outline" class="ion-margin-top" >
             <ion-icon slot="start" name="chatbubbles-outline"></ion-icon>
             Contactar sistemas
           </ion-button>
