@@ -40,6 +40,10 @@ const routes: Routes = [
   {
     path: 'conciliacion',
     loadChildren: () => import('./conciliacion/conciliacion.module').then( m => m.ConciliacionPageModule)
+  },
+  {
+    path: 'dian',
+    loadChildren: () => import('./dian/dian.module').then( m => m.DianPageModule)
   }
 ];
 

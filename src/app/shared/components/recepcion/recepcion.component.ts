@@ -140,7 +140,7 @@ export class RecepcionComponent implements OnInit {
     }
   }
 
-  search(){
+  search() {
     const search = this.searchResponsable.toLowerCase()
     this.responsableFiltrados = this.responsables.filter(responsable => responsable.name.toLowerCase().startsWith(search))
   }
@@ -148,7 +148,7 @@ export class RecepcionComponent implements OnInit {
   selectResponsable(responsable: any) {
     this.searchResponsable = responsable.name;
     this.inputs.get('responsableId')?.setValue(responsable.id);
-    this.responsableFiltrados = []; 
+    this.responsableFiltrados = [];
   }
 
 }

@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { MasterService } from 'src/app/services/gestion/master.service';
 import { ModalService } from 'src/app/services/modal.service';
-import { ConciRecepComponent } from 'src/app/shared/components/conci-recep/conci-recep.component';
 import { ConciliacionComponent } from 'src/app/shared/components/conciliacion/conciliacion.component';
 import { environment } from 'src/environments/environment.prod';
 
 @Component({
-  selector: 'app-conciliacion',
-  templateUrl: './conciliacion.page.html',
-  styleUrls: ['./conciliacion.page.scss'],
+  selector: 'app-dian',
+  templateUrl: './dian.page.html',
+  styleUrls: ['./dian.page.scss'],
   standalone: false
 })
-export class ConciliacionPage implements OnInit {
+export class DianPage implements OnInit {
 
   documentos: any[] = []
 
@@ -22,9 +21,9 @@ export class ConciliacionPage implements OnInit {
   }
 
   get() {
-    this.master.getheer("compras_reportadas", 'conciliar').subscribe({
+    this.master.get("registros_dian").subscribe({
       next: (data) => {
-        this.documentos = data.noConciliados
+        this.documentos = data
         console.log(data)
       }
     })
@@ -44,19 +43,6 @@ export class ConciliacionPage implements OnInit {
     }
   }
 
-  async modalAsignacion(item: any) {
-    try {
-      let success = await this.modalService.openModal({
-        component: ConciRecepComponent,
-        componentProps: { documento: item },
-        cssClass: 'modal'
-      });
-      if (success) this.get()
-    } catch (error) {
-      console.error('Error al abrir el modal:', error);
-    }
-  }
-
   union(item: any) {
     const url = environment.apiUrl;
     const pdf = item.urlPdf;
@@ -68,4 +54,5 @@ export class ConciliacionPage implements OnInit {
       console.warn('No hay URL de PDF disponible');
     }
   }
+
 }

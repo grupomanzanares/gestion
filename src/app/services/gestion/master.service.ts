@@ -39,7 +39,7 @@ export class MasterService {
       catchError((error) => {
         console.error('Error en la autenticacion: ', error)
         return throwError(() => new Error('Error al traer los datos. Intente nuevamente'))
-      })
+      })  
     )
   }
 
@@ -58,6 +58,23 @@ export class MasterService {
         return throwError(() => new Error('Error al traer los datos. Intente nuevamente'))
       })
     )
+  }
+
+  getheer(endpoint: string, endpointtwo: string): Observable<any> {
+    const url = `${this.apiUrl}${endpoint}/${endpointtwo}`
+    const token = this.storageService.get('manzanares-token')
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.post<any>(url, {}, { headers }).pipe(
+      catchError((error) => {
+        console.error(`Error al crear :`, error);
+        return throwError(() => new Error(`Error al crear  `));
+      })
+    );
   }
 
   getId (endpoint: string, id: number) {

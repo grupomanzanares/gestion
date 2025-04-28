@@ -22,24 +22,28 @@ export class TrazabilidadPage implements OnInit {
   tpcompras: any[] = []
   estados: any[] = []
   documentosOriginales: any[] = [];
+  empresas: any[] = []
 
   // Filtros
   filterStartDate: string = '';
   filterEndDate: string = '';
-  filterCentroCosto: string = '';
+  // filterCentroCosto: string = '';
   filterResponsable: string = '';
   filterTipoCompra: string = '';
   filterEstado: string = '';
+  filterEmpresa: string = ''
 
 
   constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService) { }
 
   ngOnInit() {
+    this.resetFilters()
     this.get()
     this.getCentro()
     this.getCompras()
     this.getResponsables()
     this.getEstado()
+    this.getEmpresa()
 
     const today = new Date().toISOString().slice(0, 10);
     // this.documentos.fecha.setValue(today)
@@ -59,6 +63,7 @@ export class TrazabilidadPage implements OnInit {
 
   toggleFilters() {
     this.showFilters = !this.showFilters;
+    // this.resetFilters() 
   }
 
   get() {
@@ -102,6 +107,14 @@ export class TrazabilidadPage implements OnInit {
     })
   }
 
+  getEmpresa () {
+    this.master.get('empresas').subscribe({
+      next: (data) => {
+        this.empresas = data
+      }
+    })
+  }
+
   union(item: any) {
     const url = environment.apiUrl;
     const pdf = item.urlPdf;
@@ -127,7 +140,7 @@ export class TrazabilidadPage implements OnInit {
       const fechaDoc = new Date(doc.fecha);
   
       const matchFecha = (!start && !end) || (start && end && fechaDoc >= start && fechaDoc <= end);
-      const matchCentro = !this.filterCentroCosto || doc.ccostoNombre?.toLowerCase().trim() === this.filterCentroCosto.toLowerCase().trim();
+      const matchCentro = !this.filterEmpresa || doc.empresaInfo?.nombre?.toLowerCase().trim() === this.filterEmpresa.toLowerCase().trim();
       const matchResponsable = !this.filterResponsable || doc.responsable?.name?.toLowerCase().trim() === this.filterResponsable.toLowerCase().trim();
       const matchTipoCompra = !this.filterTipoCompra || doc.compras_tipo?.nombre?.toLowerCase().trim() === this.filterTipoCompra.toLowerCase().trim();
       const matchEstado = !this.filterEstado || doc.compras_estado?.nombre?.toLowerCase().trim() === this.filterEstado.toLowerCase().trim();
@@ -138,25 +151,25 @@ export class TrazabilidadPage implements OnInit {
     console.log('🔍 Filtros aplicados:', {
       fechaInicio: this.filterStartDate,
       fechaFin: this.filterEndDate,
-      centro: this.filterCentroCosto,
+      centro: this.filterEmpresa,
       responsable: this.filterResponsable,
       tipoCompra: this.filterTipoCompra,
       estado: this.filterEstado,
     });
   
-    console.log('📋 Documentos filtrados:', this.documentos);
+    console.log('Documentos filtrados:', this.documentos);
   }
   
 
   resetFilters() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().slice(0, 10);
     this.filterStartDate = '';
     this.filterEndDate = '';
-    this.filterCentroCosto = '';
+    this.filterEmpresa = '';
     this.filterResponsable = '';
     this.filterTipoCompra = '';
     this.filterEstado = '';
-    this.get(); // volver a cargar todos los documentos
+    this.get(); 
   }
 
   onDateChange(type: 'start' | 'end', value: string | string[]) {

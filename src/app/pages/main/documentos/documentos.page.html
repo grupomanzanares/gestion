@@ -3,7 +3,7 @@
 
 <ion-content id="main-content">
 
-  <div class="table-wrapper" >
+  <div class="table-wrapper">
     <table class="sync-table">
       <thead>
         <tr>
@@ -35,22 +35,22 @@
           <td *ngIf="item.compras_estado?.id !== 1">
             <ion-icon name="checkmark-outline" size="large" color="success"></ion-icon>
           </td>
-          
+
           <td>{{ item.emisor }}</td>
           <td>{{ item.nombreEmisor }}</td>
           <td>{{ item.empresaInfo?.nombre }}</td>
           <td>{{ item.tipo }}</td>
           <td>{{ item.numero }}</td>
           <td>{{ item.compras_tipo?.nombre }}</td>
-          <td>{{ item.valor | currency:'USD'  }}</td>
+          <td>{{ item.valor | currency:'USD' }}</td>
           <td>{{ item.fecha | date:'shortDate' }}</td>
           <td>{{ item.cufe }}</td>
           <td>
             <a *ngIf="item.urlPdf" (click)="union(item)" style="color: blue; cursor: pointer;">
               Ver PDF
             </a>
-          </td>          
-          <td>{{ item.ccosto }}  {{ item.ccostoNombre }} </td>
+          </td>
+          <td>{{ item.ccosto }} {{ item.ccostoNombre }} </td>
           <td>{{ item.observacionResponsable }}</td>
           <td>{{ item.observacionContable }}</td>
           <td>{{ item.compras_estado?.nombre }}</td>
@@ -63,8 +63,9 @@
   </div>
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="modalRegister()" size="small" color="success">
-      <ion-icon name="add"></ion-icon>
+    <ion-fab-button (click)="modalRegister()"  size="small" color="success">
+      <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+
 </ion-content>

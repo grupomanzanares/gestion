@@ -70,6 +70,8 @@ export class DocumentosPage implements OnInit {
     }
   }
 
+  conciliacion(){
+    
+  }
+
 }
-
-

@@ -1,4 +1,4 @@
-<app-header title="Conciliacion" [showMenu]="true"></app-header>
+<app-header title="Registros DIAN" [showMenu]="true"></app-header>
 <app-side-menu></app-side-menu>
 
 <ion-content id="main-content">
@@ -7,10 +7,9 @@
     <table class="sync-table">
       <thead>
         <tr>
-          <th>Conciliar</th>
-          <th>Empresa</th>
           <th>Identificacion del emisor</th>
           <th>Emisor</th>
+          <th>Empresa</th>
           <th>Tipo de documento</th>
           <th>N° de documento</th>
           <th>Fecha</th>
@@ -20,16 +19,16 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of documentos">
-          <td *ngIf="item.conciliado === 0">
+          <!-- <td *ngIf="item.compras_estado?.id === 1">
             <ion-checkbox (click)="modalAsignacion(item)"></ion-checkbox>
           </td>
-          <td *ngIf="item.conciliado !== 0">
+          <td *ngIf="item.compras_estado?.id !== 1">
             <ion-icon name="checkmark-outline" size="large" color="success"></ion-icon>
-          </td>
+          </td> -->
           
           <td>{{ item.empresa }}</td>
-          <td>{{ item.emisor }}</td>
           <td>{{ item.nombreEmisor }}</td>
+          <td>{{ item.emisor }}</td>
           <td>{{ item.tipo }}</td>
           <td>{{ item.numero }}</td>
           <td>{{ item.fecha | date:'shortDate' }}</td>

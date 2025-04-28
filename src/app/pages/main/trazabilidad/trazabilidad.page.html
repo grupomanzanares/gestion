@@ -40,13 +40,13 @@
           </ion-item>
         </ion-col>
 
-      <!-- Centro de Costo -->
+      <!-- Empresa -->
       <ion-col size="6">
         <ion-item>
-          <ion-label position="stacked">Centro de Costo</ion-label>
-          <ion-select interface="popover" [(ngModel)]="filterCentroCosto" placeholder="Selecciona centro de costo">
-            <ion-select-option *ngFor="let centro of centros" [value]="centro.nombre">
-              {{ centro.codigo }} {{ centro.nombre }}
+          <ion-label position="stacked">Empresa</ion-label>
+          <ion-select interface="popover" [(ngModel)]="filterEmpresa" placeholder="Selecciona la empresa">
+            <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.nombre">
+            {{ empresa.nombre }}
             </ion-select-option>
           </ion-select>
         </ion-item>
