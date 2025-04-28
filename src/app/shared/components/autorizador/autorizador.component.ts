@@ -19,6 +19,8 @@ export class AutorizadorComponent implements OnInit {
   selectedFileName: string = '';
   selectedFile: File | null = null;
   centros: any[] = []
+  centrosFiltrados: any[] = [];
+  searchCentro: string = '';
 
   user = {} as any;
 
@@ -85,13 +87,14 @@ export class AutorizadorComponent implements OnInit {
   }
 
   getCentro() {
-    const nit = this.documento.empresa
+    const nit = this.documento.empresa;
     this.master.getWo('ccostos', nit).subscribe({
       next: (data) => {
-        this.centros = data
-        console.log(data)
+        this.centros = data;
+        this.centrosFiltrados = [...this.centros];
+        console.log(data);
       }
-    })
+    });
   }
 
   update() {
@@ -161,4 +164,14 @@ export class AutorizadorComponent implements OnInit {
     });
   }
 
+  searchCentroCosto() {
+    const search = this.searchCentro.toLowerCase();
+    this.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().startsWith(search));
+  }
+
+  selectCentro(centro: any) {
+    this.searchCentro = `${centro.nombre} - ${centro.codigo}`; // mostrar bonito en el input
+    this.inputs.get('ccosto')?.setValue(centro.codigo);         // guardar SOLO el codigo en el form
+    this.centrosFiltrados = [];                                // limpiar lista filtrada
+  }  
 }
