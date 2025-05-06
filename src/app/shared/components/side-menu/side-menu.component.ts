@@ -51,8 +51,6 @@ export class SideMenuComponent implements OnInit {
           { label: 'Inicio', icon: 'home-outline', route: '/main' },
           { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
           { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' },
-          { label: 'Subir archivo DIAN', icon: 'cloud-upload-outline', route: '/main/dian' },
-          { label: 'Conciliar', icon: 'sync-outline', route: '/main/conciliacion' },
           { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
         ];
         break;
