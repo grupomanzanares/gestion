@@ -63,6 +63,8 @@ export class SideMenuComponent implements OnInit {
           { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
           { label: 'Contabilizar', icon: 'calculator-outline', route: '/main/contabilizar' },
           { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
+          { label: 'Subir archivo DIAN', icon: 'cloud-upload-outline', route: '/main/dian' },
+          { label: 'Conciliar', icon: 'sync-outline', route: '/main/conciliacion' }
         ]
         break
 
