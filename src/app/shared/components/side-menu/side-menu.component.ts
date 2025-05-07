@@ -29,6 +29,7 @@ export class SideMenuComponent implements OnInit {
           { label: 'Subir Documentos', icon: 'document-text-outline', route: '/main/documentos' },
           { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' },
           { label: 'Contabilizar', icon: 'calculator-outline', route: '/main/contabilizar' },
+          { label: 'Cruzados', icon: 'repeat-outline', route: '/main/cruzar' },
           { label: 'Tesoreria', icon: 'card-outline', route: '/main/tesoreria' },
           { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
           { label: 'Subir archivo DIAN', icon: 'cloud-upload-outline', route: '/main/dian' },
@@ -61,6 +62,7 @@ export class SideMenuComponent implements OnInit {
           { label: 'Inicio', icon: 'home-outline', route: '/main' },
           { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
           { label: 'Contabilizar', icon: 'calculator-outline', route: '/main/contabilizar' },
+          { label: 'Cruzados', icon: 'repeat-outline', route: '/main/cruzar' },
           { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
           { label: 'Subir archivo DIAN', icon: 'cloud-upload-outline', route: '/main/dian' },
           { label: 'Conciliar', icon: 'sync-outline', route: '/main/conciliacion' }

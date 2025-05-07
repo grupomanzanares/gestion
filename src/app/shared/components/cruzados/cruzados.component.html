@@ -1,0 +1,63 @@
+<app-header title="Contabilizar o Cruzar"></app-header>
+<ion-content>
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col size="6">
+        <app-custom-input icon="business-outline" label="Empresa" type="text" autocomplete="empresa"
+          [control]="inputs.controls.empresa" [readonly]="true"></app-custom-input>
+      </ion-col>
+
+      <ion-col size="6">
+        <app-custom-input icon="business-outline" label="Empresa" type="text" autocomplete="empresa"
+          [control]="inputs.controls.empresaInfo" [readonly]="true"></app-custom-input>
+      </ion-col>
+
+      <ion-col size="6">
+        <app-custom-input icon="id-card-outline" label="Identificacion del emisor" type="text" autocomplete="emisor"
+          [control]="inputs.controls.emisor" [readonly]="true"></app-custom-input>
+      </ion-col>
+      
+      <ion-col size="6">
+        <app-custom-input icon="person-outline" label="Emisor" type="text" autocomplete="nombreEmisor"
+          [control]="inputs.controls.nombreEmisor" [readonly]="true"></app-custom-input>
+      </ion-col>
+
+      <ion-col size="6">
+        <app-custom-input icon="document-text-outline" label="Tipo de documento" type="text" autocomplete="tipo"
+          [control]="inputs.controls.tipo" [readonly]="true"></app-custom-input>
+      </ion-col>
+
+      <ion-col size="6">      
+        <ion-button fill="outline" expand="block" color="primary" class="ion-margin-top"
+          (click)="unionDesdeFormulario()" [disabled]="!inputs.controls.urlpdf.value">
+          Ver PDF
+        </ion-button>
+      </ion-col>
+      
+      <ion-col size="6">
+        <app-custom-input icon="barcode-outline" label="Numero de documento" type="text" autocomplete="numero"
+          [control]="inputs.controls.numero" [readonly]="true"></app-custom-input>
+      </ion-col>
+
+      <ion-col size="6">
+        <app-custom-input icon="wallet-outline" label="Valor total" type="text" autocomplete="valor"
+          [control]="inputs.controls.valor" [readonly]="true"></app-custom-input>
+      </ion-col>
+
+      <ion-col size="6">
+        <app-custom-input icon="business-outline" label="Centro de costo" type="text" autocomplete="ccosto"
+        [control]="inputs.controls.ccosto" [readonly]="true"></app-custom-input>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-button class="ion-margin-top" (click)="update()" expand="block" shape="round">
+          Enviar a contabilidad
+        </ion-button>
+
+        <ion-button class="ion-margin-top" (click)="ngOut()" expand="block" color="danger" shape="round">
+          cancelar
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -7,12 +7,12 @@ import { ToastService } from 'src/app/services/toast.service';
 import { environment } from 'src/environments/environment.prod';
 
 @Component({
-  selector: 'app-contabilidad',
-  templateUrl: './contabilidad.component.html',
-  styleUrls: ['./contabilidad.component.scss'],
+  selector: 'app-cruzados',
+  templateUrl: './cruzados.component.html',
+  styleUrls: ['./cruzados.component.scss'],
   standalone: false
 })
-export class ContabilidadComponent  implements OnInit {
+export class CruzadosComponent  implements OnInit {
 
   @Input() documento: any
 
@@ -26,12 +26,12 @@ export class ContabilidadComponent  implements OnInit {
     tipo: new FormControl(null, [Validators.required]),
     numero: new FormControl(null, [Validators.required]),
     valor: new FormControl(null, [Validators.required]),
-    observacionContable: new FormControl(null, [Validators.required]),
     urlpdf: new FormControl(null, [Validators.required]),
     ccosto: new FormControl(null, [Validators.required])
   })
 
   constructor(private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService) { }
+
 
   ngOnInit() {
     this.user = this.storage.get('manzanares-user')
@@ -48,7 +48,6 @@ export class ContabilidadComponent  implements OnInit {
         empresaInfo: this.documento.empresaInfo?.nombre || this.documento.empresa,
         tipo: this.documento.tipo,
         numero: this.documento.numero,
-        observacionContable: this.documento.observacionContable,
         valor: this.documento.valor,
         urlpdf: this.documento.urlPdf,
         ccosto: this.documento.ccostoNombre
@@ -110,62 +109,6 @@ export class ContabilidadComponent  implements OnInit {
         console.error('Error al autorizar:', error)
       }
     })
-  }
-
-  decline(){
-    const formData = new FormData();
-
-    const fields = ['observacionContable']
-    fields.forEach(field => {
-      if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
-        formData.append(field, this.inputs.get(field).value);
-      }
-    })
-
-    formData.append('id', this.documento.id)
-    formData.append('userMod', this.user.identificacion);
-    formData.append('estadoId', '2');
-
-    console.log('datos enviados', formData)
-
-    this.masterTable.update('compras_reportadas', formData).subscribe({
-      next: (res) => {
-        this.toast.presentToast('close-circle-outline', 'Rechazado con éxito', 'warning', 'top');
-        this.modalCtrl.dismiss(true);
-        console.log('Rechazo exitoso:', res);
-      },
-      error: (error) => {
-        console.error('Error al rechazar:', error);
-      }
-    });
-  }
-
-  cruzado(){
-    const formData = new FormData();
-
-    const fields = ['observacionContable']
-    fields.forEach(field => {
-      if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
-        formData.append(field, this.inputs.get(field).value);
-      }
-    })
-
-    formData.append('id', this.documento.id)
-    formData.append('userMod', this.user.identificacion);
-    formData.append('estadoId', '4');
-
-    console.log('datos enviados', formData)
-
-    this.masterTable.update('compras_reportadas', formData).subscribe({
-      next: (res) => {
-        this.toast.presentToast('close-circle-outline', 'Cruzado con éxito', 'success', 'top');
-        this.modalCtrl.dismiss(true);
-        console.log('Rechazo exitoso:', res);
-      },
-      error: (error) => {
-        console.error('Error al rechazar:', error);
-      }
-    });
   }
 
 }

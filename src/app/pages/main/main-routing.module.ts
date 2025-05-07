@@ -44,6 +44,10 @@ const routes: Routes = [
   {
     path: 'dian',
     loadChildren: () => import('./dian/dian.module').then( m => m.DianPageModule)
+  },
+  {
+    path: 'cruzar',
+    loadChildren: () => import('./cruzar/cruzar.module').then( m => m.CruzarPageModule)
   }
 ];
 

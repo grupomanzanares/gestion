@@ -86,7 +86,7 @@ export class TrazabilidadPage implements OnInit {
   getResponsables() {
     this.master.get('users').subscribe({
       next: (data) => {
-        this.responsables = data
+        this.responsables = data.filter(item => item.rolId === 3)
       }
     })
   }
