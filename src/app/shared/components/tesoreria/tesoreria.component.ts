@@ -114,7 +114,7 @@ export class TesoreriaComponent implements OnInit {
   decline() {
     const formData = new FormData();
 
-    const fields = ['observacionContable']
+    const fields = ['observacionTesoreria']
     fields.forEach(field => {
       if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
         formData.append(field, this.inputs.get(field).value);
@@ -123,7 +123,7 @@ export class TesoreriaComponent implements OnInit {
 
     formData.append('id', this.documento.id)
     formData.append('userMod', this.user.identificacion);
-    formData.append('estadoId', '4');
+    formData.append('estadoId', '3');
 
     console.log('datos enviados', formData)
 
