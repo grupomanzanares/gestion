@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment.prod';
 import { StorageService } from './storage.service';
@@ -46,7 +46,8 @@ export class AuthService {
     localStorage.removeItem('manzanares-user')
     // localStorage.removeItem('manzanares-rol')
     setTimeout(() => {
-      window.location.href = '/auth'; //Redirige asegurando que no se pueda volver atrás
+      // window.location.href = '/auth'; 
+      this.router.navigateByUrl('/auth')
     }, 100);
   }
 
