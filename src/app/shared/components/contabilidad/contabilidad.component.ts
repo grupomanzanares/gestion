@@ -158,7 +158,7 @@ export class ContabilidadComponent  implements OnInit {
 
     this.masterTable.update('compras_reportadas', formData).subscribe({
       next: (res) => {
-        this.toast.presentToast('close-circle-outline', 'Cruzado con éxito', 'success', 'top');
+        this.toast.presentToast('repeat-outline', 'Cruzado con éxito', 'success', 'top');
         this.modalCtrl.dismiss(true);
         console.log('Rechazo exitoso:', res);
       },

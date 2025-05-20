@@ -101,7 +101,7 @@ export class CruzadosComponent  implements OnInit {
 
     this.masterTable.update('compras_reportadas', formData).subscribe({
       next: (res) => {
-        this.toast.presentToast('checkmark-outline', 'Enviado a tesoreria con exito', 'success', 'top')
+        this.toast.presentToast('checkmark-outline', 'Enviado a contabilidad con exito', 'success', 'top')
         this.modalCtrl.dismiss(true)
         console.log(res)
       },
