@@ -107,7 +107,7 @@ export class TrazabilidadPage implements OnInit {
     })
   }
 
-  getEmpresa () {
+  getEmpresa() {
     this.master.get('empresas').subscribe({
       next: (data) => {
         this.empresas = data
@@ -127,6 +127,22 @@ export class TrazabilidadPage implements OnInit {
     }
   }
 
+  parseFecha(fechaStr: string): Date {
+    if (!fechaStr) return new Date(''); // fecha inválida
+    const parts = fechaStr.split('/');
+
+    if (parts.length === 3) {
+      const isMonthFirst = parseInt(parts[0]) <= 12;
+      const day = isMonthFirst ? parseInt(parts[1]) : parseInt(parts[0]);
+      const month = isMonthFirst ? parseInt(parts[0]) - 1 : parseInt(parts[1]) - 1;
+      const year = parseInt(parts[2].length === 2 ? '20' + parts[2] : parts[2]);
+      return new Date(year, month, day);
+    }
+
+    // fallback si no es reconocible
+    return new Date(fechaStr);
+  }
+
   applyFilters() {
     const start = this.filterStartDate ? new Date(this.filterStartDate) : null;
     const end = this.filterEndDate ? new Date(this.filterEndDate) : null;
@@ -135,19 +151,19 @@ export class TrazabilidadPage implements OnInit {
       return;
     }
     if (end) end.setHours(23, 59, 59, 999);
-  
+
     this.documentos = this.documentosOriginales.filter((doc) => {
-      const fechaDoc = new Date(doc.fecha);
-  
+      const fechaDoc = this.parseFecha(doc.fecha);
+
       const matchFecha = (!start && !end) || (start && end && fechaDoc >= start && fechaDoc <= end);
       const matchCentro = !this.filterEmpresa || doc.empresaInfo?.nombre?.toLowerCase().trim() === this.filterEmpresa.toLowerCase().trim();
       const matchResponsable = !this.filterResponsable || doc.responsable?.name?.toLowerCase().trim() === this.filterResponsable.toLowerCase().trim();
       const matchTipoCompra = !this.filterTipoCompra || doc.compras_tipo?.nombre?.toLowerCase().trim() === this.filterTipoCompra.toLowerCase().trim();
       const matchEstado = !this.filterEstado || doc.compras_estado?.nombre?.toLowerCase().trim() === this.filterEstado.toLowerCase().trim();
-  
+
       return matchFecha && matchCentro && matchResponsable && matchTipoCompra && matchEstado;
     });
-  
+
     console.log('🔍 Filtros aplicados:', {
       fechaInicio: this.filterStartDate,
       fechaFin: this.filterEndDate,
@@ -156,10 +172,10 @@ export class TrazabilidadPage implements OnInit {
       tipoCompra: this.filterTipoCompra,
       estado: this.filterEstado,
     });
-  
+
     console.log('Documentos filtrados:', this.documentos);
   }
-  
+
 
   resetFilters() {
     const today = new Date().toISOString().slice(0, 10);
@@ -169,26 +185,26 @@ export class TrazabilidadPage implements OnInit {
     this.filterResponsable = '';
     this.filterTipoCompra = '';
     this.filterEstado = '';
-    this.get(); 
+    this.get();
   }
 
   onDateChange(type: 'start' | 'end', value: string | string[]) {
     const selected = Array.isArray(value) ? value[0] : value;
     const selectedDate = selected?.split('T')[0] || '';
-  
+
     if (type === 'start') {
       this.filterStartDate = selectedDate;
     } else {
       this.filterEndDate = selectedDate;
     }
-  }  
+  }
 
   exportToExcel() {
     if (this.documentos.length === 0) {
       this.toast.presentToast('alert-circle-outline', 'No hay datos para exportar', 'warning', 'top');
       return;
     }
-  
+
     const exportData = this.documentos.map(item => ({
       Emisor: item.emisor,
       NombreEmisor: item.nombreEmisor,
@@ -206,14 +222,14 @@ export class TrazabilidadPage implements OnInit {
       Conciliado: item.conciliado,
       Responsable: item.responsable?.name || ''
     }));
-  
+
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const colWidths = this.calculateColumnWidths(exportData);
     worksheet['!cols'] = colWidths;
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Trazabilidad');
-  
+
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(blob, 'trazabilidad.xlsx');

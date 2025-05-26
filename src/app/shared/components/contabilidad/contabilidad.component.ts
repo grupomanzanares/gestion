@@ -96,7 +96,7 @@ export class ContabilidadComponent  implements OnInit {
 
     formData.append('id', this.documento.id)
     formData.append('userMod', this.user.identificacion);
-    formData.append('estadoId', '3');
+    formData.append('estadoId', '5');
 
     console.log('datos enviados', formData)
 

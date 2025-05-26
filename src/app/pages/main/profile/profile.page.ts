@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { MasterService } from 'src/app/services/gestion/master.service';
 import { StorageService } from 'src/app/services/storage.service';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-profile',
@@ -21,7 +22,7 @@ export class ProfilePage implements OnInit {
     password: new FormControl(null, [Validators.minLength(10), Validators.maxLength(18)])
   })
 
-  constructor(private storage: StorageService, private master: MasterService) { }
+  constructor(private storage: StorageService, private master: MasterService, private toast: ToastService) { }
 
   ngOnInit() {
     this.getUser()
@@ -74,6 +75,7 @@ export class ProfilePage implements OnInit {
 
     this.master.update(updatedUser, 'users', userId).subscribe({
       next: (response) => {
+        this.toast.presentToast('checkmark-outline', 'Usuario editado correctamente', 'success', 'top')
         console.log('Usuario actualizado con éxito:', response);
       },
       error: (error) => {
