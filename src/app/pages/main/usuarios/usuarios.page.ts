@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MasterService } from 'src/app/services/gestion/master.service';
+import { LoadingService } from 'src/app/services/loading.service';
 import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
@@ -25,7 +26,7 @@ export class UsuariosPage implements OnInit {
     rolId: new FormControl(null, [Validators.required])
   })
 
-  constructor(private master: MasterService, private toastService: ToastService) { }
+  constructor(private master: MasterService, private toastService: ToastService, private loading: LoadingService) { }
 
   ngOnInit() {
     this.getUsuarios()
@@ -42,10 +43,12 @@ export class UsuariosPage implements OnInit {
   }
 
   getUsuarios() {
+    this.loading.showLoading()
     this.master.get('users').subscribe({
       next: (data) => {
         console.log('Datos de usuarios ', data)
         this.usuarios = data
+        this.loading.hideLoading()
       }, error: (error) => {
         console.error('Error al traer a los usuarios', error)
       }

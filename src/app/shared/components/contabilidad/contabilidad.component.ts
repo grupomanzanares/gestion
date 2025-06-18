@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
+import { LoadingService } from 'src/app/services/loading.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { environment } from 'src/environments/environment.prod';
@@ -12,9 +13,13 @@ import { environment } from 'src/environments/environment.prod';
   styleUrls: ['./contabilidad.component.scss'],
   standalone: false
 })
-export class ContabilidadComponent  implements OnInit {
+export class ContabilidadComponent implements OnInit {
 
   @Input() documento: any
+  documentos: any[] = []
+  productos: any[] = []
+  searchProducto: string = ''
+  productosFiltrados: any[] = []
 
   user = {} as any
 
@@ -28,18 +33,21 @@ export class ContabilidadComponent  implements OnInit {
     valor: new FormControl(null, [Validators.required]),
     observacionContable: new FormControl(null, [Validators.required]),
     urlpdf: new FormControl(null, [Validators.required]),
-    ccosto: new FormControl(null, [Validators.required])
+    ccosto: new FormControl(null, [Validators.required]),
+    productoId: new FormControl(null, [Validators.required])
   })
 
-  constructor(private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService) { }
+  constructor(private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService, private loading: LoadingService) { }
 
   ngOnInit() {
     this.user = this.storage.get('manzanares-user')
-    this.getDatos()
+    this.getjson()
+    this.getProductos()
   }
 
   getDatos() {
     console.log(this.documento)
+    // this.loading.showLoading()
     if (this.documento) {
       this.inputs.patchValue({
         emisor: this.documento.emisor,
@@ -54,6 +62,30 @@ export class ContabilidadComponent  implements OnInit {
         ccosto: this.documento.ccostoNombre
       });
     }
+    // this.loading.hideLoading()
+  }
+
+  getProductos() {
+    this.masterTable.get(`productos/por-nit/${this.documento.empresa}`).subscribe({
+      next: (data) => {
+        this.productos = data
+      }
+    })
+  }
+
+  getjson() {
+    this.masterTable.get(`compras_reportadas/${this.documento.id}`).subscribe({
+      next: (data) => {
+        this.documento = data
+        this.documentos = data.jsonContent?.documento?.items || []
+        console.log(this.documentos)
+        this.getDatos()
+      },
+      error: (err) => {
+        console.error('Error al obtener el documento completo', err);
+
+      }
+    })
   }
 
   ngOut() {
@@ -78,7 +110,7 @@ export class ContabilidadComponent  implements OnInit {
     }
   }
 
-  update(){
+  update() {
     if (this.inputs.invalid) {
       console.warn('Formulario inválido');
       this.toast.presentToast('alert-circle-outline', 'Por favor completa todos los campos correctamente.', 'danger', 'top');
@@ -112,7 +144,7 @@ export class ContabilidadComponent  implements OnInit {
     })
   }
 
-  decline(){
+  decline() {
     const formData = new FormData();
 
     const fields = ['observacionContable']
@@ -140,7 +172,7 @@ export class ContabilidadComponent  implements OnInit {
     });
   }
 
-  cruzado(){
+  cruzado() {
     const formData = new FormData();
 
     const fields = ['observacionContable']
@@ -168,4 +200,30 @@ export class ContabilidadComponent  implements OnInit {
     });
   }
 
+  // search() {
+  //   const search = this.searchProducto.toLowerCase()
+  //   this.productosFiltrados = this.productos.filter(p => p.nombre.toLowerCase().startsWith(search))
+  // }
+
+  // selectProductos(productos: any) {
+  //   this.searchProducto = productos.nombre;
+  //   this.inputs.get('productoId')?.setValue(productos.id)
+  //   this.productosFiltrados = []
+
+  //   console.log('producto seleccionado', productos)
+  // }
+
+  search(valor: string, item: any) {
+    const search = valor.toLowerCase();
+    item.productosFiltrados = this.productos.filter(p =>
+      p.nombre.toLowerCase().includes(search)
+    );
+  }
+  
+  selectProductos(producto: any, item: any) {
+    item.nombre = producto.nombre;
+    item.codigo = producto.codigo; // si tienes este campo en el `item`
+    item.productosFiltrados = [];
+    console.log('Producto seleccionado en fila:', producto);
+  }
 }

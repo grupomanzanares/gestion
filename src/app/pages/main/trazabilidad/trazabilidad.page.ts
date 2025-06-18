@@ -5,6 +5,7 @@ import { ToastService } from 'src/app/services/toast.service';
 import { environment } from 'src/environments/environment.prod';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { LoadingService } from 'src/app/services/loading.service';
 
 @Component({
   selector: 'app-trazabilidad',
@@ -34,7 +35,7 @@ export class TrazabilidadPage implements OnInit {
   filterEmpresa: string = ''
 
 
-  constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService) { }
+  constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService, private loading: LoadingService) { }
 
   ngOnInit() {
     this.resetFilters()

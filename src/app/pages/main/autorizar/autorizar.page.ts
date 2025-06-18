@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MasterService } from 'src/app/services/gestion/master.service';
+import { LoadingService } from 'src/app/services/loading.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { AutorizadorComponent } from 'src/app/shared/components/autorizador/autorizador.component';
@@ -16,7 +17,7 @@ export class AutorizarPage implements OnInit {
   documentos: any[] = []
   user = {} as any;
 
-  constructor(private master: MasterService, private modalService: ModalService, private storage: StorageService) { }
+  constructor(private master: MasterService, private modalService: ModalService, private storage: StorageService, private loading: LoadingService) { }
 
   ngOnInit() {
     this.get()
