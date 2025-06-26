@@ -144,25 +144,49 @@ export class TrazabilidadPage implements OnInit {
   }
 
   applyFilters() {
-    const start = this.filterStartDate ? new Date(this.filterStartDate) : null;
-    const end = this.filterEndDate ? new Date(this.filterEndDate) : null;
-    if (start && end && start > end) {
-      this.toast.presentToast('calendar-outline', 'La fecha de inicio no puede ser mayor que la de fin', 'danger', 'top');
-      return;
+    let filtered = this.documentosOriginales;
+
+    // Filtro por fechas
+    if (this.filterStartDate || this.filterEndDate) {
+      const startDate = this.filterStartDate ? new Date(this.filterStartDate) : null;
+      if (startDate) startDate.setHours(0, 0, 0, 0);
+
+      const endDate = this.filterEndDate ? new Date(this.filterEndDate) : null;
+      if (endDate) endDate.setHours(23, 59, 59, 999);
+
+      if (startDate && endDate && startDate > endDate) {
+        this.toast.presentToast('calendar-outline', 'La fecha de inicio no puede ser mayor que la de fin', 'danger', 'top');
+        return;
+      }
+
+      filtered = filtered.filter(doc => {
+        const fechaDoc = this.parseFecha(doc.fecha);
+        if (fechaDoc.toString() === 'Invalid Date') return false;
+        fechaDoc.setHours(12, 0, 0, 0); // Hora fija para evitar problemas de zona horaria
+
+        if (startDate && endDate) {
+          return fechaDoc >= startDate && fechaDoc <= endDate;
+        } else if (startDate) {
+          return fechaDoc >= startDate;
+        } else if (endDate) {
+          return fechaDoc <= endDate;
+        }
+        return true;
+      });
     }
-    if (end) end.setHours(23, 59, 59, 999);
 
-    this.documentos = this.documentosOriginales.filter((doc) => {
-      const fechaDoc = this.parseFecha(doc.fecha);
+    // Resto de filtros igual que antes
+    const matchCentro = (doc) => !this.filterEmpresa || doc.empresaInfo?.nombre?.toLowerCase().trim() === this.filterEmpresa.toLowerCase().trim();
+    const matchResponsable = (doc) => !this.filterResponsable || doc.responsable?.name?.toLowerCase().trim() === this.filterResponsable.toLowerCase().trim();
+    const matchTipoCompra = (doc) => !this.filterTipoCompra || doc.compras_tipo?.nombre?.toLowerCase().trim() === this.filterTipoCompra.toLowerCase().trim();
+    const matchEstado = (doc) => !this.filterEstado || doc.compras_estado?.nombre?.toLowerCase().trim() === this.filterEstado.toLowerCase().trim();
 
-      const matchFecha = (!start && !end) || (start && end && fechaDoc >= start && fechaDoc <= end);
-      const matchCentro = !this.filterEmpresa || doc.empresaInfo?.nombre?.toLowerCase().trim() === this.filterEmpresa.toLowerCase().trim();
-      const matchResponsable = !this.filterResponsable || doc.responsable?.name?.toLowerCase().trim() === this.filterResponsable.toLowerCase().trim();
-      const matchTipoCompra = !this.filterTipoCompra || doc.compras_tipo?.nombre?.toLowerCase().trim() === this.filterTipoCompra.toLowerCase().trim();
-      const matchEstado = !this.filterEstado || doc.compras_estado?.nombre?.toLowerCase().trim() === this.filterEstado.toLowerCase().trim();
-
-      return matchFecha && matchCentro && matchResponsable && matchTipoCompra && matchEstado;
-    });
+    this.documentos = filtered.filter(doc =>
+      matchCentro(doc) &&
+      matchResponsable(doc) &&
+      matchTipoCompra(doc) &&
+      matchEstado(doc)
+    );
 
     console.log('🔍 Filtros aplicados:', {
       fechaInicio: this.filterStartDate,
