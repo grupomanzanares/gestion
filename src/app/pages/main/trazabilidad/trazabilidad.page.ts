@@ -145,38 +145,70 @@ export class TrazabilidadPage implements OnInit {
   }
 
   applyFilters() {
-    const start = this.filterStartDate ? new Date(this.filterStartDate) : null;
-    const end = this.filterEndDate ? new Date(this.filterEndDate) : null;
-    if (start && end && start > end) {
-      this.toast.presentToast('calendar-outline', 'La fecha de inicio no puede ser mayor que la de fin', 'danger', 'top');
-      return;
+    let filtered = this.documentosOriginales;
+
+    // Filtro por fechas
+    if (this.filterStartDate && this.filterEndDate) {
+      const startDate = new Date(this.filterStartDate);
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date(this.filterEndDate);
+      endDate.setHours(23, 59, 59, 999);
+
+      if (startDate > endDate) {
+        this.toast.presentToast('calendar-outline', 'La fecha de inicio no puede ser mayor que la de fin', 'danger', 'top');
+        return;
+      }
+
+      filtered = filtered.filter(doc => {
+        const fechaDoc = new Date(doc.fecha);
+        fechaDoc.setHours(12, 0, 0, 0); // Evita desfases por zona horaria
+        return fechaDoc >= startDate && fechaDoc <= endDate;
+      });
     }
-    if (end) end.setHours(23, 59, 59, 999);
 
-    this.documentos = this.documentosOriginales.filter((doc) => {
-      const fechaDoc = this.parseFecha(doc.fecha);
+    // Filtro por empresa
+    if (this.filterEmpresa) {
+      const filtro = this.filterEmpresa.trim().toLowerCase();
+      filtered = filtered.filter(doc => {
+        const empresaNombre = doc.empresaInfo?.nombre?.trim().toLowerCase();
+        return empresaNombre === filtro;
+      });
+    }
 
-      const matchFecha = (!start && !end) || (start && end && fechaDoc >= start && fechaDoc <= end);
-      const matchCentro = !this.filterEmpresa || doc.empresaInfo?.nombre?.toLowerCase().trim() === this.filterEmpresa.toLowerCase().trim();
-      const matchResponsable = !this.filterResponsable || doc.responsable?.name?.toLowerCase().trim() === this.filterResponsable.toLowerCase().trim();
-      const matchTipoCompra = !this.filterTipoCompra || doc.compras_tipo?.nombre?.toLowerCase().trim() === this.filterTipoCompra.toLowerCase().trim();
-      const matchEstado = !this.filterEstado || doc.compras_estado?.nombre?.toLowerCase().trim() === this.filterEstado.toLowerCase().trim();
+    // Filtro por responsable
+    if (this.filterResponsable) {
+      const filtro = this.filterResponsable.trim().toLowerCase();
+      filtered = filtered.filter(doc => {
+        const responsableNombre = doc.responsable?.name?.trim().toLowerCase();
+        return responsableNombre === filtro;
+      });
+    }
 
-      return matchFecha && matchCentro && matchResponsable && matchTipoCompra && matchEstado;
-    });
+    // Filtro por tipo de compra
+    if (this.filterTipoCompra) {
+      const filtro = this.filterTipoCompra.trim().toLowerCase();
+      filtered = filtered.filter(doc => {
+        const tipo = doc.compras_tipo?.nombre?.trim().toLowerCase();
+        return tipo === filtro;
+      });
+    }
 
-    console.log('🔍 Filtros aplicados:', {
-      fechaInicio: this.filterStartDate,
-      fechaFin: this.filterEndDate,
-      centro: this.filterEmpresa,
-      responsable: this.filterResponsable,
-      tipoCompra: this.filterTipoCompra,
-      estado: this.filterEstado,
-    });
+    // Filtro por estado
+    if (this.filterEstado) {
+      const filtro = this.filterEstado.trim().toLowerCase();
+      filtered = filtered.filter(doc => {
+        const estado = doc.compras_estado?.nombre?.trim().toLowerCase();
+        return estado === filtro;
+      });
+    }
 
-    console.log('Documentos filtrados:', this.documentos);
+    this.documentos = filtered;
+
+    if (this.documentos.length === 0) {
+      this.toast.presentToast('search-outline', 'No se encontraron resultados con los filtros aplicados', 'warning', 'top');
+    }
   }
-
 
   resetFilters() {
     const today = new Date().toISOString().slice(0, 10);
@@ -189,7 +221,7 @@ export class TrazabilidadPage implements OnInit {
     this.get();
   }
 
-  onDateChange(type: 'start' | 'end', value: string | string[]) {
+  onDateChange(type: 'form' | 'start' | 'end', value: string | string[]) {
     const selected = Array.isArray(value) ? value[0] : value;
     const selectedDate = selected?.split('T')[0] || '';
 

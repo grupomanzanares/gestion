@@ -60,48 +60,57 @@
           <table class="sync-table">
             <thead>
               <tr>
-                <th>N° Item</th>
-                <th>Cod Producto</th>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Unitario</th>
-                <th>IVA</th>
-                <th>Total</th>
+                <th class="col-xs">N° Item</th>
+                <th class="col-sm">Cod Producto</th>
+                <th class="col-lg">Nombre del producto</th>
+                <th class="col-xl">Producto</th>
+                <th class="col-sm">Codigo Producto</th>
+                <th class="col-xs">Cantidad</th>
+                <th class="col-md">Costo Unitario</th>
+                <th class="col-xs">IVA</th>
+                <th class="col-md">Costo IVA</th>
+                <th class="col-md">Costo Bruto</th>
+                <th class="col-md">Total</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of documentos">
                 <td>{{ item.numeroItem }}</td>
-                <td>{{ item.producto }}</td>
+                <td>{{ item.ProductoProveedor }}</td>
+                <td>{{ item.nombreProductoProveedor }}</td>
                 <td>
-                  <!-- <ion-input type="text" placeholder="Buscar producto" [(ngModel)]="searchProducto"
-                    (ionInput)="search()" autocomplete="off">
-                  </ion-input>
-                  <ion-list class="list" *ngIf="productosFiltrados.length > 0 && searchProducto">
-                    <ion-item 
-                    *ngFor="let item of productosFiltrados"
-                    (click)="selectProductos(item)">
-                      {{ item.nombre }} - {{ item.codigo }}
-                    </ion-item>
-                  </ion-list> -->
-
                   <ion-input type="text" [(ngModel)]="item.nombre" (ionInput)="search(item.nombre, item)"
                     placeholder="Buscar producto" autocomplete="off">
                   </ion-input>
 
-                  <ion-list *ngIf="item.productosFiltrados?.length > 0 && item.nombre">
+                  <ion-list class="list" *ngIf="item.productosFiltrados?.length > 0 && item.nombre">
                     <ion-item *ngFor="let producto of item.productosFiltrados"
                       (click)="selectProductos(producto, item)">
                       {{ producto.nombre }} - {{ producto.codigo }}
                     </ion-item>
                   </ion-list>
-
                 </td>
-                <td>{{ item.cantidad }}</td>
-                <td>{{ item.costoUnitario }}</td>
-                <td>{{ item.porcentajeImpuesto }}</td>
-                <td>{{ item.costoTotal }}</td>
+                <td>{{ item.codigo }}</td>
+                <td>{{ item.cantidad | number:'1.0-0' }}</td>
+                <td>{{ item.costoUnitario | currency: 'USD':'symbol':'1.0-0' }}</td>
+                <td>{{ item.porIva / 100 | percent:'1.0-0' }}</td>
+                <td>{{ item.costoIva | currency: 'USD':'symbol':'1.0-0' }}</td>
+                <td>{{ item.costoBruto | currency: 'USD':'symbol':'1.0-0' }}</td>
+                <td>{{ item.costoTotal | currency: 'USD' :'symbol':'1.0-0' }}</td>
               </tr>
+              <tr class="total-row">
+                <td colspan="1" style="text-align: right;"><strong>Totales</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>{{ suma().cantidad }}</strong></td>
+                <td></td>
+                <td></td>
+                <td><strong>{{ suma().costoIVA | currency:'USD':'symbol':'1.0-0' }}</strong></td>
+                <td><strong>{{ suma().costoBruto | currency:'USD':'symbol':'1.0-0' }}</strong></td>
+                <td><strong>{{ suma().total | currency:'USD':'symbol':'1.0-0' }}</strong></td>
+              </tr>              
             </tbody>
           </table>
         </div>

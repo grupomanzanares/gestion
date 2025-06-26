@@ -16,6 +16,7 @@
     border-radius: 10px 10px 0 0;
     overflow: hidden;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    table-layout: fixed;
 }
 
 .sync-table thead tr {
@@ -28,7 +29,27 @@
 
 .sync-table th,
 .sync-table td {
-    padding: 15px 15px;
+    padding: 15px;
+}
+
+.col-xs {
+    width: 100px;
+}
+
+.col-sm {
+    width: 130px;
+}
+
+.col-md {
+    width: 120px;
+}
+
+.col-lg {
+    width: 200px;
+}
+
+.col-xl {
+    width: 300px;
 }
 
 .sync-table tbody {
@@ -61,13 +82,11 @@
     /* Color para resaltar una fila activa */
 }
 
-.col-small {
-    width: 60px;
-    max-width: 60px;
-    text-align: center;
-    white-space: nowrap;
-}
-
 .list {
     cursor: pointer;
+}
+
+.total-row {
+    background-color: #e0f7fa;
+    font-weight: bold;
 }

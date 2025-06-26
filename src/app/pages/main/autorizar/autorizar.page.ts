@@ -38,7 +38,7 @@ export class AutorizarPage implements OnInit {
       let success = await this.modalService.openModal({
         component: AutorizadorComponent,
         componentProps: { documento: item },
-        cssClass: 'modal'
+        cssClass: 'modaltow'
       });
       if (success) this.get()
     } catch (error) {

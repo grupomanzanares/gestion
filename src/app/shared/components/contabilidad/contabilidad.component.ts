@@ -20,6 +20,11 @@ export class ContabilidadComponent implements OnInit {
   productos: any[] = []
   searchProducto: string = ''
   productosFiltrados: any[] = []
+  cantidad = 0
+  costoIva = 0
+  costoBruto = 0
+  total = 0
+
 
   user = {} as any
 
@@ -77,9 +82,10 @@ export class ContabilidadComponent implements OnInit {
     this.masterTable.get(`compras_reportadas/${this.documento.id}`).subscribe({
       next: (data) => {
         this.documento = data
-        this.documentos = data.jsonContent?.documento?.items || []
+        this.documentos = data.items || []
         console.log(this.documentos)
         this.getDatos()
+        this.suma()
       },
       error: (err) => {
         console.error('Error al obtener el documento completo', err);
@@ -200,30 +206,24 @@ export class ContabilidadComponent implements OnInit {
     });
   }
 
-  // search() {
-  //   const search = this.searchProducto.toLowerCase()
-  //   this.productosFiltrados = this.productos.filter(p => p.nombre.toLowerCase().startsWith(search))
-  // }
-
-  // selectProductos(productos: any) {
-  //   this.searchProducto = productos.nombre;
-  //   this.inputs.get('productoId')?.setValue(productos.id)
-  //   this.productosFiltrados = []
-
-  //   console.log('producto seleccionado', productos)
-  // }
-
   search(valor: string, item: any) {
     const search = valor.toLowerCase();
-    item.productosFiltrados = this.productos.filter(p =>
-      p.nombre.toLowerCase().includes(search)
-    );
+    item.productosFiltrados = this.productos.filter(p => p.nombre.toLowerCase().includes(search));
   }
-  
+
   selectProductos(producto: any, item: any) {
     item.nombre = producto.nombre;
     item.codigo = producto.codigo; // si tienes este campo en el `item`
     item.productosFiltrados = [];
     console.log('Producto seleccionado en fila:', producto);
+  }
+
+  suma() {
+    return {
+      cantidad: this.documentos.reduce((acc, item) => acc + Number(item.cantidad || 0), 0),
+      costoIVA: this.documentos.reduce((acc, item) => acc + Number(item.costoIva || 0), 0),
+      costoBruto: this.documentos.reduce((acc, item) => acc + Number(item.costoBruto || 0), 0),
+      total: this.documentos.reduce((acc, item) => acc + Number(item.costoTotal || 0), 0),
+    }
   }
 }

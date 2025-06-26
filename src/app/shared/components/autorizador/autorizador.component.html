@@ -60,17 +60,6 @@
         </ion-list>
       </ion-col>
 
-      <!-- <ion-col size="12">
-        <ion-item class="ion-margin-top">
-          <ion-select interface="popover" placeholder="Seleccionar el centro de costo"
-            [formControl]="inputs.controls.ccosto">
-            <ion-select-option *ngFor="let item of centros" [value]="item.codigo">
-              {{ item.codigo }} - {{ item.nombre }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-      </ion-col> -->
-
       <ion-col size="6">
         <app-custom-input icon="cart-outline" lavel="Tipo de compra" type="text" autocomplete="compras_tipo"
           [control]="inputs.controls.compras_tipo" [readonly]="true"></app-custom-input>
@@ -79,6 +68,71 @@
       <ion-col size="6">
         <app-custom-input icon="pencil-outline" label="Observación" type="text" autocomplete="observacionResponsable"
           [control]="inputs.controls.observacionResponsable"></app-custom-input>
+      </ion-col>
+
+
+      <ion-col size="12">
+        <div class="table-wrapper">
+          <table class="sync-table">
+            <thead>
+              <tr>
+                <th class="col-xs">Item</th>
+                <th class="col-sm">Cod Producto</th>
+                <th class="col-lg">Nombre del producto</th>
+                <th class="col-xl">Centro de costo</th>
+                <th class="col-sm">Cod Ccosto</th>
+                <th class="col-xs">Cantidad</th>
+                <th class="col-md">Costo Unitario</th>
+                <th class="col-xs">IVA</th>
+                <th class="col-md">Costo IVA</th>
+                <th class="col-md">Costo Bruto</th>
+                <th class="col-md">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of documentos">
+                <td>{{ item.numeroItem }}</td>
+                <td>{{ item.ProductoProveedor }}</td>
+                <td>{{ item.nombreProductoProveedor }}</td>
+                <td>
+                  <ion-input type="text" placeholder="Buscar centro de costo" [(ngModel)]="item.nombre"
+                    (ionInput)="search(item.nombre, item)" autocomplete="off">
+                  </ion-input>
+
+                  <!-- Mostrar lista de resultados filtrados por item -->
+                  <ion-list class="list" *ngIf="item.centrosFiltrados?.length > 0 && item.nombre">
+                    <ion-item *ngFor="let centro of item.centrosFiltrados" (click)="select(centro, item)">
+                      {{ centro.nombre }} - {{ centro.codigo }}
+                    </ion-item>
+                  </ion-list>
+                </td>
+                <td>{{ item.codigo }}</td>
+                <td>{{ item.cantidad | number:'1.0-0' }}</td>
+                <td>{{ item.costoUnitario | currency: 'USD':'symbol':'1.0-0' }}</td>
+                <td>{{ item.porIva / 100 | percent:'1.0-0' }}</td>
+                <td>{{ item.costoIva | currency: 'USD':'symbol':'1.0-0' }}</td>
+                <td>{{ item.costoBruto | currency: 'USD':'symbol':'1.0-0' }}</td>
+                <td>{{ item.costoTotal | currency: 'USD' :'symbol':'1.0-0' }}</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="1" style="text-align: right;"><strong>Totales</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>{{ suma().cantidad }}</strong></td>
+                <td></td>
+                <td></td>
+                <td><strong>{{ suma().costoIVA | currency:'USD':'symbol':'1.0-0' }}</strong></td>
+                <td><strong>{{ suma().costoBruto | currency:'USD':'symbol':'1.0-0' }}</strong></td>
+                <td><strong>{{ suma().total | currency:'USD':'symbol':'1.0-0' }}</strong></td>
+              </tr>   
+            </tbody>
+          </table>
+          <ion-button (click)="save()" expand="block" shape="round">
+            Click me
+          </ion-button>
+        </div>
       </ion-col>
 
       <ion-col size="6">
