@@ -34,7 +34,7 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+// @import "@ionic/angular/css/palettes/dark.system.css";
 
 
 /* Errores del usuario en formularios */
@@ -53,6 +53,12 @@ ion-modal.modal::part(content) {
 
 }
 
+ion-modal.modaltow::part(content) {
+    --height: 900px !important;
+    width: 1200px ;
+    overflow-y: auto;
+    max-height: 90vh;
+}
 
 /* Ajustes para los campos de entrada */
 app-custom-input input {

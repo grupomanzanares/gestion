@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MasterService } from 'src/app/services/gestion/master.service';
+import { LoadingService } from 'src/app/services/loading.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { LoadFileComponent } from 'src/app/shared/components/load-file/load-file.component';
 import { RecepcionComponent } from 'src/app/shared/components/recepcion/recepcion.component';
@@ -15,17 +16,19 @@ export class DocumentosPage implements OnInit {
 
   documentos: any[] = []
 
-  constructor(private master: MasterService, private _modalService: ModalService) { }
+  constructor(private master: MasterService, private _modalService: ModalService, private loading: LoadingService) { }
 
   ngOnInit() {
     this.get()
   }
 
   get() {
+    this.loading.showLoading()
     this.master.get("compras_reportadas").subscribe({
       next: (data) => {
         this.documentos = data.filter((item: any) => item.compras_estado?.id === 1)
         console.log(this.documentos)
+        this.loading.hideLoading()
       }
     })
   }

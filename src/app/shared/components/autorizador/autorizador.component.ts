@@ -21,7 +21,11 @@ export class AutorizadorComponent implements OnInit {
   centros: any[] = []
   centrosFiltrados: any[] = [];
   searchCentro: string = '';
-
+  documentos: any[] = []
+  cantidad = 0
+  costoIva = 0
+  costoBruto = 0
+  total = 0
   user = {} as any;
 
   public inputs = new FormGroup({
@@ -44,6 +48,7 @@ export class AutorizadorComponent implements OnInit {
     this.user = this.storage.get('manzanares-user')
     this.getDatos()
     this.getCentro()
+    this.getjson()
   }
 
   getDatos() {
@@ -62,6 +67,18 @@ export class AutorizadorComponent implements OnInit {
       });
       console.log(this.documento)
     }
+  }
+
+  getjson() {
+    this.masterTable.get(`compras_reportadas/${this.documento.id}`).subscribe({
+      next: (data) => {
+        this.documento = data
+        this.documentos = data.items || []
+        console.log(this.documentos)
+        console.log(this.documento)
+        this.getDatos()
+      }
+    })
   }
 
   ngOut() {
@@ -173,5 +190,36 @@ export class AutorizadorComponent implements OnInit {
     this.searchCentro = `${centro.nombre} - ${centro.codigo}`; // mostrar bonito en el input
     this.inputs.get('ccosto')?.setValue(centro.codigo);         // guardar SOLO el codigo en el form
     this.centrosFiltrados = [];                                // limpiar lista filtrada
-  }  
+  }
+
+  search(valor: string, item: any) {
+    if (!valor) {
+      item.centrosFiltrados = []
+      return
+    }
+    item.centrosFiltrados = this.centros.filter(c => c.nombre.toLowerCase().includes(valor.toLowerCase()) ||
+    c.codigo.toLowerCase().includes(valor.toLowerCase()))
+    // const search = valor.toLowerCase();
+    // item.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().includes(search));
+  }
+
+  select(centro: any, item: any) {
+    item.nombre = centro.nombre;
+    item.codigo = centro.codigo
+    item.centrosFiltrados = []
+  }
+
+  suma() {
+    return {
+      cantidad: this.documentos.reduce((acc, item) => acc + Number(item.cantidad || 0), 0),
+      costoIVA: this.documentos.reduce((acc, item) => acc + Number(item.costoIva || 0), 0),
+      costoBruto: this.documentos.reduce((acc, item) => acc + Number(item.costoBruto || 0), 0),
+      total: this.documentos.reduce((acc, item) => acc + Number(item.costoTotal || 0), 0),
+    }
+  }
+
+  save() {
+    
+  }
+
 }

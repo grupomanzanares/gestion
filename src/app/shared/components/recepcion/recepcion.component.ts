@@ -45,7 +45,6 @@ export class RecepcionComponent implements OnInit {
   ngOnInit() {
     /** Datos del usuario  */
     this.user = this.storage.get('manzanares-user')
-
     this.getTpCompra()
     this.getResponsables()
     this.getDatos()

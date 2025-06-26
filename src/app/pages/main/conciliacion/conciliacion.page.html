@@ -32,9 +32,9 @@
           <td>{{ item.nombreEmisor }}</td>
           <td>{{ item.tipo }}</td>
           <td>{{ item.numero }}</td>
-          <td>{{ item.fecha | date:'shortDate' }}</td>
+          <td>{{ item.fecha | date:'dd/MM/yyyy':'UTC' }}</td>
           <td>{{ item.cufe }}</td>
-          <td>{{ item.valor | currency:'USD'  }}</td>
+          <td>{{ item.valor | currency:'USD' :'symbol':'1.0-0' }}</td>
           <!-- <td>{{ item.habilitado }}</td> -->
         </tr>
       </tbody>
