@@ -129,20 +129,21 @@ export class TrazabilidadPage implements OnInit {
   }
 
   parseFecha(fechaStr: string): Date {
-    if (!fechaStr) return new Date(''); // fecha inválida
+    if (!fechaStr) return new Date('');
     const parts = fechaStr.split('/');
 
     if (parts.length === 3) {
-      const isMonthFirst = parseInt(parts[0]) <= 12;
-      const day = isMonthFirst ? parseInt(parts[1]) : parseInt(parts[0]);
-      const month = isMonthFirst ? parseInt(parts[0]) - 1 : parseInt(parts[1]) - 1;
+      // Siempre: día/mes/año
+      const day = parseInt(parts[0]);
+      const month = parseInt(parts[1]) - 1;
       const year = parseInt(parts[2].length === 2 ? '20' + parts[2] : parts[2]);
       return new Date(year, month, day);
     }
 
-    // fallback si no es reconocible
     return new Date(fechaStr);
   }
+
+
 
   applyFilters() {
     let filtered = this.documentosOriginales;
@@ -161,16 +162,13 @@ export class TrazabilidadPage implements OnInit {
       }
 
       filtered = filtered.filter(doc => {
-        const fechaDoc = this.parseFecha(doc.fecha);
-        if (fechaDoc.toString() === 'Invalid Date') return false;
-        fechaDoc.setHours(12, 0, 0, 0); // Hora fija para evitar problemas de zona horaria
-
-        if (startDate && endDate) {
-          return fechaDoc >= startDate && fechaDoc <= endDate;
-        } else if (startDate) {
-          return fechaDoc >= startDate;
-        } else if (endDate) {
-          return fechaDoc <= endDate;
+        const fechaStr = doc.fecha.slice(0, 10); // yyyy-mm-dd
+        if (this.filterStartDate && this.filterEndDate) {
+          return fechaStr >= this.filterStartDate && fechaStr <= this.filterEndDate;
+        } else if (this.filterStartDate) {
+          return fechaStr >= this.filterStartDate;
+        } else if (this.filterEndDate) {
+          return fechaStr <= this.filterEndDate;
         }
         return true;
       });
