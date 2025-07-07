@@ -50,6 +50,18 @@
       </ion-col>
 
       <ion-col size="6">
+        <app-custom-input icon="person-circle-outline" label="Responsable" type="text" autocomplete="responsable"
+        [control]="inputs.controls.responsable" [readonly]="true">          
+        </app-custom-input>
+      </ion-col>
+
+      <ion-col size="6">
+        <app-custom-input icon="calendar-outline" label="Fecha
+        " type="text" autocomplete="fechaComercial"
+        [control]="inputs.controls.fechaComercial" [readonly]="true"></app-custom-input>
+      </ion-col>
+
+      <ion-col size="6">
         <app-custom-input icon="pencil-outline" label="Observación" type="text" autocomplete="observacionTesoreria"
           [control]="inputs.controls.observacionTesoreria"></app-custom-input>
       </ion-col>

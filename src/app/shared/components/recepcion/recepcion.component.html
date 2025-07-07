@@ -33,7 +33,7 @@
       </ion-col>
       <ion-col size="6">
         <ion-item class="ion-margin-top">
-          <ion-select interface="popover" placeholder="Seleccionar tipo de compra"
+          <ion-select class="list" interface="popover" placeholder="Seleccionar tipo de compra"
             [formControl]="inputs.controls.tipoCompraId">
             <ion-select-option *ngFor="let item of compras" [value]="item.id">
               {{ item.nombre }}
@@ -51,7 +51,7 @@
       
         <!-- Mostrar lista de resultados filtrados -->
         <ion-list *ngIf="responsableFiltrados.length > 0 && searchResponsable">
-          <ion-item 
+          <ion-item class="list"
             *ngFor="let responsable of responsableFiltrados" 
             (click)="selectResponsable(responsable)">
             {{ responsable.name }}

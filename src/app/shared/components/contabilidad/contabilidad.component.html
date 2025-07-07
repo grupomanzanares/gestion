@@ -65,6 +65,8 @@
                 <th class="col-lg">Nombre del producto</th>
                 <th class="col-xl">Producto</th>
                 <th class="col-sm">Codigo Producto</th>
+                <th class="col-md">Centro de Costo</th>
+                <th class="col-md">Cod Ccosto</th>
                 <th class="col-xs">Cantidad</th>
                 <th class="col-md">Costo Unitario</th>
                 <th class="col-xs">IVA</th>
@@ -91,6 +93,8 @@
                   </ion-list>
                 </td>
                 <td>{{ item.codigo }}</td>
+                <td>{{ item.CentroDeCosto }}</td>
+                <td>{{ getNombreCentro(item.CentroDeCosto) }}</td>
                 <td>{{ item.cantidad | number:'1.0-0' }}</td>
                 <td>{{ item.costoUnitario | currency: 'USD':'symbol':'1.0-0' }}</td>
                 <td>{{ item.porIva / 100 | percent:'1.0-0' }}</td>
@@ -104,6 +108,8 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
+                <td></td>
                 <td><strong>{{ suma().cantidad }}</strong></td>
                 <td></td>
                 <td></td>
@@ -113,6 +119,9 @@
               </tr>              
             </tbody>
           </table>
+          <ion-button (click)="save()" expand="block" shape="round">
+            guardar
+          </ion-button>
         </div>
       </ion-col>
 

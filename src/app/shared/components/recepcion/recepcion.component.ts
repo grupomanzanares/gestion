@@ -110,7 +110,14 @@ export class RecepcionComponent implements OnInit {
 
     formData.append('id', this.documento.id);
     formData.append('userMod', this.user.identificacion);
-    formData.append('estadoId', '2');
+    formData.append('fecha', new Date().toISOString());
+    
+    const tipoCompraId = this.inputs.get('tipoCompraId')?.value;
+    if (tipoCompraId === 1) {
+      formData.append('estadoId', '2');
+    } else {
+      formData.append('estadoId', '6');
+    }
 
 
     /**  Paso 4: Adjuntar el archivo PDF si existe*/

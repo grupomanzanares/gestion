@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { MasterService } from 'src/app/services/gestion/master.service';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -20,6 +21,7 @@ export class ContabilidadComponent implements OnInit {
   productos: any[] = []
   searchProducto: string = ''
   productosFiltrados: any[] = []
+  centros: any[] = []
   cantidad = 0
   costoIva = 0
   costoBruto = 0
@@ -39,15 +41,16 @@ export class ContabilidadComponent implements OnInit {
     observacionContable: new FormControl(null, [Validators.required]),
     urlpdf: new FormControl(null, [Validators.required]),
     ccosto: new FormControl(null, [Validators.required]),
-    productoId: new FormControl(null, [Validators.required])
+    productoId: new FormControl(null)
   })
 
-  constructor(private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService, private loading: LoadingService) { }
+  constructor(private master: MasterService, private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService, private loading: LoadingService) { }
 
   ngOnInit() {
     this.user = this.storage.get('manzanares-user')
     this.getjson()
     this.getProductos()
+    this.getCcosto()
   }
 
   getDatos() {
@@ -62,7 +65,7 @@ export class ContabilidadComponent implements OnInit {
         tipo: this.documento.tipo,
         numero: this.documento.numero,
         observacionContable: this.documento.observacionContable,
-        valor: this.documento.valor,
+        valor: this.documento.valor ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
         urlpdf: this.documento.urlPdf,
         ccosto: this.documento.ccostoNombre
       });
@@ -81,7 +84,7 @@ export class ContabilidadComponent implements OnInit {
   getjson() {
     this.masterTable.get(`compras_reportadas/${this.documento.id}`).subscribe({
       next: (data) => {
-        this.documento = data
+        // this.documento = data
         this.documentos = data.items || []
         console.log(this.documentos)
         this.getDatos()
@@ -92,6 +95,20 @@ export class ContabilidadComponent implements OnInit {
 
       }
     })
+  }
+
+  getCcosto() {
+    const nit = this.documento.empresa;
+    this.master.getWo(`ccostos`, nit).subscribe({
+      next: (data) => {
+        this.centros = data
+      }
+    })
+  }
+
+  getNombreCentro(codigo: string): string {
+    const centro = this.centros.find(c => c.codigo === codigo);
+    return centro ? centro.nombre : '';
   }
 
   ngOut() {
@@ -118,7 +135,15 @@ export class ContabilidadComponent implements OnInit {
 
   update() {
     if (this.inputs.invalid) {
-      console.warn('Formulario inválido');
+      const controls = this.inputs.controls;
+      const camposInvalidos: string[] = [];
+
+      for (const nombre in controls) {
+        if (controls[nombre].invalid) {
+          camposInvalidos.push(nombre);
+          console.log(`Campo inválido: ${nombre}`, controls[nombre].errors);
+        }
+      }
       this.toast.presentToast('alert-circle-outline', 'Por favor completa todos los campos correctamente.', 'danger', 'top');
       return;
     }
@@ -135,6 +160,7 @@ export class ContabilidadComponent implements OnInit {
     formData.append('id', this.documento.id)
     formData.append('userMod', this.user.identificacion);
     formData.append('estadoId', '5');
+    formData.append('fechaContabilizacion', new Date().toISOString());
 
     console.log('datos enviados', formData)
 
@@ -226,4 +252,39 @@ export class ContabilidadComponent implements OnInit {
       total: this.documentos.reduce((acc, item) => acc + Number(item.costoTotal || 0), 0),
     }
   }
+
+  save() {
+    const sinProducto = this.documentos.filter(item =>
+      !item.productoId
+    );
+  
+    // if (sinProducto.length > 0) {
+    //   this.toast.presentToast('alert-circle-outline', 'Todos los ítems deben tener un producto asignado.', 'danger', 'top');
+    //   return;
+    // }
+  
+    const itemsFormateados = this.documentos.map(item => ({
+      id: item.id, // id del item
+      compraReportadaId: this.documento.id,
+
+      
+      productoId: item.productoId
+    }));
+  
+    const payload = {
+      documentoId: this.documento.id,
+      items: itemsFormateados
+    };
+  
+    this.masterTable.updateTwo('compras_reportadas_detalle/compra', payload).subscribe({
+      next: () => {
+        this.toast.presentToast('checkmark-outline', 'Productos guardados correctamente', 'success', 'top');
+      },
+      error: (err) => {
+        console.error('Error al guardar productos:', err);
+        this.toast.presentToast('close-circle-outline', 'Error al guardar', 'danger', 'top');
+      }
+    });
+  }
+  
 }

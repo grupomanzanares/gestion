@@ -23,11 +23,14 @@ export class TesoreriaPage implements OnInit {
   }
 
   get() {
-    this.loading.showLoading()
+    // this.loading.showLoading()
     this.master.get('compras_reportadas').subscribe({
       next: (data) => {
-        this.documentos = data.filter((item: any) => item.compras_estado?.id === 5 && item.tesoreria === false)
-        this.loading.hideLoading()
+        const filtrados = data.filter((item: any) => item.compras_estado?.id === 5 && item.tesoreria === false)
+        const ordenados = filtrados.sort((a, b) => b.id - a.id)
+
+        this.documentos = ordenados
+        // this.loading.hideLoading()
       }
     })
   }

@@ -27,7 +27,9 @@ export class AutorizarPage implements OnInit {
   get() {
     this.master.get("compras_reportadas").subscribe({
       next: (data) => {
-        this.documentos = data.filter((item: any) => item.compras_estado?.id === 2 && item.responsableId === this.user.id)
+        const filtrados = data.filter((item: any) => item.compras_estado?.id === 2 && item.responsableId === this.user.id)
+        const ordenados = filtrados.sort((a, b) => b.id - a.id)
+        this.documentos = ordenados
         console.log(this.documentos)
       }
     })

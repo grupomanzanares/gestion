@@ -26,7 +26,10 @@ export class CruzarPage implements OnInit {
     this.loading.showLoading()
     this.master.get('compras_reportadas').subscribe({
       next: (data) => {
-        this.documentos = data.filter((item: any) => item.compras_estado?.id === 4)
+        const filtrados = data.filter((item: any) => item.compras_estado?.id === 4)
+        const ordenados = filtrados.sort((a, b) => b.id - a.id)
+
+        this.documentos = ordenados
         console.log(this.documentos)
         this.loading.hideLoading()
       }

@@ -21,11 +21,13 @@ export class AutorizadorComponent implements OnInit {
   centros: any[] = []
   centrosFiltrados: any[] = [];
   searchCentro: string = '';
-  documentos: any[] = []
+  documentos: any[] = [];
+  centrosPorItem: { [numeroItem: string]: string } = {};
   cantidad = 0
   costoIva = 0
   costoBruto = 0
   total = 0
+  buscandoCentro = false;
   user = {} as any;
 
   public inputs = new FormGroup({
@@ -39,20 +41,26 @@ export class AutorizadorComponent implements OnInit {
     valor: new FormControl(null, [Validators.required]),
     observacionResponsable: new FormControl(null, [Validators.required]),
     urlpdf: new FormControl(null, [Validators.required]),
-    ccosto: new FormControl(null, [Validators.required])
+    ccosto: new FormControl(null, [Validators.required]),
+    ccostoNombre: new FormControl(null, [Validators.required])
   })
 
   constructor(private master: MasterService, private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService) { }
 
   ngOnInit() {
     this.user = this.storage.get('manzanares-user')
-    this.getDatos()
     this.getCentro()
+    this.getDatos()
     this.getjson()
   }
 
   getDatos() {
     if (this.documento) {
+      const codigoCentro = this.documento.ccosto; // este es el código como '101101'
+      const centro = this.centros.find(c => c.codigo === codigoCentro);
+
+      const nombreCentro = centro ? centro.nombre : 'No encontrado';
+
       this.inputs.patchValue({
         emisor: this.documento.emisor,
         nombreEmisor: this.documento.nombreEmisor,
@@ -61,24 +69,43 @@ export class AutorizadorComponent implements OnInit {
         tipo: this.documento.tipo,
         compras_tipo: this.documento.compras_tipo?.nombre,
         numero: this.documento.numero,
-        valor: this.documento.valor,
+        observacionResponsable: this.documento.observacionResponsable,
+        valor: this.documento.valor ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
         urlpdf: this.documento.urlPdf,
-        ccosto: this.documento.ccostoId
+        ccosto: codigoCentro,
+        ccostoNombre: nombreCentro,
       });
-      console.log(this.documento)
+
+      this.searchCentro = `${nombreCentro} - ${codigoCentro}`;
+      this.buscandoCentro = false;
     }
   }
+
 
   getjson() {
     this.masterTable.get(`compras_reportadas/${this.documento.id}`).subscribe({
       next: (data) => {
-        this.documento = data
-        this.documentos = data.items || []
-        console.log(this.documentos)
-        console.log(this.documento)
-        this.getDatos()
+        this.documento = data;
+        this.documentos = data.items || [];
+
+        // Asignar centros ya guardados
+        this.documentos.forEach(item => {
+          const centroAsignado = this.centros.find(c => c.codigo === item.CentroDeCosto);
+
+          if (centroAsignado) {
+            item.nombre = centroAsignado.nombre;
+            item.codigo = centroAsignado.codigo;
+            this.centrosPorItem[item.numeroItem] = centroAsignado.codigo;
+          } else if (item.CentroDeCosto) {
+            item.nombre = 'Centro no encontrado';
+            item.codigo = item.CentroDeCosto;
+            this.centrosPorItem[item.numeroItem] = item.CentroDeCosto;
+          }
+        });
+
+        this.getDatos(); 
       }
-    })
+    });
   }
 
   ngOut() {
@@ -109,7 +136,6 @@ export class AutorizadorComponent implements OnInit {
       next: (data) => {
         this.centros = data;
         this.centrosFiltrados = [...this.centros];
-        console.log(data);
       }
     });
   }
@@ -131,12 +157,13 @@ export class AutorizadorComponent implements OnInit {
     })
     formData.append('id', this.documento.id)
     formData.append('userMod', this.user.identificacion);
+    formData.append('fechaAutorizacion', new Date().toISOString());
+    formData.append('estadoId', '3');
 
-    if (this.documento.compras_tipo?.id === 1) {
-      formData.append('estadoId', '3');
-    } else {
-      formData.append('estadoId', '6');
-    }
+    // if (this.documento.compras_tipo?.id === 1) {
+    // } else {
+    //   formData.append('estadoId', '6');
+    // }
 
 
     console.log('datos enviados', formData)
@@ -182,6 +209,7 @@ export class AutorizadorComponent implements OnInit {
   }
 
   searchCentroCosto() {
+    this.buscandoCentro = true;
     const search = this.searchCentro.toLowerCase();
     this.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().startsWith(search));
   }
@@ -190,6 +218,7 @@ export class AutorizadorComponent implements OnInit {
     this.searchCentro = `${centro.nombre} - ${centro.codigo}`; // mostrar bonito en el input
     this.inputs.get('ccosto')?.setValue(centro.codigo);         // guardar SOLO el codigo en el form
     this.centrosFiltrados = [];                                // limpiar lista filtrada
+    this.buscandoCentro = false
   }
 
   search(valor: string, item: any) {
@@ -198,7 +227,7 @@ export class AutorizadorComponent implements OnInit {
       return
     }
     item.centrosFiltrados = this.centros.filter(c => c.nombre.toLowerCase().includes(valor.toLowerCase()) ||
-    c.codigo.toLowerCase().includes(valor.toLowerCase()))
+      c.codigo.toLowerCase().includes(valor.toLowerCase()))
     // const search = valor.toLowerCase();
     // item.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().includes(search));
   }
@@ -207,6 +236,8 @@ export class AutorizadorComponent implements OnInit {
     item.nombre = centro.nombre;
     item.codigo = centro.codigo
     item.centrosFiltrados = []
+
+    this.centrosPorItem[item.numeroItem] = centro.codigo;
   }
 
   suma() {
@@ -219,7 +250,42 @@ export class AutorizadorComponent implements OnInit {
   }
 
   save() {
-    
+    // Verificar que todos los ítems tengan centro asignado
+    console.log('Documentos', this.documentos)
+    const sinCentro = this.documentos.filter(item =>
+      !this.centrosPorItem[item.numeroItem]
+    );
+
+    // if (sinCentro.length > 0) {
+    //   this.toast.presentToast('alert-circle-outline', 'Todos los ítems deben tener un centro de costo asignado.', 'danger', 'top');
+    //   return;
+    // }
+
+    // Recorre y construye un array con los objetos 
+    const itemsFormateados = this.documentos.map(item => ({
+      id: item.id,
+      compraReportadaId: this.documento.id,
+      CentroDeCosto: this.centrosPorItem[item.numeroItem]
+    }));
+
+    const payload = {
+      // id: this.documento.id,
+      documentoId: this.documento.id,
+      items: itemsFormateados
+    };
+
+    console.log('Datos enviados:', payload);
+
+    this.masterTable.updateTwo('compras_reportadas_detalle/compra', payload).subscribe({
+      next: () => {
+        this.toast.presentToast('checkmark-outline', 'Centros de costo guardados correctamente', 'success', 'top');
+        // this.modalCtrl.dismiss(true);
+      },
+      error: (err) => {
+        console.error('Error al guardar centros de costo:', err);
+        this.toast.presentToast('close-circle-outline', 'Error al guardar', 'danger', 'top');
+      }
+    });
   }
 
 }

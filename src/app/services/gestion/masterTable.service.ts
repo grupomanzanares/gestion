@@ -85,6 +85,7 @@ export class MasterTableService {
         }
 
         const url = `${this.apiUrl}${endPoint}/${registerId}`;
+        console.log('URL', url)
 
         // Log de todas las entradas en el FormData para depuración
         console.log("Contenido del FormData para actualización:");
@@ -101,6 +102,31 @@ export class MasterTableService {
             catchError((error) => {
                 console.error(`Error al editar ${endPoint}`, error);
                 return throwError(() => new Error('Error al editar ${Table}: ' + (error.message || 'Error desconocido')));
+            })
+        );
+    }
+
+    updateTwo(endPoint: string, payload: any): Observable<any> {
+        const registerId = payload.documentoId;
+        console.log(`ID ${endPoint}`, registerId);
+
+        if (!registerId) {
+            console.error(`El objeto ${endPoint} no tiene un ID válido`);
+            return throwError(() => new Error(`No se puede actualizar ${endPoint} sin un ID válido`));
+        }
+
+        const url = `${this.apiUrl}${endPoint}/${registerId}`;
+        console.log('URL', url);
+        console.log("Contenido del payload JSON:", payload);
+
+        const headers = this.getHeaders(false); // ← JSON, no FormData
+
+        return this.http.put<any>(url, payload, {
+            headers: headers
+        }).pipe(
+            catchError((error) => {
+                console.error(`Error al editar ${endPoint}`, error);
+                return throwError(() => new Error(`Error al editar ${endPoint}: ${error.message || 'Error desconocido'}`));
             })
         );
     }

@@ -72,6 +72,7 @@ export class TrazabilidadPage implements OnInit {
       next: (data) => {
         this.documentosOriginales = data;
         this.documentos = [...data];
+        console.log(this.documentos)
       }
     });
   }
@@ -142,8 +143,6 @@ export class TrazabilidadPage implements OnInit {
 
     return new Date(fechaStr);
   }
-
-
 
   applyFilters() {
     let filtered = this.documentosOriginales;
@@ -260,7 +259,10 @@ export class TrazabilidadPage implements OnInit {
       ObservacionContable: item.observacionContable,
       Estado: item.compras_estado?.nombre || '',
       Conciliado: item.conciliado,
-      Responsable: item.responsable?.name || ''
+      Responsable: item.responsable?.name || '',
+      FechaAutorizacion: item.fechaAutorizacion || '',
+      FechaContabilizacion: item.fechaContabilizacion || '',
+      FechaTesoreria: item.fechaTesoreria || ''
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportData);

@@ -28,7 +28,9 @@ export class TesoreriaComponent implements OnInit {
     valor: new FormControl(null, [Validators.required]),
     observacionTesoreria: new FormControl(null, [Validators.required]),
     urlpdf: new FormControl(null, [Validators.required]),
-    ccosto: new FormControl(null, [Validators.required])
+    ccosto: new FormControl(null, [Validators.required]),
+    responsable: new FormControl(null, [Validators.required]),
+    fechaComercial: new FormControl(null, [Validators.required])
   })
 
   constructor(private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService) { }
@@ -48,9 +50,11 @@ export class TesoreriaComponent implements OnInit {
         empresaInfo: this.documento.empresaInfo?.nombre || this.documento.empresa,
         tipo: this.documento.tipo,
         numero: this.documento.numero,
-        valor: this.documento.valor,
+        valor: this.documento.valor ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
         urlpdf: this.documento.urlPdf,
-        ccosto: this.documento.ccostoNombre
+        ccosto: this.documento.ccostoNombre,
+        responsable: this.documento.responsable.name,
+        fechaComercial: this.documento.fecha ? new Date(this.documento.fecha).toLocaleDateString('es-CO') : ''
       });
     }
   }
@@ -96,6 +100,7 @@ export class TesoreriaComponent implements OnInit {
     formData.append('id', this.documento.id)
     formData.append('userMod', this.user.identificacion);
     formData.append('tesoreria', 'true');
+    formData.append('fechaAsignacion', new Date().toISOString());
 
     console.log('datos enviados', formData)
 

@@ -50,14 +50,15 @@
           <ion-input placeholder="Buscar centro de costo" [(ngModel)]="searchCentro" (ionInput)="searchCentroCosto()"
             autocomplete="off">
           </ion-input>
+
         </ion-item>
 
         <!-- Mostrar lista de resultados filtrados -->
-        <ion-list *ngIf="centrosFiltrados.length > 0 && searchCentro">
+        <ion-list class="list" *ngIf="buscandoCentro && centrosFiltrados.length > 0 && searchCentro">
           <ion-item *ngFor="let centro of centrosFiltrados" (click)="selectCentro(centro)">
             {{ centro.nombre }} - {{ centro.codigo }}
           </ion-item>
-        </ion-list>
+        </ion-list>        
       </ion-col>
 
       <ion-col size="6">
@@ -126,11 +127,11 @@
                 <td><strong>{{ suma().costoIVA | currency:'USD':'symbol':'1.0-0' }}</strong></td>
                 <td><strong>{{ suma().costoBruto | currency:'USD':'symbol':'1.0-0' }}</strong></td>
                 <td><strong>{{ suma().total | currency:'USD':'symbol':'1.0-0' }}</strong></td>
-              </tr>   
+              </tr>
             </tbody>
           </table>
           <ion-button (click)="save()" expand="block" shape="round">
-            Click me
+            guardar
           </ion-button>
         </div>
       </ion-col>

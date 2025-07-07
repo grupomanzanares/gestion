@@ -130,6 +130,9 @@
           <th>Estado</th>
           <th>Conciliado</th>
           <th>Responsable</th>
+          <th>Fecha Autorizacion</th>
+          <th>Fecha Contabilizacion</th>
+          <th>Fecha Tesoreria</th>
           <!-- <th>Habilitado</th> -->
         </tr>
       </thead>
@@ -156,6 +159,9 @@
           <td>{{ item.compras_estado?.nombre }}</td>
           <td>{{ item.conciliado }}</td>
           <td>{{ item.responsable?.name }}</td>
+          <td>{{ item.fechaAutorizacion | date:'dd/MM/yyyy':'UTC' }}</td>
+          <td>{{ item.fechaContabilizacion | date:'dd/MM/yyyy':'UTC' }}</td>
+          <td>{{ item.fechaTesoreria | date:'dd/MM/yyyy':'UTC' }}</td>
           <!-- <td>{{ item.habilitado }}</td> -->
         </tr>
       </tbody>

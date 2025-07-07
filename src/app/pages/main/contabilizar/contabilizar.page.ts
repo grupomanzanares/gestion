@@ -26,7 +26,10 @@ export class ContabilizarPage implements OnInit {
     // this.loading.showLoading()
     this.master.get('compras_reportadas').subscribe({
       next: (data) => {
-        this.documentos = data.filter((item: any) => item.compras_estado?.id === 3)
+        const filtrados = data.filter((item: any) => item.compras_estado?.id === 3)
+        const ordenados = filtrados.sort((a, b) => b.id - a.id)
+
+        this.documentos = ordenados
         console.log(this.documentos)
         // this.loading.hideLoading()
       }
@@ -61,17 +64,17 @@ export class ContabilizarPage implements OnInit {
     }
   }
 
-  // json(item: any) {
-  //   const id = item.id;
-  //   console.log('ID del documento:', id);
+  json(item: any) {
+    const id = item.id;
+    console.log('ID del documento:', id);
   
-  //   this.master.get(`compras_reportadas/${id}`).subscribe({
-  //     next: (res) => {
-  //       console.log('Datos completos del documento:', res);
-  //     },
-  //     error: (err) => {
-  //       console.error('Error al obtener el documento:', err);
-  //     }
-  //   });
-  // } 
+    this.master.get(`compras_reportadas/${id}`).subscribe({
+      next: (res) => {
+        console.log('Datos completos del documento:', res);
+      },
+      error: (err) => {
+        console.error('Error al obtener el documento:', err);
+      }
+    });
+  } 
 }
