@@ -148,7 +148,7 @@ export class RecepcionComponent implements OnInit {
 
   search() {
     const search = this.searchResponsable.toLowerCase()
-    this.responsableFiltrados = this.responsables.filter(responsable => responsable.name.toLowerCase().startsWith(search))
+    this.responsableFiltrados = this.responsables.filter(responsable => responsable.name.toLowerCase().includes(search))
   }
 
   selectResponsable(responsable: any) {

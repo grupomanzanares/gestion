@@ -211,7 +211,7 @@ export class AutorizadorComponent implements OnInit {
   searchCentroCosto() {
     this.buscandoCentro = true;
     const search = this.searchCentro.toLowerCase();
-    this.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().startsWith(search));
+    this.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().includes(search));
   }
 
   selectCentro(centro: any) {
@@ -222,14 +222,10 @@ export class AutorizadorComponent implements OnInit {
   }
 
   search(valor: string, item: any) {
-    if (!valor) {
-      item.centrosFiltrados = []
-      return
-    }
-    item.centrosFiltrados = this.centros.filter(c => c.nombre.toLowerCase().includes(valor.toLowerCase()) ||
-      c.codigo.toLowerCase().includes(valor.toLowerCase()))
-    // const search = valor.toLowerCase();
-    // item.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().includes(search));
+    // item.centrosFiltrados = this.centros.filter(c => c.nombre.toLowerCase().includes(valor.toLowerCase()) ||
+    //   c.codigo.toLowerCase().includes(valor.toLowerCase()))
+    const search = valor.toLowerCase();
+    item.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().includes(search));
   }
 
   select(centro: any, item: any) {
