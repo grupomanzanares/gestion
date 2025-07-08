@@ -81,7 +81,7 @@ export class RecepcionComponent implements OnInit {
         empresaInfo: this.documento.empresaInfo?.nombre || this.documento.empresa,
         tipo: this.documento.tipo,
         numero: this.documento.numero,
-        valor: this.documento.valor,
+        valor: this.documento.valor  ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
         tipoCompraId: this.documento.tipoCompraId,
         responsableId: this.documento.responsableId
       });
