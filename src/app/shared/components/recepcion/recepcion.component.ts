@@ -110,7 +110,7 @@ export class RecepcionComponent implements OnInit {
 
     formData.append('id', this.documento.id);
     formData.append('userMod', this.user.identificacion);
-    formData.append('fecha', new Date().toISOString());
+    formData.append('fechaAsignacion', new Date().toISOString());
     
     const tipoCompraId = this.inputs.get('tipoCompraId')?.value;
     if (tipoCompraId === 1) {

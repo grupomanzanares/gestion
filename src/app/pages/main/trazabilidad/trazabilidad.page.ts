@@ -260,6 +260,7 @@ export class TrazabilidadPage implements OnInit {
       Estado: item.compras_estado?.nombre || '',
       Conciliado: item.conciliado,
       Responsable: item.responsable?.name || '',
+      FechaAsignacion: item.fechaAsignacion || '',
       FechaAutorizacion: item.fechaAutorizacion || '',
       FechaContabilizacion: item.fechaContabilizacion || '',
       FechaTesoreria: item.fechaTesoreria || ''
