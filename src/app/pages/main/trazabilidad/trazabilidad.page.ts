@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment.prod';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { LoadingService } from 'src/app/services/loading.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-trazabilidad',
@@ -24,6 +25,8 @@ export class TrazabilidadPage implements OnInit {
   estados: any[] = []
   documentosOriginales: any[] = [];
   empresas: any[] = []
+  user: any
+  rol: number = 0;
 
   // Filtros
   filterStartDate: string = '';
@@ -35,7 +38,7 @@ export class TrazabilidadPage implements OnInit {
   filterEmpresa: string = ''
 
 
-  constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService, private loading: LoadingService) { }
+  constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService, private loading: LoadingService, private storage: StorageService) { }
 
   ngOnInit() {
     this.resetFilters()
@@ -68,11 +71,20 @@ export class TrazabilidadPage implements OnInit {
   }
 
   get() {
+    this.user = this.storage.get('manzanares-user')
+    this.rol = this.user?.rolId
     this.master.get('compras_reportadas').subscribe({
       next: (data) => {
-        this.documentosOriginales = data;
-        this.documentos = [...data];
-        console.log(this.documentos)
+        if (this.user.rolId === 3) {
+          const filtrados = data.filter((item: any) => item.responsableId === this.user.id)
+          this.documentosOriginales = filtrados;
+          this.documentos = [...filtrados];
+          console.log(this.documentos)
+        } else {
+          this.documentosOriginales = data;
+          this.documentos = [...data];
+          // console.log(this.documentos)
+        }
       }
     });
   }

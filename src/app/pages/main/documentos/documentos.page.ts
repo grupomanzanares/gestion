@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MasterService } from 'src/app/services/gestion/master.service';
 import { LoadingService } from 'src/app/services/loading.service';
@@ -16,25 +17,52 @@ export class DocumentosPage implements OnInit {
 
   documentos: any[] = []
 
-  constructor(private master: MasterService, private _modalService: ModalService, private loading: LoadingService) { }
+  constructor(private master: MasterService, private _modalService: ModalService, private loading: LoadingService, private http: HttpClient) { }
 
   ngOnInit() {
     this.get()
   }
 
-  get() {
-    this.loading.showLoading()
-    this.master.get("compras_reportadas").subscribe({
-      next: (data) => {
-        const filtrados = data.filter((item: any) => item.compras_estado?.id === 1)
-        const ordenados = filtrados.sort((a,b) => b.id - a.id)
+  // get() {
+  //   this.loading.showLoading()
+  //   this.master.get("compras_reportadas").subscribe({
+  //     next: (data) => {
+  //       const filtrados = data.filter((item: any) => item.compras_estado?.id === 1)
+  //       const ordenados = filtrados.sort((a,b) => b.id - a.id)
 
-        this.documentos = ordenados
-        console.log(this.documentos)
-        this.loading.hideLoading()
+  //       this.documentos = ordenados
+  //       console.log(this.documentos)
+  //       this.loading.hideLoading()
+  //     }
+  //   })
+  // }
+
+  async get() {
+    this.loading.showLoading();
+    this.master.get("compras_reportadas").subscribe({
+      next: async (data) => {
+        const filtrados = data.filter((item: any) => item.compras_estado?.id === 1);
+        const urlBase = environment.apiUrl;
+
+        // Verificar existencia de cada PDF
+        const documentosConEstado = await Promise.all(
+          filtrados.map(async (item: any) => {
+            const urlCompleta = item.urlPdf ? urlBase + item.urlPdf : null;
+            const existe = urlCompleta ? await this.verificacionPDF(urlCompleta) : false;
+
+            return {
+              ...item,
+              estadoPdf: existe ? 'PDF ASIGNADO' : 'PDF NO ENCONTRADO'
+            };
+          })
+        );
+
+        this.documentos = documentosConEstado.sort((a, b) => b.id - a.id);
+        this.loading.hideLoading();
       }
-    })
+    });
   }
+
 
   /**VentanaModal para crear o modificar */
   async modalRegister() {
@@ -76,8 +104,13 @@ export class DocumentosPage implements OnInit {
     }
   }
 
-  conciliacion(){
-    
+  verificacionPDF(url: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.http.head(url, { observe: 'response' }).subscribe({
+        next: (resp) => resolve(resp.status === 200),
+        error: () => resolve(false)
+      })
+    })
   }
 
 }

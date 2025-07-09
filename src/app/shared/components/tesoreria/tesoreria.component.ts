@@ -99,7 +99,7 @@ export class TesoreriaComponent implements OnInit {
 
     formData.append('id', this.documento.id)
     formData.append('userMod', this.user.identificacion);
-    formData.append('tesoreria', 'true');
+    formData.append('estadoId', '7');
     formData.append('fechaTesoreria', new Date().toISOString());
 
     console.log('datos enviados', formData)

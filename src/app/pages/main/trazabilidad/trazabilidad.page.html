@@ -56,7 +56,7 @@
       <ion-col size="6">
         <ion-item>
           <ion-label position="stacked">Responsable</ion-label>
-          <ion-select interface="popover" [(ngModel)]="filterResponsable" placeholder="Selecciona responsable">
+          <ion-select interface="popover" [(ngModel)]="filterResponsable" placeholder="Selecciona responsable" [disabled]="rol === 3">
             <ion-select-option *ngFor="let responsable of responsables" [value]="responsable.name">
               {{ responsable.name }}
             </ion-select-option>
