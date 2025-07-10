@@ -23,46 +23,19 @@ export class DocumentosPage implements OnInit {
     this.get()
   }
 
-  // get() {
-  //   this.loading.showLoading()
-  //   this.master.get("compras_reportadas").subscribe({
-  //     next: (data) => {
-  //       const filtrados = data.filter((item: any) => item.compras_estado?.id === 1)
-  //       const ordenados = filtrados.sort((a,b) => b.id - a.id)
-
-  //       this.documentos = ordenados
-  //       console.log(this.documentos)
-  //       this.loading.hideLoading()
-  //     }
-  //   })
-  // }
-
-  async get() {
-    this.loading.showLoading();
+  get() {
+    this.loading.showLoading()
     this.master.get("compras_reportadas").subscribe({
-      next: async (data) => {
-        const filtrados = data.filter((item: any) => item.compras_estado?.id === 1);
-        const urlBase = environment.apiUrl;
+      next: (data) => {
+        const filtrados = data.filter((item: any) => item.compras_estado?.id === 1)
+        const ordenados = filtrados.sort((a,b) => b.id - a.id)
 
-        // Verificar existencia de cada PDF
-        const documentosConEstado = await Promise.all(
-          filtrados.map(async (item: any) => {
-            const urlCompleta = item.urlPdf ? urlBase + item.urlPdf : null;
-            const existe = urlCompleta ? await this.verificacionPDF(urlCompleta) : false;
-
-            return {
-              ...item,
-              estadoPdf: existe ? 'PDF ASIGNADO' : 'PDF NO ENCONTRADO'
-            };
-          })
-        );
-
-        this.documentos = documentosConEstado.sort((a, b) => b.id - a.id);
-        this.loading.hideLoading();
+        this.documentos = ordenados
+        console.log(this.documentos)
+        this.loading.hideLoading()
       }
-    });
+    })
   }
-
 
   /**VentanaModal para crear o modificar */
   async modalRegister() {
