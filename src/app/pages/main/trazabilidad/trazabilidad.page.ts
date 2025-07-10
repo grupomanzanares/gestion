@@ -50,8 +50,9 @@ export class TrazabilidadPage implements OnInit {
     this.getEmpresa()
 
     const today = new Date().toISOString().slice(0, 10);
+    const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10);
     // this.documentos.fecha.setValue(today)
-    this.filterStartDate = today;
+    this.filterStartDate = firstDay;
     this.filterEndDate = today;
   }
 
@@ -83,7 +84,7 @@ export class TrazabilidadPage implements OnInit {
         } else {
           this.documentosOriginales = data;
           this.documentos = [...data];
-          // console.log(this.documentos)
+          console.log(this.documentos)
         }
       }
     });
@@ -127,6 +128,13 @@ export class TrazabilidadPage implements OnInit {
         this.empresas = data
       }
     })
+  }
+
+  dian(item: any) {
+    const url = 'https://catalogo-vpfe.dian.gov.co/User/SearchDocument?DocumentKey='
+    const cufe = item.cufe
+    const link = url+cufe
+    window.open(link, '_blank')
   }
 
   union(item: any) {

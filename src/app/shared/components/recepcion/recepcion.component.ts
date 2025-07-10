@@ -33,7 +33,7 @@ export class RecepcionComponent implements OnInit {
     numero: new FormControl(null, [Validators.required]),
     valor: new FormControl(null, [Validators.required]),
     tipoCompraId: new FormControl(null, [Validators.required]),
-    responsableId: new FormControl(null, [Validators.required])
+    responsableId: new FormControl(null, [Validators.required]),
   })
 
   constructor(private master: MasterService,
@@ -83,7 +83,7 @@ export class RecepcionComponent implements OnInit {
         numero: this.documento.numero,
         valor: this.documento.valor  ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
         tipoCompraId: this.documento.tipoCompraId,
-        responsableId: this.documento.responsableId
+        responsableId: this.documento.responsableId,
       });
     }
   }
@@ -156,6 +156,13 @@ export class RecepcionComponent implements OnInit {
     this.searchResponsable = responsable.name;
     this.inputs.get('responsableId')?.setValue(responsable.id);
     this.responsableFiltrados = [];
+  }
+
+  dian() {
+    const url = 'https://catalogo-vpfe.dian.gov.co/User/SearchDocument?DocumentKey='
+    const cufe = this.documento.cufe
+    const link = url+cufe
+    window.open(link, '_blank')
   }
 
 }

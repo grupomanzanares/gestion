@@ -147,7 +147,11 @@
           <td>{{ item.compras_tipo?.nombre }}</td>
           <td>{{ item.valor | currency:'USD' :'symbol':'1.0-0' }}</td>
           <td>{{ item.fecha | date:'dd/MM/yyyy':'UTC' }}</td>
-          <td>{{ item.cufe }}</td>
+          <td>
+            <a *ngIf="item.cufe" (click)="dian(item)" style="color: blue; cursor: pointer;">
+              {{ item.cufe }}
+            </a>
+          </td>          
           <td>
             <a *ngIf="item.urlPdf" (click)="union(item)" style="color: blue; cursor: pointer;">
               Ver PDF
