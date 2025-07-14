@@ -29,6 +29,8 @@ export class AutorizadorComponent implements OnInit {
   total = 0
   buscandoCentro = false;
   user = {} as any;
+  public archivo: boolean = false
+  public asignar: boolean = false
 
   public inputs = new FormGroup({
     emisor: new FormControl(null, [Validators.required]),
@@ -42,7 +44,9 @@ export class AutorizadorComponent implements OnInit {
     observacionResponsable: new FormControl(null, [Validators.required]),
     urlpdf: new FormControl(null, [Validators.required]),
     ccosto: new FormControl(null, [Validators.required]),
-    ccostoNombre: new FormControl(null, [Validators.required])
+    ccostoNombre: new FormControl(null, [Validators.required]),
+    observacionContable: new FormControl(null),
+    observacionTesoreria: new FormControl(null)
   })
 
   constructor(private master: MasterService, private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService) { }
@@ -54,9 +58,17 @@ export class AutorizadorComponent implements OnInit {
     this.getjson()
   }
 
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFileName = file.name;
+      this.selectedFile = file;
+    }
+  }
+
   getDatos() {
     if (this.documento) {
-      const codigoCentro = this.documento.ccosto; // este es el código como '101101'
+      const codigoCentro = this.documento.ccosto;
       const centro = this.centros.find(c => c.codigo === codigoCentro);
 
       const nombreCentro = centro ? centro.nombre : 'No encontrado';
@@ -74,13 +86,15 @@ export class AutorizadorComponent implements OnInit {
         urlpdf: this.documento.urlPdf,
         ccosto: codigoCentro,
         ccostoNombre: nombreCentro,
+        observacionContable: this.documento.observacionContable,
+        observacionTesoreria: this.documento.observacionTesoreria
       });
 
       this.searchCentro = `${nombreCentro} - ${codigoCentro}`;
       this.buscandoCentro = false;
+      console.log(this.documento)
     }
   }
-
 
   getjson() {
     this.masterTable.get(`compras_reportadas/${this.documento.id}`).subscribe({
@@ -103,7 +117,7 @@ export class AutorizadorComponent implements OnInit {
           }
         });
 
-        this.getDatos(); 
+        this.getDatos();
       }
     });
   }
@@ -128,6 +142,18 @@ export class AutorizadorComponent implements OnInit {
     } else {
       console.warn('No hay URL de PDF disponible');
     }
+  }
+
+  // Verifica si la observación contable tiene contenido
+  mostrarObservacionContable(): boolean {
+    const valor = this.inputs.controls.observacionContable?.value;
+    return valor && valor.trim() !== '';
+  }
+
+  // Verifica si la observación tesorería tiene contenido
+  mostrarObservacionTesoreria(): boolean {
+    const valor = this.inputs.controls.observacionTesoreria?.value;
+    return valor && valor.trim() !== '';
   }
 
   getCentro() {

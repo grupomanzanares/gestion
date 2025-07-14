@@ -34,6 +34,9 @@ export class RecepcionComponent implements OnInit {
     valor: new FormControl(null, [Validators.required]),
     tipoCompraId: new FormControl(null, [Validators.required]),
     responsableId: new FormControl(null, [Validators.required]),
+    observacionResponsable: new FormControl(null),
+    observacionContable: new FormControl(null),
+    observacionTesoreria: new FormControl(null)
   })
 
   constructor(private master: MasterService,
@@ -84,6 +87,9 @@ export class RecepcionComponent implements OnInit {
         valor: this.documento.valor  ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
         tipoCompraId: this.documento.tipoCompraId,
         responsableId: this.documento.responsableId,
+        observacionResponsable: this.documento.observacionResponsable,
+        observacionContable: this.documento.observacionContable,
+        observacionTesoreria: this.documento.observacionTesoreria
       });
     }
   }
@@ -142,7 +148,6 @@ export class RecepcionComponent implements OnInit {
     if (file) {
       this.selectedFileName = file.name;
       this.selectedFile = file;
-
     }
   }
 
@@ -151,6 +156,21 @@ export class RecepcionComponent implements OnInit {
     this.responsableFiltrados = this.responsables.filter(responsable => responsable.name.toLowerCase().includes(search))
   }
   
+  mostrarObservacionContable(): boolean {
+    const valor = this.inputs.controls.observacionContable?.value;
+    return valor && valor.trim() !== '';
+  }
+
+  // Verifica si la observación tesorería tiene contenido
+  mostrarObservacionTesoreria(): boolean {
+    const valor = this.inputs.controls.observacionTesoreria?.value;
+    return valor && valor.trim() !== '';
+  }
+
+  mostrarObservacionResponsable(): boolean {
+    const valor = this.inputs.controls.observacionResponsable?.value;
+    return valor && valor.trim() !== '';
+  }
 
   selectResponsable(responsable: any) {
     this.searchResponsable = responsable.name;

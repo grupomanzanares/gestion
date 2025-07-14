@@ -15,7 +15,6 @@
     min-width: 400px;
     border-radius: 10px 10px 0 0;
     overflow: hidden;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     table-layout: fixed;
 }
 
@@ -94,4 +93,10 @@
 p {
     color: rgb(46, 57, 255);
     font-weight: 600;
+}
+
+ion-item {
+    --min-height: 40px;
+    align-items: center;
+    margin-top: 6px;
 }
