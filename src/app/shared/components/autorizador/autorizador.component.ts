@@ -29,7 +29,7 @@ export class AutorizadorComponent implements OnInit {
   total = 0
   buscandoCentro = false;
   user = {} as any;
-  public archivo: boolean = false
+  public adjuntos: boolean = false
   public asignar: boolean = false
 
   public inputs = new FormGroup({
@@ -186,11 +186,9 @@ export class AutorizadorComponent implements OnInit {
     formData.append('fechaAutorizacion', new Date().toISOString());
     formData.append('estadoId', '3');
 
-    // if (this.documento.compras_tipo?.id === 1) {
-    // } else {
-    //   formData.append('estadoId', '6');
-    // }
-
+    if (this.selectedFile) {
+      formData.append('adjuntos', this.selectedFile, this.selectedFile.name);
+    }
 
     console.log('datos enviados', formData)
 

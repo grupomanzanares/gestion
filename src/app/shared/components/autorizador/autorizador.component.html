@@ -84,14 +84,14 @@
       </ion-col>
 
       <!-- Añadir Archivo -->
-      <ion-col size="6">
+      <ion-col size="4">
         <ion-item lines="none">
-          <ion-checkbox slot="start" [(ngModel)]="archivo"></ion-checkbox>
-          <ion-label>Añadir Archivo</ion-label>
+          <ion-checkbox slot="start" [(ngModel)]="adjuntos"></ion-checkbox>
+          <ion-label>Adjuntar Soporte</ion-label>
         </ion-item>
       </ion-col>
 
-      <ion-col size="6" *ngIf="archivo">
+      <ion-col size="4" *ngIf="adjuntos">
         <ion-button class="ion-margin-top" expand="block" fill="clear" shape="round" (click)="fileInput.click()">
           <ion-icon name="document-attach-outline" slot="start"></ion-icon>
           Selecciona el archivo
@@ -99,8 +99,8 @@
         <input type="file" #fileInput (change)="onFileChange($event)" multiple accept=".pdf, .png, .jpg, .jpeg, .xls, .xlsx" hidden>
       </ion-col>
 
-      <ion-col size="12" class="ion-margin-top">
-        <ion-text  *ngIf="archivo && selectedFileName">
+      <ion-col size="4" class="ion-margin-top">
+        <ion-text  *ngIf="adjuntos && selectedFileName">
           Archivo seleccionado: {{ selectedFileName }}
         </ion-text>
       </ion-col>

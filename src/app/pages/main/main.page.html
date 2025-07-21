@@ -32,7 +32,8 @@
             <ion-card-title>Subir Documentos</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-button [routerLink]="['documentos']" routerLinkActive="router-link-active" expand="block" shape="round">
+            <ion-button [routerLink]="['documentos']" routerLinkActive="router-link-active" expand="block"
+              shape="round">
               <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
               Ir a documentos
             </ion-button>
@@ -62,7 +63,8 @@
             <ion-card-title>Contabilizar Documentos</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-button [routerLink]="['contabilizar']" routerLinkActive="router-link-active" expand="block" shape="round">
+            <ion-button [routerLink]="['contabilizar']" routerLinkActive="router-link-active" expand="block"
+              shape="round">
               <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
               Ir a contabilizar
             </ion-button>
@@ -107,7 +109,8 @@
             <ion-card-title>Trazabilidad</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-button [routerLink]="['trazabilidad']" routerLinkActive="router-link-active" expand="block" shape="round">
+            <ion-button [routerLink]="['trazabilidad']" routerLinkActive="router-link-active" expand="block"
+              shape="round">
               <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
               Ir a trazabilidad
             </ion-button>
@@ -137,9 +140,25 @@
             <ion-card-title>Conciliacion</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-button [routerLink]="['conciliacion']" routerLinkActive="router-link-active" expand="block" shape="round">
+            <ion-button [routerLink]="['conciliacion']" routerLinkActive="router-link-active" expand="block"
+              shape="round">
               <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
               Ir a Conciliacion
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" *ngIf="rol === 1 || rol === 2">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="stats-chart-outline" size="large"></ion-icon>
+            <ion-card-title>Diagrama</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['diagrama']" routerLinkActive="router-link-active" expand="block" shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a Diagramas
             </ion-button>
           </ion-card-content>
         </ion-card>
@@ -148,7 +167,8 @@
       <ion-col size="12" *ngIf="rol === null">
         <ion-card color="light" class="ion-padding" style="text-align: center;">
           <ion-card-header>
-            <ion-icon name="help-circle-outline" size="large" style="font-size: 48px; color: var(--ion-color-primary);"></ion-icon>
+            <ion-icon name="help-circle-outline" size="large"
+              style="font-size: 48px; color: var(--ion-color-primary);"></ion-icon>
             <ion-card-title class="ion-text-center" style="margin-top: 8px;">
               ¿Necesitas acceso?
             </ion-card-title>
@@ -157,12 +177,12 @@
             Tu rol aún no está definido en el sistema.<br />
             Por favor, comunícate con el área de sistemas para obtener acceso.
           </ion-card-content>
-          <ion-button expand="block" color="primary" fill="outline" class="ion-margin-top" >
+          <ion-button expand="block" color="primary" fill="outline" class="ion-margin-top">
             <ion-icon slot="start" name="chatbubbles-outline"></ion-icon>
             Contactar sistemas
           </ion-button>
         </ion-card>
-      </ion-col>      
+      </ion-col>
 
     </ion-row>
   </ion-grid>

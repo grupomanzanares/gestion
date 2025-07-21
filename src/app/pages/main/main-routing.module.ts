@@ -48,6 +48,10 @@ const routes: Routes = [
   {
     path: 'cruzar',
     loadChildren: () => import('./cruzar/cruzar.module').then( m => m.CruzarPageModule)
+  },
+  {
+    path: 'diagrama',
+    loadChildren: () => import('./diagrama/diagrama.module').then( m => m.DiagramaPageModule)
   }
 ];
 
