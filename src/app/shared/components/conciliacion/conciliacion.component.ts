@@ -3,8 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { MasterService } from 'src/app/services/gestion/master.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { ToastService } from 'src/app/services/toast.service';
-import * as XLSX from 'xlsx';
-import { LoadFileComponent } from '../load-file/load-file.component';
+import * as XLSX from 'xlsx'
 
 
 @Component({
@@ -60,6 +59,7 @@ export class ConciliacionComponent implements OnInit {
       reader.readAsArrayBuffer(file)
     }
   }
+
   convertirFecha(fechaStr: string): string {
     if (!fechaStr) return '';
 
