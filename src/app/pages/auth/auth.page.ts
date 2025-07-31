@@ -9,6 +9,7 @@ import { LoadingService } from 'src/app/services/loading.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { StorageService } from 'src/app/services/storage.service';
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -28,6 +29,8 @@ export class AuthPage implements OnInit {
     identificacion: new FormControl(null, [Validators.required, Validators.minLength(8), Validators.maxLength(10), Validators.pattern('^[0-9]*$'),]),
     password: new FormControl(null,[Validators.required, Validators.minLength(10), Validators.maxLength(18)]),
   });
+
+  version = environment.version;
 
   constructor( 
     private _router: Router,
