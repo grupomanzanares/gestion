@@ -16,7 +16,7 @@ export class CruzarPage implements OnInit {
 
   documentos: any[] = []
 
-  constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService, private loading: LoadingService) { }
+  constructor(private master: MasterService, private modalService: ModalService, private loading: LoadingService) { }
 
   ngOnInit() {
     this.get()

@@ -35,6 +35,7 @@ export class SideMenuComponent implements OnInit {
           { label: 'Subir archivo DIAN', icon: 'cloud-upload-outline', route: '/main/dian' },
           { label: 'Conciliar', icon: 'sync-outline', route: '/main/conciliacion' },
           { label: 'Diagrama', icon: 'stats-chart-outline', route: '/main/diagrama' },
+          { label: 'Finalizadas', icon: 'checkmark-done-outline', route: '/main/finalizadas' },
           { label: 'Usuarios', icon: 'people-outline', route: '/main/usuarios' },
         ];
         break;

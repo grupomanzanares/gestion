@@ -8,9 +8,14 @@ import { AuthService } from './services/auth.service';
   standalone: false,
 })
 export class AppComponent implements OnInit, OnDestroy {
-
   private inactivityTimeout: any;
-  private readonly TIME_LIMIT = 60 * 60 * 1000;
+  private readonly TIME_LIMIT = 10 * 60 * 1000;
+
+  // Guardar las funciones enlazadas
+  private boundMousemove = this.resetInactivityTimer.bind(this);
+  private boundKeydown = this.resetInactivityTimer.bind(this);
+  private boundClick = this.resetInactivityTimer.bind(this);
+  private boundTouchstart = this.resetInactivityTimer.bind(this);
 
   constructor(private authService: AuthService) { }
 
@@ -18,22 +23,20 @@ export class AppComponent implements OnInit, OnDestroy {
     sessionStorage.setItem('active', 'true');
     this.resetInactivityTimer();
 
-    // Detecta eventos de interacción y reinicia el temporizador
-    window.addEventListener('mousemove', this.resetInactivityTimer.bind(this));
-    window.addEventListener('keydown', this.resetInactivityTimer.bind(this));
-    window.addEventListener('click', this.resetInactivityTimer.bind(this));
-    window.addEventListener('touchstart', this.resetInactivityTimer.bind(this));
+    window.addEventListener('mousemove', this.boundMousemove);
+    window.addEventListener('keydown', this.boundKeydown);
+    window.addEventListener('click', this.boundClick);
+    window.addEventListener('touchstart', this.boundTouchstart);
   }
 
   ngOnDestroy() {
     sessionStorage.removeItem('active');
     clearTimeout(this.inactivityTimeout);
 
-    // Limpia los listeners
-    window.removeEventListener('mousemove', this.resetInactivityTimer.bind(this));
-    window.removeEventListener('keydown', this.resetInactivityTimer.bind(this));
-    window.removeEventListener('click', this.resetInactivityTimer.bind(this));
-    window.removeEventListener('touchstart', this.resetInactivityTimer.bind(this));
+    window.removeEventListener('mousemove', this.boundMousemove);
+    window.removeEventListener('keydown', this.boundKeydown);
+    window.removeEventListener('click', this.boundClick);
+    window.removeEventListener('touchstart', this.boundTouchstart);
   }
 
   private resetInactivityTimer() {
@@ -43,5 +46,4 @@ export class AppComponent implements OnInit, OnDestroy {
       this.authService.logout();
     }, this.TIME_LIMIT);
   }
-
 }

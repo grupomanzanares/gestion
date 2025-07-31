@@ -1,0 +1,65 @@
+<app-header title="Finalizadas" [showMenu]="true"></app-header>
+<app-side-menu></app-side-menu>
+
+<ion-content id="main-content">
+  <div class="table-wrapper" >
+    <table class="sync-table">
+      <thead>
+        <tr>
+          <th>Asignar</th>
+          <th>Identificacion del emisor</th>
+          <th>Emisor</th>
+          <th>Empresa</th>
+          <th>Tipo de documento</th>
+          <th>N° de documento</th>
+          <th>Tipo de compra</th>
+          <th>Valor total</th>
+          <th>Fecha estado comercial</th>
+          <th>CUFE/CUDE</th>
+          <th>Url PDF</th>
+          <th>Centro de costo</th>
+          <th>Observación Responsable</th>
+          <th>Observación Contable</th>
+          <th>Observación Tesoreria</th>
+          <th>Estado</th>
+          <th>Conciliado</th>
+          <th>Responsable</th>
+          <!-- <th>Habilitado</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of documentos">
+          <td *ngIf="item.compras_estado?.id === 7">
+            <ion-checkbox (click)="modalFin(item)"></ion-checkbox>
+          </td>
+          <td *ngIf="item.compras_estado?.id !== 7">
+            <ion-icon name="checkmark-outline" size="large" color="success"></ion-icon>
+          </td>
+          
+          <td>{{ item.emisor }}</td>
+          <td>{{ item.nombreEmisor }}</td>
+          <td>{{ item.empresaInfo?.nombre }}</td>
+          <td>{{ item.tipo }}</td>
+          <td>{{ item.numero }}</td>
+          <td>{{ item.compras_tipo?.nombre }}</td>
+          <td>{{ item.valor | currency:'USD' :'symbol':'1.0-0' }}</td>
+          <td>{{ item.fecha | date:'dd/MM/yyyy':'UTC' }}</td>
+          <td>{{ item.cufe }}</td>
+          <td>
+            <a *ngIf="item.urlPdf" (click)="union(item)" style="color: blue; cursor: pointer;">
+              Ver PDF
+            </a>
+          </td>          
+          <td>{{ item.ccosto }}  {{ item.ccostoNombre }} </td>
+          <td>{{ item.observacionResponsable }}</td>
+          <td>{{ item.observacionContable }}</td>
+          <td>{{ item.observacionTesoreria }}</td>
+          <td>{{ item.compras_estado?.nombre }}</td>
+          <td>{{ item.conciliado }}</td>
+          <td>{{ item.responsable?.name }}</td>
+          <!-- <td>{{ item.habilitado }}</td> -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ion-content>

@@ -78,12 +78,14 @@ export class TrazabilidadPage implements OnInit {
       next: (data) => {
         if (this.user.rolId === 3) {
           const filtrados = data.filter((item: any) => item.responsableId === this.user.id)
-          this.documentosOriginales = filtrados;
-          this.documentos = [...filtrados];
+          const ordenados = filtrados.sort((a,b) => b.id - a.id)
+          this.documentosOriginales = ordenados;
+          this.documentos = [...ordenados];
           console.log(this.documentos)
         } else {
-          this.documentosOriginales = data;
-          this.documentos = [...data];
+          const ordenados = data.sort((a,b) => b.id - a.id)
+          this.documentosOriginales = ordenados;
+          this.documentos = [...ordenados];
           console.log(this.documentos)
         }
       }

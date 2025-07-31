@@ -52,6 +52,10 @@ const routes: Routes = [
   {
     path: 'diagrama',
     loadChildren: () => import('./diagrama/diagrama.module').then( m => m.DiagramaPageModule)
+  },
+  {
+    path: 'finalizadas',
+    loadChildren: () => import('./finalizadas/finalizadas.module').then( m => m.FinalizadasPageModule)
   }
 ];
 
