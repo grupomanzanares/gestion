@@ -27,6 +27,8 @@ export class ContabilidadComponent implements OnInit {
   costoBruto = 0
   total = 0
 
+  prod: any[] = []
+
 
   user = {} as any
 
@@ -41,7 +43,8 @@ export class ContabilidadComponent implements OnInit {
     observacionContable: new FormControl(null, [Validators.required]),
     urlpdf: new FormControl(null, [Validators.required]),
     ccosto: new FormControl(null, [Validators.required]),
-    productoId: new FormControl(null)
+    productoId: new FormControl(null),
+    urladj: new FormControl(null, [Validators.required])
   })
 
   constructor(private master: MasterService, private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService, private loading: LoadingService) { }
@@ -67,7 +70,8 @@ export class ContabilidadComponent implements OnInit {
         observacionContable: this.documento.observacionContable,
         valor: this.documento.valor ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
         urlpdf: this.documento.urlPdf,
-        ccosto: this.documento.ccostoNombre
+        ccosto: this.documento.ccostoNombre,
+        urladj: this.documento.adjuntos?.length ? this.documento.adjuntos[0].url : null
       });
     }
     // this.loading.hideLoading()
@@ -84,7 +88,6 @@ export class ContabilidadComponent implements OnInit {
   getjson() {
     this.masterTable.get(`compras_reportadas/${this.documento.id}`).subscribe({
       next: (data) => {
-        // this.documento = data
         this.documentos = data.items || []
         console.log(this.documentos)
         this.getDatos()
@@ -131,6 +134,11 @@ export class ContabilidadComponent implements OnInit {
     } else {
       console.warn('No hay URL de PDF disponible');
     }
+  }
+
+  abrirAdjunto(url: string) {
+    const fullUrl = environment.apiUrl + url;
+    window.open(fullUrl, '_blank');
   }
 
   update() {
@@ -257,25 +265,25 @@ export class ContabilidadComponent implements OnInit {
     const sinProducto = this.documentos.filter(item =>
       !item.productoId
     );
-  
+
     // if (sinProducto.length > 0) {
     //   this.toast.presentToast('alert-circle-outline', 'Todos los ítems deben tener un producto asignado.', 'danger', 'top');
     //   return;
     // }
-  
+
     const itemsFormateados = this.documentos.map(item => ({
       id: item.id, // id del item
       compraReportadaId: this.documento.id,
 
-      
+
       productoId: item.productoId
     }));
-  
+
     const payload = {
       documentoId: this.documento.id,
       items: itemsFormateados
     };
-  
+
     this.masterTable.updateTwo('compras_reportadas_detalle/compra', payload).subscribe({
       next: () => {
         this.toast.presentToast('checkmark-outline', 'Productos guardados correctamente', 'success', 'top');
@@ -286,5 +294,5 @@ export class ContabilidadComponent implements OnInit {
       }
     });
   }
-  
+
 }

@@ -64,17 +64,4 @@ export class ContabilizarPage implements OnInit {
     }
   }
 
-  json(item: any) {
-    const id = item.id;
-    console.log('ID del documento:', id);
-  
-    this.master.get(`compras_reportadas/${id}`).subscribe({
-      next: (res) => {
-        console.log('Datos completos del documento:', res);
-      },
-      error: (err) => {
-        console.error('Error al obtener el documento:', err);
-      }
-    });
-  } 
 }

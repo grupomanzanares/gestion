@@ -17,7 +17,7 @@ export class AutorizadorComponent implements OnInit {
   @Input() documento: any
 
   selectedFileName: string = '';
-  selectedFile: File | null = null;
+  selectedFiles: File [] = [];
   centros: any[] = []
   centrosFiltrados: any[] = [];
   searchCentro: string = '';
@@ -59,19 +59,24 @@ export class AutorizadorComponent implements OnInit {
   }
 
   onFileChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFileName = file.name;
-      this.selectedFile = file;
+    if (event.target.files && event.target.files.length > 0) {
+      const nuevosArchivos: File[] = Array.from(event.target.files);
+  
+      this.selectedFiles = [...this.selectedFiles, ...nuevosArchivos];
+  
+      // Elimina duplicados por nombre (opcional)
+      const unique = new Map(this.selectedFiles.map(file => [file.name, file]));
+      this.selectedFiles = Array.from(unique.values());
+  
+      this.selectedFileName = this.selectedFiles.map(f => f.name).join(', ');
     }
-  }
+  }  
 
   getDatos() {
     if (this.documento) {
       const codigoCentro = this.documento.ccosto;
       const centro = this.centros.find(c => c.codigo === codigoCentro);
-
-      const nombreCentro = centro ? centro.nombre : 'No encontrado';
+      const nombreCentro = centro ? centro.nombre : '';
 
       this.inputs.patchValue({
         emisor: this.documento.emisor,
@@ -84,15 +89,21 @@ export class AutorizadorComponent implements OnInit {
         observacionResponsable: this.documento.observacionResponsable,
         valor: this.documento.valor ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
         urlpdf: this.documento.urlPdf,
-        ccosto: codigoCentro,
+        ccosto: codigoCentro || '',
         ccostoNombre: nombreCentro,
         observacionContable: this.documento.observacionContable,
         observacionTesoreria: this.documento.observacionTesoreria
       });
 
-      this.searchCentro = `${nombreCentro} - ${codigoCentro}`;
+      // Si no hay centro asignado, mostrar solo el placeholder
+      if (centro) {
+        this.searchCentro = `${nombreCentro} - ${codigoCentro}`;
+      } else {
+        this.searchCentro = ''; // esto hará que se vea solo el placeholder
+      }
+
       this.buscandoCentro = false;
-      console.log(this.documento)
+      console.log(this.documento);
     }
   }
 
@@ -186,23 +197,46 @@ export class AutorizadorComponent implements OnInit {
     formData.append('fechaAutorizacion', new Date().toISOString());
     formData.append('estadoId', '3');
 
-    if (this.selectedFile) {
-      formData.append('adjuntos', this.selectedFile, this.selectedFile.name);
+    if (this.selectedFiles.length > 0) {
+      this.selectedFiles.forEach(file => {
+        formData.append('adjuntos', file, file.name);
+      });
+
+      this.masterTable.update('compras_reportadas/autorizar', formData).subscribe({
+        next: (res) => {
+          this.toast.presentToast('checkmark-outline', 'Autorizado con éxito', 'success', 'top');
+          this.modalCtrl.dismiss(true);
+          console.log(res);
+        },
+        error: (error) => {
+          console.error('Error al autorizar:', error);
+        }
+      });
+    } else {
+      this.masterTable.update('compras_reportadas', formData).subscribe({
+        next: (res) => {
+          this.toast.presentToast('checkmark-outline', 'Autorizado con exito', 'success', 'top')
+          this.modalCtrl.dismiss(true)
+          console.log(res)
+        },
+        error: (error) => {
+          console.error('Error al autorizar:', error)
+        }
+      })
     }
 
-    console.log('datos enviados', formData)
+    // Mostrar el contenido de FormData
+    console.log('datos enviados:');
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
-      next: (res) => {
-        this.toast.presentToast('checkmark-outline', 'Autorizado con exito', 'success', 'top')
-        this.modalCtrl.dismiss(true)
-        console.log(res)
-      },
-      error: (error) => {
-        console.error('Error al autorizar:', error)
-      }
-    })
   }
+
+  removeFile(fileName: string) {
+    this.selectedFiles = this.selectedFiles.filter(file => file.name !== fileName);
+    this.selectedFileName = this.selectedFiles.map(f => f.name).join(', ');
+  }  
 
   decline() {
     const formData = new FormData();
@@ -235,7 +269,7 @@ export class AutorizadorComponent implements OnInit {
   searchCentroCosto() {
     this.buscandoCentro = true;
     const search = this.searchCentro.toLowerCase();
-    this.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().includes(search));
+    this.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().includes(search) || centro.codigo.includes(search));
   }
 
   selectCentro(centro: any) {

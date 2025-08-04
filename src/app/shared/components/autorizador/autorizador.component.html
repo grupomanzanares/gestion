@@ -74,13 +74,15 @@
       </ion-col>
 
       <ion-col size="12" *ngIf="mostrarObservacionContable()">
-        <app-custom-input icon="pencil-outline" label="Observación Contable" type="text" autocomplete="observacionContable"
-        [control]="inputs.controls.observacionContable" [readonly]="true"></app-custom-input>
+        <app-custom-input icon="pencil-outline" label="Observación Contable" type="text"
+          autocomplete="observacionContable" [control]="inputs.controls.observacionContable"
+          [readonly]="true"></app-custom-input>
       </ion-col>
 
       <ion-col size="12" *ngIf="mostrarObservacionTesoreria()">
-        <app-custom-input icon="pencil-outline" label="Observación Tesoreria" type="text" autocomplete="observacionTesoreria"
-        [control]="inputs.controls.observacionTesoreria" [readonly]="true"></app-custom-input>
+        <app-custom-input icon="pencil-outline" label="Observación Tesoreria" type="text"
+          autocomplete="observacionTesoreria" [control]="inputs.controls.observacionTesoreria"
+          [readonly]="true"></app-custom-input>
       </ion-col>
 
       <!-- Añadir Archivo -->
@@ -92,18 +94,24 @@
       </ion-col>
 
       <ion-col size="4" *ngIf="adjuntos">
-        <ion-button class="ion-margin-top" expand="block" fill="clear" shape="round" (click)="fileInput.click()">
+        <ion-button fill="outline" expand="block" (click)="fileInput.click()">
           <ion-icon name="document-attach-outline" slot="start"></ion-icon>
-          Selecciona el archivo
+          Añadir archivo
         </ion-button>
-        <input type="file" #fileInput (change)="onFileChange($event)" multiple accept=".pdf, .png, .jpg, .jpeg, .xls, .xlsx" hidden>
+        <input type="file" #fileInput (change)="onFileChange($event)" multiple hidden accept=".pdf, .png, .jpg, .jpeg, .xls, .xlsx">
       </ion-col>
 
-      <ion-col size="4" class="ion-margin-top">
-        <ion-text  *ngIf="adjuntos && selectedFileName">
-          Archivo seleccionado: {{ selectedFileName }}
-        </ion-text>
-      </ion-col>
+      <ion-col size="12" class="ion-margin-top" *ngIf="selectedFiles.length > 0">
+        <ion-list>
+          <ion-item *ngFor="let file of selectedFiles">
+            <ion-icon name="document-outline" slot="start"></ion-icon>
+            <ion-label>{{ file.name }}</ion-label>
+            <ion-button fill="clear" size="small" color="danger" (click)="removeFile(file.name)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-list>
+      </ion-col>      
 
       <!-- Asignar Centro de Costo -->
       <ion-col size="6">
@@ -178,14 +186,14 @@
       </ion-col>
 
       <ion-col size="6">
-        <ion-button class="ion-margin-top" (click)="update()" expand="block" shape="round">
-          autorizar
+        <ion-button class="ion-margin-top" (click)="decline()" expand="block" color="warning" shape="round">
+          rechazar
         </ion-button>
       </ion-col>
 
       <ion-col size="6">
-        <ion-button class="ion-margin-top" (click)="decline()" expand="block" color="warning" shape="round">
-          rechazar
+        <ion-button class="ion-margin-top" (click)="update()" expand="block" shape="round">
+          autorizar
         </ion-button>
       </ion-col>
 

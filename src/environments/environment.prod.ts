@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
   apiUrl: 'https://gmanzanares.com.co/api_manzanares/',  
-  version: '2025.07.09'
+  version: '04/08/2025'
 };

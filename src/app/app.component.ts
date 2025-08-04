@@ -27,6 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
     window.addEventListener('keydown', this.boundKeydown);
     window.addEventListener('click', this.boundClick);
     window.addEventListener('touchstart', this.boundTouchstart);
+    window.addEventListener('beforeunload', this.handleBeforeUnload)
   }
 
   ngOnDestroy() {
@@ -37,6 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
     window.removeEventListener('keydown', this.boundKeydown);
     window.removeEventListener('click', this.boundClick);
     window.removeEventListener('touchstart', this.boundTouchstart);
+    window.removeEventListener('beforeunload', this.handleBeforeUnload)
   }
 
   private resetInactivityTimer() {
@@ -46,4 +48,22 @@ export class AppComponent implements OnInit, OnDestroy {
       this.authService.logout();
     }, this.TIME_LIMIT);
   }
+
+  // Esta función se ejecuta cuando el usuario intenta cerrar la pestaña, recargar o navegar fuera
+  private handleBeforeUnload = (event: BeforeUnloadEvent) => {
+    // Obtenemos las entradas de navegación registradas por el navegador
+    const navEntries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+
+    // Identificamos el tipo de navegación: puede ser 'reload', 'navigate', 'back_forward', etc.
+    // Si no se encuentra, se asume 'navigate' por defecto
+    const navType = navEntries[0]?.type || 'navigate';
+
+    // Si la navegación NO es una recarga ('reload') y la sesión está activa,
+    // entonces ejecutamos el cierre de sesión
+    if (navType !== 'reload' && sessionStorage.getItem('active') === 'true') {
+      this.authService.logout(); // Cierra la sesión del usuario
+    }
+  };
+
+
 }

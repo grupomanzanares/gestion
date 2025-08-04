@@ -49,6 +49,22 @@
         </ion-button>
       </ion-col>
 
+      <ion-col size="12" *ngIf="documento.adjuntos?.length">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Adjuntos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item *ngFor="let adj of documento.adjuntos">
+              <ion-label>{{ adj.nombre }}</ion-label>
+              <ion-button size="small" fill="clear" (click)="abrirAdjunto(adj.url)">
+                Ver
+              </ion-button>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      
 
       <ion-col size="12">
         <app-custom-input icon="pencil-outline" label="Observación" type="text" autocomplete="observacionContable"
@@ -116,7 +132,7 @@
                 <td><strong>{{ suma().costoIVA | currency:'USD':'symbol':'1.0-0' }}</strong></td>
                 <td><strong>{{ suma().costoBruto | currency:'USD':'symbol':'1.0-0' }}</strong></td>
                 <td><strong>{{ suma().total | currency:'USD':'symbol':'1.0-0' }}</strong></td>
-              </tr>              
+              </tr>
             </tbody>
           </table>
           <ion-button (click)="save()" expand="block" shape="round">

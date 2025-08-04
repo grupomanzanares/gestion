@@ -17,9 +17,9 @@
           <th>Valor total</th>
           <th>Fecha estado comercial</th>
           <th>Url PDF</th>
+          <th>Observación Responsable</th>
           <th>CUFE/CUDE</th>
           <th>Centro de costo</th>
-          <th>Observación Responsable</th>
           <th>Observación Contable</th>
           <th>Observación Tesoreria</th>
           <th>Estado</th>
@@ -50,9 +50,9 @@
               Ver PDF
             </a>
           </td>
+          <td>{{ item.observacionResponsable }}</td>
           <td>{{ item.cufe }}</td>
           <td>{{ item.ccosto }} {{ item.ccostoNombre }} </td>
-          <td>{{ item.observacionResponsable }}</td>
           <td>{{ item.observacionContable }}</td>
           <td>{{ item.observacionTesoreria }}</td>
           <td>{{ item.compras_estado?.nombre }}</td>
