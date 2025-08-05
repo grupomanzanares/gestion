@@ -44,7 +44,7 @@ export class ContabilidadComponent implements OnInit {
     urlpdf: new FormControl(null, [Validators.required]),
     ccosto: new FormControl(null, [Validators.required]),
     productoId: new FormControl(null),
-    urladj: new FormControl(null, [Validators.required])
+    urladj: new FormControl(null)
   })
 
   constructor(private master: MasterService, private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService, private loading: LoadingService) { }
