@@ -17,7 +17,7 @@ export class AutorizadorComponent implements OnInit {
   @Input() documento: any
 
   selectedFileName: string = '';
-  selectedFiles: File [] = [];
+  selectedFiles: File[] = [];
   centros: any[] = []
   centrosFiltrados: any[] = [];
   searchCentro: string = '';
@@ -44,7 +44,7 @@ export class AutorizadorComponent implements OnInit {
     observacionResponsable: new FormControl(null, [Validators.required]),
     urlpdf: new FormControl(null, [Validators.required]),
     ccosto: new FormControl(null, [Validators.required]),
-    ccostoNombre: new FormControl(null, [Validators.required]),
+    ccostoNombre: new FormControl(null),
     observacionContable: new FormControl(null),
     observacionTesoreria: new FormControl(null)
   })
@@ -61,16 +61,16 @@ export class AutorizadorComponent implements OnInit {
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length > 0) {
       const nuevosArchivos: File[] = Array.from(event.target.files);
-  
+
       this.selectedFiles = [...this.selectedFiles, ...nuevosArchivos];
-  
+
       // Elimina duplicados por nombre (opcional)
       const unique = new Map(this.selectedFiles.map(file => [file.name, file]));
       this.selectedFiles = Array.from(unique.values());
-  
+
       this.selectedFileName = this.selectedFiles.map(f => f.name).join(', ');
     }
-  }  
+  }
 
   getDatos() {
     if (this.documento) {
@@ -180,6 +180,12 @@ export class AutorizadorComponent implements OnInit {
   update() {
     if (this.inputs.invalid) {
       console.warn('Formulario inválido');
+      Object.keys(this.inputs.controls).forEach(campo => {
+        const control = this.inputs.get(campo);
+        if (control && control.invalid) {
+          console.log(`❌ Campo inválido: ${campo}`, control.errors);
+        }
+      });
       this.toast.presentToast('alert-circle-outline', 'Por favor completa todos los campos correctamente.', 'danger', 'top');
       return;
     }
@@ -236,7 +242,7 @@ export class AutorizadorComponent implements OnInit {
   removeFile(fileName: string) {
     this.selectedFiles = this.selectedFiles.filter(file => file.name !== fileName);
     this.selectedFileName = this.selectedFiles.map(f => f.name).join(', ');
-  }  
+  }
 
   decline() {
     const formData = new FormData();

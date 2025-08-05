@@ -101,8 +101,8 @@
         <input type="file" #fileInput (change)="onFileChange($event)" multiple hidden accept=".pdf, .png, .jpg, .jpeg, .xls, .xlsx">
       </ion-col>
 
-      <ion-col size="12" class="ion-margin-top" *ngIf="selectedFiles.length > 0">
-        <ion-list>
+      <ion-col size="12" class="ion-margin-top" *ngIf="adjuntos">
+        <ion-list *ngIf="selectedFiles.length > 0">
           <ion-item *ngFor="let file of selectedFiles">
             <ion-icon name="document-outline" slot="start"></ion-icon>
             <ion-label>{{ file.name }}</ion-label>
