@@ -11,12 +11,14 @@ export class SideMenuComponent implements OnInit {
 
   menuItems: { label: string; icon: string; route: string }[] = []
   rol: number;
+  id: number
 
   constructor(private storage: StorageService) { }
 
   ngOnInit() {
     const user = this.storage.get('manzanares-user');
     this.rol = user?.rolId;
+    this.id = user?.id
     this.updateMenuItems()
   }
 
@@ -48,17 +50,27 @@ export class SideMenuComponent implements OnInit {
           { label: 'Conciliar', icon: 'sync-outline', route: '/main/conciliacion' },
           { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
           { label: 'Diagrama', icon: 'stats-chart-outline', route: '/main/diagrama' },
-          
+
         ]
         break;
 
       case 3:
-        this.menuItems = [
-          { label: 'Inicio', icon: 'home-outline', route: '/main' },
-          { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
-          { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' },
-          { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
-        ];
+        if (this.id === 4) {
+          this.menuItems = [
+            { label: 'Inicio', icon: 'home-outline', route: '/main' },
+            { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
+            { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' },
+            { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
+            { label: 'Diagrama', icon: 'stats-chart-outline', route: '/main/diagrama' },
+          ];
+        } else {
+          this.menuItems = [
+            { label: 'Inicio', icon: 'home-outline', route: '/main' },
+            { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
+            { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' },
+            { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
+          ];
+        }
         break;
 
       case 4:

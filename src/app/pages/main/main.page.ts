@@ -14,6 +14,7 @@ export class MainPage implements OnInit {
   showMenu: boolean = false
   user: any;
   rol: number = 0;
+  id: number = 0
 
   constructor(private auth: AuthService, private router: Router, private storage: StorageService) { 
     this.router.events.subscribe((event: any) => {
@@ -26,6 +27,7 @@ export class MainPage implements OnInit {
   ngOnInit(){
     this.user = this.storage.get('manzanares-user')
     this.rol = this.user?.rolId
+    this.id = this.user?.id
   }
 
   logout() {
