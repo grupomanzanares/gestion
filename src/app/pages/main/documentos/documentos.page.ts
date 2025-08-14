@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MasterService } from 'src/app/services/gestion/master.service';
+import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { LoadFileComponent } from 'src/app/shared/components/load-file/load-file.component';
@@ -17,7 +18,7 @@ export class DocumentosPage implements OnInit {
 
   documentos: any[] = []
 
-  constructor(private master: MasterService, private _modalService: ModalService, private loading: LoadingService, private http: HttpClient) { }
+  constructor(private master: MasterService, private _modalService: ModalService, private loading: LoadingService, private http: HttpClient, private masterTable: MasterTableService) { }
 
   ngOnInit() {
     this.get()
@@ -83,6 +84,29 @@ export class DocumentosPage implements OnInit {
         next: (resp) => resolve(resp.status === 200),
         error: () => resolve(false)
       })
+    })
+  }
+
+  async update(item: any) {
+    const confirmacion = window.confirm('¿Estas segura de anular este documento?');
+    if (!confirmacion) return;
+
+    const formData = new FormData();
+
+    formData.append('id', item.id)
+    formData.append('userMod', item.user.identificacion);
+    formData.append('estadoId', '8');
+
+    console.log('item', item)
+
+    this.masterTable.update('compras_reportadas', formData).subscribe({
+      next: (res) => {
+        this.get()
+        console.log(res)
+      },
+      error: (error) => {
+        console.error('Error al autorizar:', error)
+      }
     })
   }
 

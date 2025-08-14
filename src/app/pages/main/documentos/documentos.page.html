@@ -8,6 +8,7 @@
       <thead>
         <tr>
           <th>Asignar</th>
+          <th>Anular</th>
           <th>Identificacion del emisor</th>
           <th>Emisor</th>
           <th>Empresa</th>
@@ -30,11 +31,12 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of documentos">
-          <td *ngIf="item.compras_estado?.id === 1">
+          <td>
             <ion-checkbox (click)="modalAsignacion(item)"></ion-checkbox>
           </td>
-          <td *ngIf="item.compras_estado?.id !== 1">
-            <ion-icon name="checkmark-outline" size="large" color="success"></ion-icon>
+
+          <td>
+            <ion-checkbox (click)="update(item)"></ion-checkbox>
           </td>
 
           <td>{{ item.emisor }}</td>

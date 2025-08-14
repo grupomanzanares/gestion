@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MasterService } from 'src/app/services/gestion/master.service';
+import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { ToastService } from 'src/app/services/toast.service';
@@ -16,7 +17,7 @@ export class TesoreriaPage implements OnInit {
 
   documentos: any[] = []
 
-  constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService, private loading: LoadingService) { }
+  constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService, private loading: LoadingService, private masterTable: MasterTableService) { }
 
   ngOnInit() {
     this.get()
@@ -59,4 +60,31 @@ export class TesoreriaPage implements OnInit {
       console.warn('No hay URL de PDF disponible');
     }
   }
+
+  update(item: any) {
+    const formData = new FormData();
+
+    formData.append('observacionTesoreria', 'Ok Recibido');
+
+    formData.append('id', item.id)
+    formData.append('userMod', item.user.identificacion);
+    formData.append('estadoId', '7');
+    formData.append('fechaTesoreria', new Date().toISOString());
+
+    console.log('item', item)
+    
+    this.masterTable.update('compras_reportadas', formData).subscribe({
+      next: (res) => {
+        this.toast.presentToast('checkmark-outline', 'Aceptado en tesoreria con exito', 'success', 'top')
+        this.get()
+        console.log(res)
+      },
+      error: (error) => {
+        console.error('Error al autorizar:', error)
+      }
+    })
+    
+    console.log('datos enviados', formData)
+  }
+
 }

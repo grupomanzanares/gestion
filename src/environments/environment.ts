@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'https://gmanzanares.com.co/api_manzanares/' ,
-  version: '05/08/2025'  
+  version: '14/08/2025'  
 };
 
 /*
