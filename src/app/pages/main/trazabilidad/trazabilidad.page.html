@@ -40,55 +40,56 @@
           </ion-item>
         </ion-col>
 
-      <!-- Empresa -->
-      <ion-col size="6">
-        <ion-item>
-          <ion-label position="stacked">Empresa</ion-label>
-          <ion-select interface="popover" [(ngModel)]="filterEmpresa" placeholder="Selecciona la empresa">
-            <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.nombre">
-            {{ empresa.nombre }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
+        <!-- Empresa -->
+        <ion-col size="6">
+          <ion-item>
+            <ion-label position="stacked">Empresa</ion-label>
+            <ion-select interface="popover" [(ngModel)]="filterEmpresa" placeholder="Selecciona la empresa">
+              <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.nombre">
+                {{ empresa.nombre }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
 
-      <!-- Responsable -->
-      <ion-col size="6">
-        <ion-item>
-          <ion-label position="stacked">Responsable</ion-label>
-          <ion-select interface="popover" [(ngModel)]="filterResponsable" placeholder="Selecciona responsable" [disabled]="rol === 3">
-            <ion-select-option *ngFor="let responsable of responsables" [value]="responsable.name">
-              {{ responsable.name }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
+        <!-- Responsable -->
+        <ion-col size="6">
+          <ion-item>
+            <ion-label position="stacked">Responsable</ion-label>
+            <ion-select interface="popover" [(ngModel)]="filterResponsable" placeholder="Selecciona responsable"
+              [disabled]="rol === 3">
+              <ion-select-option *ngFor="let responsable of responsables" [value]="responsable.name">
+                {{ responsable.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
 
-      <!-- Tipo de Compra -->
-      <ion-col size="6">
-        <ion-item>
-          <ion-label position="stacked">Tipo de Compra</ion-label>
-          <ion-select interface="popover" [(ngModel)]="filterTipoCompra" placeholder="Selecciona tipo de compra">
-            <ion-select-option *ngFor="let tipo of tpcompras" [value]="tipo.nombre">
-              {{ tipo.nombre }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
+        <!-- Tipo de Compra -->
+        <ion-col size="6">
+          <ion-item>
+            <ion-label position="stacked">Tipo de Compra</ion-label>
+            <ion-select interface="popover" [(ngModel)]="filterTipoCompra" placeholder="Selecciona tipo de compra">
+              <ion-select-option *ngFor="let tipo of tpcompras" [value]="tipo.nombre">
+                {{ tipo.nombre }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
 
-      <!-- Estado -->
-      <ion-col size="6">
-        <ion-item>
-          <ion-label position="stacked">Estado</ion-label>
-          <ion-select interface="popover" [(ngModel)]="filterEstado" placeholder="Selecciona estado">
-            <ion-select-option *ngFor="let estado of estados" [value]="estado.nombre">
-              {{ estado.nombre }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
+        <!-- Estado -->
+        <ion-col size="6">
+          <ion-item>
+            <ion-label position="stacked">Estado</ion-label>
+            <ion-select interface="popover" [(ngModel)]="filterEstado" placeholder="Selecciona estado">
+              <ion-select-option *ngFor="let estado of estados" [value]="estado.nombre">
+                {{ estado.nombre }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
 
-      <!-- Botones -->
+        <!-- Botones -->
         <ion-col size="6">
           <ion-button expand="block" color="primary" (click)="applyFilters()">Aplicar Filtros</ion-button>
         </ion-col>
@@ -105,14 +106,22 @@
           </ion-button>
         </ion-col>
       </ion-row>
-      
+
     </ion-grid>
   </div>
+
+  <ion-fab *ngIf="rol === 1 || rol === 2" slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="success" [disabled]="selectedDocs.length === 0" (click)="exportSelectedToExcel()">
+      <ion-icon name="download-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
   <div class="table-wrapper">
     <table class="sync-table">
       <thead>
         <tr>
+          <td>Impresiones</td>
+          <td>Impreso</td>
           <th>Identificacion del emisor</th>
           <th>Emisor</th>
           <th>Empresa</th>
@@ -139,6 +148,11 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of documentos">
+          <td *ngIf="rol === 1 || rol === 2">
+            <ion-checkbox [ngModel]="item.selected ?? item.impreso" (ngModelChange)="item.selected = $event; onSelectDoc(item)">
+            </ion-checkbox>
+          </td>
+          <td *ngIf="rol === 1 || rol === 2">{{ item.impreso }}</td>
           <td>{{ item.emisor }}</td>
           <td>{{ item.nombreEmisor }}</td>
           <td>{{ item.empresaInfo?.nombre }}</td>
@@ -151,7 +165,7 @@
             <a *ngIf="item.cufe" (click)="dian(item)" style="color: blue; cursor: pointer;">
               {{ item.cufe }}
             </a>
-          </td>          
+          </td>
           <td>
             <a *ngIf="item.urlPdf" (click)="union(item)" style="color: blue; cursor: pointer;">
               Ver PDF

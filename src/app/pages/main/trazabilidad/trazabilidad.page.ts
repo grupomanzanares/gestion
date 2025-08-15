@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { LoadingService } from 'src/app/services/loading.service';
 import { StorageService } from 'src/app/services/storage.service';
+import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 
 @Component({
   selector: 'app-trazabilidad',
@@ -27,21 +28,22 @@ export class TrazabilidadPage implements OnInit {
   empresas: any[] = []
   user: any
   rol: number = 0;
+  selectedDocs: any[] = [];
+  today = new Date().toISOString().slice(0, 10);
 
   // Filtros
   filterStartDate: string = '';
   filterEndDate: string = '';
-  // filterCentroCosto: string = '';
   filterResponsable: string = '';
   filterTipoCompra: string = '';
   filterEstado: string = '';
   filterEmpresa: string = ''
 
 
-  constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService, private loading: LoadingService, private storage: StorageService) { }
+  constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService, private loading: LoadingService, private storage: StorageService, private masterTable: MasterTableService) { }
 
   ngOnInit() {
-    this.resetFilters()
+    // this.resetFilters()
     this.get()
     this.getCentro()
     this.getCompras()
@@ -54,6 +56,10 @@ export class TrazabilidadPage implements OnInit {
     // this.documentos.fecha.setValue(today)
     this.filterStartDate = firstDay;
     this.filterEndDate = today;
+
+    this.user = this.storage.get('manzanares-user')
+    this.rol = this.user?.rolId
+    console.log(this.rol)
   }
 
   onShowForm() {
@@ -78,12 +84,12 @@ export class TrazabilidadPage implements OnInit {
       next: (data) => {
         if (this.user.rolId === 3) {
           const filtrados = data.filter((item: any) => item.responsableId === this.user.id)
-          const ordenados = filtrados.sort((a,b) => b.id - a.id)
+          const ordenados = filtrados.sort((a, b) => b.id - a.id)
           this.documentosOriginales = ordenados;
           this.documentos = [...ordenados];
           console.log(this.documentos)
         } else {
-          const ordenados = data.sort((a,b) => b.id - a.id)
+          const ordenados = data.sort((a, b) => b.id - a.id)
           this.documentosOriginales = ordenados;
           this.documentos = [...ordenados];
           console.log(this.documentos)
@@ -135,7 +141,7 @@ export class TrazabilidadPage implements OnInit {
   dian(item: any) {
     const url = 'https://catalogo-vpfe.dian.gov.co/User/SearchDocument?DocumentKey='
     const cufe = item.cufe
-    const link = url+cufe
+    const link = url + cufe
     window.open(link, '_blank')
   }
 
@@ -239,7 +245,6 @@ export class TrazabilidadPage implements OnInit {
   }
 
   resetFilters() {
-    const today = new Date().toISOString().slice(0, 10);
     this.filterStartDate = '';
     this.filterEndDate = '';
     this.filterEmpresa = '';
@@ -300,6 +305,74 @@ export class TrazabilidadPage implements OnInit {
     saveAs(blob, 'trazabilidad.xlsx');
   }
 
+  private updateImpresos(): Promise<any[]> {
+    const peticiones = this.selectedDocs.map(item => {
+      const formData = new FormData();
+      formData.append('id', item.id);
+      formData.append('userMod', item.user?.identificacion);
+      formData.append('fechaImpresion', this.today);
+      formData.append('impreso', '1');
+      // Retorna la promesa de la actualización
+      return this.masterTable.update('compras_reportadas', formData).toPromise();
+    });
+    return Promise.all(peticiones);
+  }
+
+  async exportSelectedToExcel() {
+    if (this.selectedDocs.length === 0) {
+      this.toast.presentToast('alert-circle-outline', 'No hay documentos seleccionados', 'warning', 'top');
+      return;
+    }
+
+    await this.loading.showLoading('Actualizando documentos y generando Excel...');
+
+    try {
+      await this.updateImpresos();
+      this.get();
+      this.toast.presentToast('checkmark-circle-outline', 'Documentos actualizados y Excel generado', 'success', 'top');
+    } catch (err) {
+      this.toast.presentToast('alert-circle-outline', 'Error actualizando documentos', 'danger', 'top');
+      return;
+    }
+
+    this.loading.hideLoading();
+
+    const exportData = this.selectedDocs.map(item => ({
+      Emisor: item.emisor,
+      NombreEmisor: item.nombreEmisor,
+      Empresa: item.empresaInfo?.nombre || '',
+      TipoDocumento: item.tipo,
+      Numero: item.numero,
+      TipoCompra: item.compras_tipo?.nombre || '',
+      Valor: item.valor,
+      Fecha: item.fecha,
+      CUFE_CUDE: item.cufe,
+      CentroCosto: item.ccostoNombre || '',
+      ObservacionResponsable: item.observacionResponsable,
+      ObservacionContable: item.observacionContable,
+      Estado: item.compras_estado?.nombre || '',
+      Conciliado: item.conciliado,
+      Responsable: item.responsable?.name || '',
+      FechaAsignacion: item.fechaAsignacion || '',
+      FechaAutorizacion: item.fechaAutorizacion || '',
+      FechaContabilizacion: item.fechaContabilizacion || '',
+      FechaTesoreria: item.fechaTesoreria || ''
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const colWidths = this.calculateColumnWidths(exportData);
+    worksheet['!cols'] = colWidths;
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Seleccionados');
+
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(blob, `Impresos ${this.today}.xlsx`);
+
+
+  }
+
   private calculateColumnWidths(data: any[]): { wpx: number }[] {
     const keys = Object.keys(data[0]);
     return keys.map((key) => {
@@ -311,4 +384,13 @@ export class TrazabilidadPage implements OnInit {
     });
   }
 
+  onSelectDoc(item: any) {
+    if (item.selected) {
+      if (!this.selectedDocs.includes(item)) {
+        this.selectedDocs.push(item);
+      }
+    } else {
+      this.selectedDocs = this.selectedDocs.filter(doc => doc !== item);
+    }
+  }
 }

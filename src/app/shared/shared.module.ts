@@ -23,13 +23,14 @@ import { ConciliacionComponent } from './components/conciliacion/conciliacion.co
 import { ConciRecepComponent } from './components/conci-recep/conci-recep.component';
 import { CruzadosComponent } from './components/cruzados/cruzados.component';
 import { FinalizadasComponent } from './components/finalizadas/finalizadas.component';
+import { AnulacionComponent } from './components/anulacion/anulacion.component';
 
 /**  Componentes */
 
 @NgModule({
-  declarations: [ HeaderComponent, CustomInputComponent, LogoComponent, SideMenuComponent, LoadFileComponent, RecepcionComponent, AutorizadorComponent, ContabilidadComponent, TesoreriaComponent, ConciliacionComponent, ConciRecepComponent, CruzadosComponent, FinalizadasComponent ],
+  declarations: [ HeaderComponent, CustomInputComponent, LogoComponent, SideMenuComponent, LoadFileComponent, RecepcionComponent, AutorizadorComponent, ContabilidadComponent, TesoreriaComponent, ConciliacionComponent, ConciRecepComponent, CruzadosComponent, FinalizadasComponent, AnulacionComponent ],
   imports: [ CommonModule, IonicModule, ReactiveFormsModule, FormsModule, RouterModule ],
-  exports:[ReactiveFormsModule, HeaderComponent, CustomInputComponent, LogoComponent , SideMenuComponent, LoadFileComponent, RecepcionComponent, AutorizadorComponent, ContabilidadComponent, TesoreriaComponent, ConciliacionComponent, ConciRecepComponent, CruzadosComponent, FinalizadasComponent ]
+  exports:[ReactiveFormsModule, HeaderComponent, CustomInputComponent, LogoComponent, SideMenuComponent, LoadFileComponent, RecepcionComponent, AutorizadorComponent, ContabilidadComponent, TesoreriaComponent, ConciliacionComponent, ConciRecepComponent, CruzadosComponent, FinalizadasComponent, AnulacionComponent ]
 })
 
 export class SharedModule { }

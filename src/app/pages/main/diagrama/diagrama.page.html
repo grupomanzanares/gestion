@@ -4,6 +4,7 @@
 <ion-content id="main-content" class="ion-padding">
   <ion-grid>
     <ion-row>
+
       <ion-col size="12" sizeMd="4">
         <ion-grid>
           <ion-row>
@@ -15,7 +16,7 @@
             </ion-col>
           </ion-row>
         </ion-grid>
-      </ion-col>      
+      </ion-col>
 
       <ion-col size="8">
         <ion-card>
@@ -23,7 +24,7 @@
             <ion-card-title>Grafico de estados</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <div style="height: 300px;">
+            <div style="height: 400px;">
               <canvas id="barras"></canvas>
             </div>
           </ion-card-content>
@@ -31,7 +32,7 @@
       </ion-col>
 
       <ion-col size="7">
-        <ion-card >
+        <ion-card>
           <ion-card-header>
             <ion-card-title>Facturas por persona</ion-card-title>
           </ion-card-header>
@@ -42,6 +43,7 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
+
       <ion-col size="5">
         <ion-card *ngIf="responsableSeleccionado">
           <ion-card-header>
@@ -69,17 +71,107 @@
                     </ion-card-header>
                     <ion-card-content>
                       <p style="margin: 0;">📅 Fecha asignación:</p>
-                      <p style="font-weight: 500; margin-top: 2px;">{{ diasFactura.fecha }}</p>
-                      <p style="margin-top: 8px;">🕒 A estado: <strong>{{ diasFactura.dias }}</strong> días en espera</p>
+                      <p style="font-weight: 500; margin-top: 2px;">{{ diasFactura?.fecha }}</p>
+                      <p style="margin-top: 8px;">🕒 A estado: <strong>{{ diasFactura?.dias }}</strong> días en espera
+                      </p>
                     </ion-card-content>
                   </ion-card>
                 </ion-col>
-                
+
               </ion-row>
             </ion-grid>
           </ion-card-content>
         </ion-card>
       </ion-col>
+
+      <ion-col size="6">
+        <ion-item>
+          <ion-label position="stacked">Fecha Inicio</ion-label>
+          <ion-datetime-button datetime="datetime-start" class="ion-margin"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime id="datetime-start" presentation="date" [(ngModel)]="filterStartDate"
+                (ionChange)="onDateChange('start', $event.detail.value)"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+      </ion-col>
+      <!-- Fecha Fin -->
+      <ion-col size="6">
+        <ion-item>
+          <ion-label position="stacked">Fecha Fin</ion-label>
+          <ion-datetime-button datetime="datetime-end" class="ion-margin"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime id="datetime-end" presentation="date" [(ngModel)]="filterEndDate"
+                (ionChange)="onDateChange('end', $event.detail.value)"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+      </ion-col>
+
+      <ion-col size="4">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-sm="12" size-md="12">
+              <ion-card color="light" class="ion-text-center resumen-card">
+                <ion-card-subtitle>Asignación → Autorización</ion-card-subtitle>
+                <ion-card-title>
+                  {{ tiempos?.data?.general?.tiempoPromedioAsignacionAutorizacion || '0' }} días
+                </ion-card-title>
+              </ion-card>
+            </ion-col>
+            <ion-col size="12" size-sm="12" size-md="12">
+              <ion-card color="light" class="ion-text-center resumen-card">
+                <ion-card-subtitle>Autorización → Contabilización</ion-card-subtitle>
+                <ion-card-title>
+                  {{ tiempos?.data?.general?.tiempoPromedioAutorizacionContabilizacion || '0' }} días
+                </ion-card-title>
+              </ion-card>
+            </ion-col>
+            <ion-col size="12" size-sm="12" size-md="12">
+              <ion-card color="light" class="ion-text-center resumen-card">
+                <ion-card-subtitle>Contabilización → Tesorería</ion-card-subtitle>
+                <ion-card-title>
+                  {{ tiempos?.data?.general?.tiempoPromedioContabilizacionTesoreria || '0' }} días
+                </ion-card-title>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+      <ion-col size="8">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Grafico de Tiempos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <!-- Gráfico a la derecha -->
+                <div style="height: 350px; width: 100%;">
+                  <canvas #barrasTiempos id="barrasTiempos"></canvas>
+                </div>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Asignacion → Autorizacion por responsable</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div style="width: 100%; height: 400px;">
+              <canvas id="autContResp"></canvas>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+
     </ion-row>
   </ion-grid>
 </ion-content>

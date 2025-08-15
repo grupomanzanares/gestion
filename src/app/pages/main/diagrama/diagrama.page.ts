@@ -10,140 +10,161 @@ import { MasterService } from 'src/app/services/gestion/master.service';
 })
 export class DiagramaPage implements OnInit {
 
-  documentos: any[] = []
-  chart: any;
-  recepcion: number = 0
-  autorizados: number = 0
-  contabilizados: number = 0
-  cruzar: number = 0
-  tesoreria: number = 0
-  caja: number = 0
-  fin: number = 0
-  total: number = 0
-  resumen: any[] = []
+  documentos: any[] = [];
+  tiempos: any = {};
+  chartBarras: Chart | null = null;
+  chartResponsable: Chart | null = null;
+  chartTiemposPromedio: Chart | null = null;
+  chartAutContResp: Chart | null = null;
+
+  // <<< NUEVO: estado de fechas (lo llena ion-datetime)
+  filterStartDate: string = '';
+  filterEndDate: string = '';
+
+  resumen: any[] = [];
   resumenResponsable: { estado: string, cantidad: number }[] = [];
   responsableSeleccionado: string = '';
   diasFactura: { dias: number, fecha: string } | null = null;
 
+  // Configuración de estados
+  readonly estadosConfig = [
+    { label: 'Recepción', id: 1 },
+    { label: 'Autorizadas', id: 2 },
+    { label: 'Contabilidad', id: 3 },
+    { label: 'Cruzar', id: 4 },
+    { label: 'Tesorería', id: 5 },
+    { label: 'Caja Menor', id: 6 },
+    { label: 'Finalizadas', id: 7 },
+    { label: 'Anuladas', id: 8 }
+  ];
+
+  readonly tiemposPromedioLabels = [
+    'Asignación → Autorización',
+    'Autorización → Contabilización',
+    'Contabilización → Tesorería'
+  ];
+
   constructor(private master: MasterService) { }
 
+  /**
+   * Inicializa fechas por defecto y carga datos iniciales.
+   */
   ngOnInit() {
-    this.get()
+    // <<< NUEVO: fechas por defecto (1er día del mes → hoy)
+    this.setDefaultDates();
+
+    this.get();
+    // <<< NUEVO: carga inicial de tiempos con el rango por defecto
+    this.getTiempos(
+      this.toISODate(this.filterStartDate),
+      this.toISODate(this.filterEndDate)
+    );
   }
-  
+
+  // Utilidad para convertir a número
+  private toNum(v: any): number {
+    if (v == null) return 0;
+    if (typeof v === 'string') {
+      const n = parseFloat(v.replace(',', '.').trim());
+      return Number.isFinite(n) ? n : 0;
+    }
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  // <<< NUEVO: setear fechas por defecto
+  private setDefaultDates(): void {
+    const now = new Date();
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    this.filterStartDate = first.toISOString();
+    this.filterEndDate = now.toISOString();
+  }
+
+  // <<< NUEVO: normaliza a YYYY-MM-DD sin desfasar por zona horaria
+  private toISODate(input: string | Date): string {
+    const d = new Date(input);
+    const tz = d.getTimezoneOffset() * 60000;
+    return new Date(d.getTime() - tz).toISOString().slice(0, 10);
+  }
+
   get() {
     this.master.get('compras_reportadas').subscribe({
       next: (data) => {
-        this.documentos = data
-        console.log(this.documentos)
-        this.totales()
-        this.graficoBarras()
-        this.grficoHorizontal()
+        this.documentos = data;
+        this.totales();
+        this.graficoBarras();
+        this.graficoHorizontal();
       }
-    })
+    });
+  }
+
+  // <<< CAMBIO: acepta fechas opcionales y usa las seleccionadas si están
+  getTiempos(fechaInicio?: string, fechaFin?: string) {
+    const fi = fechaInicio || this.toISODate(this.filterStartDate);
+    const ff = fechaFin || this.toISODate(this.filterEndDate);
+
+    this.master.get(`compras_reportadas/mediciones-tiempo?tipo=porUsuario&fechaInicio=${fi}&fechaFin=${ff}`).subscribe({
+      next: (data) => {
+        this.tiempos = data;
+        this.graficoTiemposPromedio(this.tiempos);
+
+        const porResp = this.tiempos?.data?.porResponsable ?? this.tiempos?.porResponsable;
+        this.graficoAutContPorResponsable(porResp);
+      },
+      error: (err) => {
+        console.error('Error al obtener los tiempos:', err);
+      }
+    });
   }
 
   totales() {
-    const recepcion = this.documentos.filter(item => item.compras_estado?.id === 1).length
-    const autorizacion = this.documentos.filter(item => item.compras_estado?.id === 2).length
-    const contabilidad = this.documentos.filter(item => item.compras_estado?.id === 3).length
-    const cruzados = this.documentos.filter(item => item.compras_estado?.id === 4).length
-    const tesoreria = this.documentos.filter(item => item.compras_estado?.id === 5).length
-    const caja = this.documentos.filter(item => item.compras_estado?.id === 6).length
-    const finalizado = this.documentos.filter(item => item.compras_estado?.id === 7).length
-    const total = this.documentos.length
-    this.recepcion = recepcion
-    this.autorizados = autorizacion
-    this.contabilizados = contabilidad
-    this.cruzar = cruzados
-    this.tesoreria = tesoreria
-    this.caja = caja
-    this.fin = finalizado
-    this.total = total
-
-    this.resumen = [
-      { label: 'Total', valor: this.total },
-      { label: 'Recepción', valor: this.recepcion },
-      { label: 'Autorizadas', valor: this.autorizados },
-      { label: 'Contabilidad', valor: this.contabilizados },
-      { label: 'Cruzar', valor: this.cruzar },
-      { label: 'Tesorería', valor: this.tesoreria },
-      { label: 'Caja Menor', valor: this.caja },
-      { label: 'Finalizadas', valor: this.fin }
-    ];
-
+    this.resumen = this.estadosConfig.map(e => ({
+      label: e.label,
+      valor: this.documentos.filter(item => item.compras_estado?.id === e.id).length
+    }));
+    this.resumen.unshift({ label: 'Total', valor: this.documentos.length });
   }
 
   graficoBarras() {
-    const estados = [
-      { label: 'Recepción', id: 1 },
-      { label: 'Autorizador', id: 2 },
-      { label: 'Contabilidad', id: 3 },
-      { label: 'Cruzado', id: 4 },
-      { label: 'Tesorería', id: 5 },
-      { label: 'Caja Menor', id: 6 },
-      { label: 'Finalizado', id: 7 }
-    ];
+    if (this.chartBarras) this.chartBarras.destroy();
 
-    const colores = ['#226C3B', '#2D8F4E', '#38B261', '#50C878', '#73D393', '#96DEAE', '#B9E9C9'];
+    const colores = ['#226C3B', '#2D8F4E', '#38B261', '#50C878', '#73D393', '#96DEAE', '#B9E9C9', '#ECF87F'];
+    const valores = this.resumen.slice(1).map(d => d.valor); // omite 'Total'
+    const etiquetas = this.resumen.slice(1).map(d => d.label);
 
-    const filtro = estados.map(e => ({
-      label: e.label,
-      value: this.documentos.filter(item => item.compras_estado?.id === e.id).length
-    }))
-
-    const ordenar = [...filtro].sort((a, b) => b.value - a.value)
-    const asignar: string[] = []
-
-    ordenar.forEach((item, index) => {
-      const original = filtro.findIndex(d => d.label === item.label)
-      asignar[original] = colores[index]
-    })
-
-    const valores = filtro.map(d => d.value)
-    const etiquetas = filtro.map(d => d.label)
-
-    this.chart = new Chart('barras', {
+    this.chartBarras = new Chart('barras', {
       type: 'bar',
       data: {
         labels: etiquetas,
         datasets: [{
           label: 'Cantidad',
           data: valores,
-          backgroundColor: asignar
+          backgroundColor: colores
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            mode: 'index',
-            intersect: false
-          }
+          legend: { display: false },
+          tooltip: { mode: 'index', intersect: false }
         },
         scales: {
-          x: {
-            beginAtZero: true
-          },
-          y: {
-            beginAtZero: true
-          }
+          x: { beginAtZero: true },
+          y: { beginAtZero: true }
         }
       }
-    })
+    });
   }
 
-  grficoHorizontal() {
-    const conteo: { [key: string]: number } = {}
+  graficoHorizontal() {
+    if (this.chartResponsable) this.chartResponsable.destroy();
 
+    const conteo: { [key: string]: number } = {};
     this.documentos.forEach(doc => {
-      const nombre = doc.responsable?.name || 'Recepcion'
-      conteo[nombre] = (conteo[nombre] || 0) + 1
-    })
+      const nombre = doc.responsable?.name || 'Recepcion';
+      conteo[nombre] = (conteo[nombre] || 0) + 1;
+    });
 
     const labels = Object.keys(conteo);
     const data = Object.values(conteo);
@@ -153,12 +174,10 @@ export class DiagramaPage implements OnInit {
       return `rgba(${base}, ${180 - i * 20}, ${150 + i * 10}, 0.7)`;
     });
 
-    const canvas = document.getElementById('responsable') as HTMLCanvasElement
-    if (canvas) {
-      canvas.height = labels.length * 25
-    }
+    const canvas = document.getElementById('responsable') as HTMLCanvasElement;
+    if (canvas) canvas.height = labels.length * 25;
 
-    this.chart = new Chart('responsable', {
+    this.chartResponsable = new Chart('responsable', {
       type: 'bar',
       data: {
         labels: labels,
@@ -181,54 +200,51 @@ export class DiagramaPage implements OnInit {
           }
         },
         scales: {
-          x: {
-            beginAtZero: true
-          }
+          x: { beginAtZero: true }
         },
         onClick: (evt, elements) => {
           if (elements.length > 0) {
-            const index = elements[0].index
-            const responsable = labels[index]
-            this.resumenRespo(responsable)
+            const index = elements[0].index;
+            const responsable = labels[index];
+            this.resumenRespo(responsable);
           }
         }
       }
-    })
+    });
   }
 
   resumenRespo(responsable: string) {
-    this.responsableSeleccionado = responsable
+    this.responsableSeleccionado = responsable;
 
     const docsResponsable = this.documentos.filter(doc => {
-      const nombre = doc.responsable?.name || ''
-      return nombre === responsable
-    })
+      const nombre = doc.responsable?.name || '';
+      return nombre === responsable;
+    });
 
-    const resumenMap: { [estado: string]: number} = {}
-
+    const resumenMap: { [estado: string]: number } = {};
     docsResponsable.forEach(doc => {
-      const estado = doc.compras_estado?.nombre || ''
-      resumenMap[estado] = (resumenMap[estado] || 0) + 1
-    })
+      const estado = doc.compras_estado?.nombre || '';
+      resumenMap[estado] = (resumenMap[estado] || 0) + 1;
+    });
 
     this.resumenResponsable = Object.entries(resumenMap).map(([estado, cantidad]) => ({
       estado,
       cantidad
-    }))
+    }));
     this.diasFactura = this.facturaAntigua(responsable);
   }
 
   facturaAntigua(responsable: string): { fecha: string, dias: number } | null {
     const docsRespon = this.documentos.filter(doc => {
-      const nombre = doc.responsable?.name || ''
-      return nombre === responsable && doc.compras_estado?.id === 2 && doc.fechaAsignacion
-    })
+      const nombre = doc.responsable?.name || '';
+      return nombre === responsable && doc.compras_estado?.id === 2 && doc.fechaAsignacion;
+    });
 
-    if ( docsRespon.length === 0) return null;
+    if (docsRespon.length === 0) return null;
 
     const facturaMasAntigua = docsRespon.reduce((prev, curr) => {
-      return new Date(prev.fechaAsignacion) < new Date(curr.fechaAsignacion) ? prev : curr
-    })
+      return new Date(prev.fechaAsignacion) < new Date(curr.fechaAsignacion) ? prev : curr;
+    });
 
     const fechaAntigua = new Date(facturaMasAntigua.fechaAsignacion);
     const hoy = new Date();
@@ -238,12 +254,145 @@ export class DiagramaPage implements OnInit {
 
     const fecha = fechaAntigua.toLocaleDateString('es-CO', {
       year: 'numeric', month: 'long', day: 'numeric'
-    })
+    });
 
-    return {
-      fecha: fecha,
-      dias: diasPasados
-    };
+    return { fecha, dias: diasPasados };
   }
 
+  graficoTiemposPromedio(tiempos: any) {
+    if (this.chartTiemposPromedio) this.chartTiemposPromedio.destroy();
+
+    const general = tiempos?.data?.general ?? {};
+    const data = [
+      this.toNum(general.tiempoPromedioAsignacionAutorizacion),
+      this.toNum(general.tiempoPromedioAutorizacionContabilizacion),
+      this.toNum(general.tiempoPromedioContabilizacionTesoreria)
+    ];
+    const backgroundColors = ['#4e73df', '#1cc88a', '#36b9cc'];
+
+    const canvas = document.getElementById('barrasTiempos') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    this.chartTiemposPromedio = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: this.tiemposPromedioLabels,
+        datasets: [{
+          label: 'Tiempo promedio (días)',
+          data: data,
+          backgroundColor: backgroundColors
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.label}: ${context.raw} días`
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  getTiemposPromedioArray(): { label: string, valor: number | string }[] {
+    const general = this.tiempos?.data?.general ?? {};
+    return [
+      {
+        label: this.tiemposPromedioLabels[0],
+        valor: general.tiempoPromedioAsignacionAutorizacion ?? '0'
+      },
+      {
+        label: this.tiemposPromedioLabels[1],
+        valor: general.tiempoPromedioAutorizacionContabilizacion ?? '0'
+      },
+      {
+        label: this.tiemposPromedioLabels[2],
+        valor: general.tiempoPromedioContabilizacionTesoreria ?? '0'
+      }
+    ];
+  }
+
+  graficoAutContPorResponsable(porResponsable: any) {
+    if (this.chartAutContResp) this.chartAutContResp.destroy();
+
+    let arr: any[] = [];
+    if (Array.isArray(porResponsable)) {
+      arr = porResponsable;
+    } else if (porResponsable && typeof porResponsable === 'object') {
+      arr = Object.values(porResponsable);
+    }
+
+    // <<< FIX: usar tiempoPromedioAutorizacionContabilizacion (no Asignación)
+    const dataMapped = arr.map((r: any) => ({
+      nombre: r?.nombreResponsable || r?.emailResponsable || `ID ${r?.responsableId ?? ''}`,
+      valor: this.toNum(r?.tiempoPromedioAutorizacionContabilizacion),
+    })).sort((a, b) => b.valor - a.valor);
+
+    const labels = dataMapped.map(x => x.nombre);
+    const data = dataMapped.map(x => x.valor);
+
+    const palette = [
+      '#1241A1', '#1454AE', '#1768BB', '#1A7DC9', '#1C94D6', '#22ACE0', 
+      '#31BFE1', '#40CFE2', '#4EDEE3', '#5DE5DF', '#6BE6D8', '#7AE8D2', 
+      '#88E9CF', '#96EBCD', '#A4EDCE', '#B1F0D0', '#BFF2D4', '#CDF4DA',
+    ];
+    const backgroundColors = labels.map((_, i) => palette[i % palette.length]);
+
+    const canvas = document.getElementById('autContResp') as HTMLCanvasElement | null;
+    if (canvas) canvas.height = Math.max(240, labels.length * 28);
+
+    this.chartAutContResp = new Chart('autContResp', {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Promedio Autorización → Contabilización (días)',
+          data,
+          backgroundColor: backgroundColors
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.label}: ${ctx.raw} días`
+            }
+          }
+        },
+        scales: {
+          x: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // <<< CAMBIO: al cambiar fecha, guarda y llama a la API
+  onDateChange(type: 'form' | 'start' | 'end', value: string | string[]) {
+    const selected = Array.isArray(value) ? value[0] : value;
+    const selectedDate = selected?.split('T')[0] || '';
+
+    if (type === 'start') this.filterStartDate = selectedDate;
+    else this.filterEndDate = selectedDate;
+
+    // si ambas fechas están listas, llama a la API y redibuja
+    if (this.filterStartDate && this.filterEndDate) {
+      const start = this.toISODate(this.filterStartDate);
+      const end = this.toISODate(this.filterEndDate);
+      // Corrige si el usuario puso al revés
+      const [fi, ff] = start <= end ? [start, end] : [end, start];
+      this.getTiempos(fi, ff);
+      // Si también quieres filtrar los documentos: this.get(fi, ff);
+    }
+  }
 }

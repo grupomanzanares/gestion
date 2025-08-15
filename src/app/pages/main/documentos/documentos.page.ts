@@ -4,6 +4,7 @@ import { MasterService } from 'src/app/services/gestion/master.service';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { ModalService } from 'src/app/services/modal.service';
+import { AnulacionComponent } from 'src/app/shared/components/anulacion/anulacion.component';
 import { LoadFileComponent } from 'src/app/shared/components/load-file/load-file.component';
 import { RecepcionComponent } from 'src/app/shared/components/recepcion/recepcion.component';
 import { environment } from 'src/environments/environment.prod';
@@ -62,6 +63,20 @@ export class DocumentosPage implements OnInit {
       });
       if (success) this.get()
     } catch (error) {
+      console.error('Error al abrir el modal:', error);
+    }
+  }
+
+  async modalAnulacion(item: any) {
+    try {
+      let success = await this._modalService.openModal({
+        component: AnulacionComponent,
+        componentProps: { documento: item },
+        cssClass: 'modal'
+      });
+      if (success) this.get()
+    }
+    catch (error) {
       console.error('Error al abrir el modal:', error);
     }
   }

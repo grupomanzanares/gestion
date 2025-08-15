@@ -31,7 +31,10 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+              "src/global.scss",
+              "src/theme/variables.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -111,7 +114,10 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+              "src/global.scss",
+              "src/theme/variables.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -141,10 +147,18 @@
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {
-      "styleext": "scss"
+      "style": "scss" 
     },
     "@ionic/angular-toolkit:page": {
-      "styleext": "scss"
+      "style": "scss" 
+    },
+    "@schematics/angular:component": {
+      "standalone": false,
+      "skipTests": true,
+      "style": "scss"
+    },
+    "@schematics/angular:directive": {
+      "standalone": false
     }
   }
 }

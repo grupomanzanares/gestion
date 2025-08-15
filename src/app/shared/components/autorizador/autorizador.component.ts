@@ -22,6 +22,7 @@ export class AutorizadorComponent implements OnInit {
   centrosFiltrados: any[] = [];
   searchCentro: string = '';
   documentos: any[] = [];
+  usados: any[] = [];
   centrosPorItem: { [numeroItem: string]: string } = {};
   cantidad = 0
   costoIva = 0
@@ -31,6 +32,10 @@ export class AutorizadorComponent implements OnInit {
   user = {} as any;
   public adjuntos: boolean = false
   public asignar: boolean = false
+
+  typeaheadOpen = false;
+  highlightedIndex = 0;
+
 
   public inputs = new FormGroup({
     emisor: new FormControl(null, [Validators.required]),
@@ -56,6 +61,7 @@ export class AutorizadorComponent implements OnInit {
     this.getCentro()
     this.getDatos()
     this.getjson()
+    this.getCcUsados()
   }
 
   onFileChange(event: any) {
@@ -105,6 +111,28 @@ export class AutorizadorComponent implements OnInit {
       this.buscandoCentro = false;
       console.log(this.documento);
     }
+  }
+
+  //Centros mas usados por el responsable
+  private toArray<T = any>(resp: any): T[] {
+    if (Array.isArray(resp)) return resp;
+    if (Array.isArray(resp?.data)) return resp.data;
+    if (resp?.data && typeof resp.data === 'object') return Object.values(resp.data);
+    return [];
+  }
+
+  getCcUsados() {
+    const id = this.user.id;
+    const nit = this.documento.empresa;
+
+    this.masterTable
+      .get(`compras_reportadas/centros-costo-por-responsable?responsableId=${id}&empresa=${nit}`)
+      .subscribe({
+        next: (resp) => {
+          this.usados = this.toArray(resp);          // 👈 aquí el cambio
+          console.log('Centros usados por el responsable:', this.usados);
+        }
+      });
   }
 
   getjson() {
@@ -278,12 +306,12 @@ export class AutorizadorComponent implements OnInit {
     this.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().includes(search) || centro.codigo.includes(search));
   }
 
-  selectCentro(centro: any) {
-    this.searchCentro = `${centro.nombre} - ${centro.codigo}`; // mostrar bonito en el input
-    this.inputs.get('ccosto')?.setValue(centro.codigo);         // guardar SOLO el codigo en el form
-    this.centrosFiltrados = [];                                // limpiar lista filtrada
-    this.buscandoCentro = false
-  }
+  // selectCentro(centro: any) {
+  //   this.searchCentro = `${centro.nombre} - ${centro.codigo}`; // mostrar bonito en el input
+  //   this.inputs.get('ccosto')?.setValue(centro.codigo);         // guardar SOLO el codigo en el form
+  //   this.centrosFiltrados = [];                                // limpiar lista filtrada
+  //   this.buscandoCentro = false
+  // }
 
   search(valor: string, item: any) {
     // item.centrosFiltrados = this.centros.filter(c => c.nombre.toLowerCase().includes(valor.toLowerCase()) ||
@@ -348,4 +376,60 @@ export class AutorizadorComponent implements OnInit {
     });
   }
 
+  openTypeahead() {
+    this.typeaheadOpen = true;
+    // muestra usados si no hay texto; si hay, filtra
+    this.onTypeaheadInput();
+  }
+
+  closeTypeaheadSoon() {
+    // deja tiempo para que el click en la opción ocurra antes de cerrar
+    setTimeout(() => this.typeaheadOpen = false, 120);
+  }
+
+  onTypeaheadInput() {
+    const q = (this.searchCentro || '').trim().toLowerCase();
+    if (!q) {
+      this.highlightedIndex = 0;
+      return; // se mostrarán los "usados"
+    }
+    this.centrosFiltrados = this.centros.filter(centro =>
+      (centro.nombre || '').toLowerCase().includes(q) ||
+      String(centro.codigo || '').toLowerCase().includes(q)
+    );
+    this.highlightedIndex = 0;
+  }
+
+  onTypeaheadKey(ev: KeyboardEvent) {
+    const list = (this.searchCentro ? this.centrosFiltrados : this.usados) || [];
+    const last = Math.max(0, list.length - 1);
+
+    if (ev.key === 'ArrowDown') {
+      ev.preventDefault();
+      if (list.length) this.highlightedIndex = Math.min(this.highlightedIndex + 1, last);
+    } else if (ev.key === 'ArrowUp') {
+      ev.preventDefault();
+      if (list.length) this.highlightedIndex = Math.max(this.highlightedIndex - 1, 0);
+    } else if (ev.key === 'Enter') {
+      ev.preventDefault();
+      if (list[this.highlightedIndex]) this.selectCentro(list[this.highlightedIndex]);
+    } else if (ev.key === 'Escape') {
+      this.typeaheadOpen = false;
+    }
+  }
+
+  selectCentro(c: any) {
+    // muestra bonito en el input
+    this.searchCentro = `${c.nombre} - ${c.codigo}`;
+
+    // guarda en tu FormGroup (lo que se envía en update())
+    this.inputs.get('ccosto')?.setValue(c.codigo);
+    this.inputs.get('ccostoNombre')?.setValue(c.nombre);
+    this.inputs.get('ccosto')?.markAsDirty();
+    this.inputs.get('ccosto')?.updateValueAndValidity();
+
+    // cierra panel y limpia filtro
+    this.typeaheadOpen = false;
+    this.centrosFiltrados = [];
+  }
 }
