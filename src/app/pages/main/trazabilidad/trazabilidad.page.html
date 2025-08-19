@@ -89,6 +89,18 @@
           </ion-item>
         </ion-col>
 
+        <!-- Emisor -->
+        <ion-col size="12">
+          <ion-item>
+            <ion-label position="stacked">Emisor</ion-label>
+            <ion-select [(ngModel)]="filterEmisor" placeholder="Selecciona emisor">
+              <ion-select-option *ngFor="let emisor of emisores" [value]="emisor.emisor">
+                {{ emisor.nombreEmisor }} - {{ emisor.emisor }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+
         <!-- Botones -->
         <ion-col size="6">
           <ion-button expand="block" color="primary" (click)="applyFilters()">Aplicar Filtros</ion-button>
@@ -120,8 +132,8 @@
     <table class="sync-table">
       <thead>
         <tr>
-          <td>Impresiones</td>
-          <td>Impreso</td>
+          <td *ngIf="rol === 1 || rol === 2">Impresiones</td>
+          <td *ngIf="rol === 1 || rol === 2">Impreso</td>
           <th>Identificacion del emisor</th>
           <th>Emisor</th>
           <th>Empresa</th>

@@ -21,6 +21,10 @@ export class RecepcionComponent implements OnInit {
   selectedFile: File | null = null;
   responsableFiltrados: any[] = []
   searchResponsable: string = ''
+  frecuentes: any[] = []
+
+  typeaheadOpen = false;
+  highlightedIndex = 0;
 
   user = {} as any;
 
@@ -51,6 +55,7 @@ export class RecepcionComponent implements OnInit {
     this.getTpCompra()
     this.getResponsables()
     this.getDatos()
+    this.getFrecuentes()
   }
 
   ngOut() {
@@ -61,7 +66,6 @@ export class RecepcionComponent implements OnInit {
     this.master.get("compras_tipos").subscribe({
       next: (data) => {
         this.compras = data
-        console.log(data)
       }
     })
   }
@@ -75,6 +79,25 @@ export class RecepcionComponent implements OnInit {
     })
   }
 
+  private toArray<T = any>(resp: any): T[] {
+    if (Array.isArray(resp)) return resp;
+    if (Array.isArray(resp?.data)) return resp.data;
+    if (resp?.data && typeof resp.data === 'object') return Object.values(resp.data);
+    return [];
+  }
+
+  getFrecuentes() {
+    const emisor = this.documento.emisor
+    const empresa = this.documento.empresa
+    this.masterTable.get(`compras_reportadas/responsables-por-emisor?empresa=${empresa}&emisor=${emisor}`).subscribe({
+      next: (data) => {
+        this.frecuentes = this.toArray(data);
+        console.log(data)
+      }
+
+    })
+  }
+
   getDatos() {
     if (this.documento) {
       this.inputs.patchValue({
@@ -84,7 +107,7 @@ export class RecepcionComponent implements OnInit {
         empresaInfo: this.documento.empresaInfo?.nombre || this.documento.empresa,
         tipo: this.documento.tipo,
         numero: this.documento.numero,
-        valor: this.documento.valor  ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
+        valor: this.documento.valor ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
         tipoCompraId: this.documento.tipoCompraId,
         responsableId: this.documento.responsableId,
         observacionResponsable: this.documento.observacionResponsable,
@@ -117,7 +140,7 @@ export class RecepcionComponent implements OnInit {
     formData.append('id', this.documento.id);
     formData.append('userMod', this.user.identificacion);
     formData.append('fechaAsignacion', new Date().toISOString());
-    
+
     const tipoCompraId = this.inputs.get('tipoCompraId')?.value;
     if (tipoCompraId === 1) {
       formData.append('estadoId', '2');
@@ -155,7 +178,7 @@ export class RecepcionComponent implements OnInit {
     const search = this.searchResponsable.toLowerCase()
     this.responsableFiltrados = this.responsables.filter(responsable => responsable.name.toLowerCase().includes(search))
   }
-  
+
   mostrarObservacionContable(): boolean {
     const valor = this.inputs.controls.observacionContable?.value;
     return valor && valor.trim() !== '';
@@ -175,14 +198,57 @@ export class RecepcionComponent implements OnInit {
   selectResponsable(responsable: any) {
     this.searchResponsable = responsable.name;
     this.inputs.get('responsableId')?.setValue(responsable.id);
+    this.inputs.get('responsableId')?.markAsDirty();
+    this.inputs.get('responsableId')?.updateValueAndValidity();
+    this.typeaheadOpen = false;
     this.responsableFiltrados = [];
   }
 
   dian() {
     const url = 'https://catalogo-vpfe.dian.gov.co/User/SearchDocument?DocumentKey='
     const cufe = this.documento.cufe
-    const link = url+cufe
+    const link = url + cufe
     window.open(link, '_blank')
+  }
+
+  openTypeahead() {
+    this.typeaheadOpen = true;
+    this.onTypeaheadInput();
+  }
+
+  closeTypeaheadSoon() {
+    setTimeout(() => this.typeaheadOpen = false, 120);
+  }
+
+  onTypeaheadInput() {
+    const q = (this.searchResponsable || '').trim().toLowerCase();
+    if (!q) {
+      this.highlightedIndex = 0;
+      return
+    }
+    this.responsableFiltrados = this.responsables.filter(responsable =>
+      (responsable.name || '').toLowerCase().includes(q) ||
+      String(responsable.identificacion || '').toLowerCase().includes(q)
+    )
+    this.highlightedIndex = 0;
+  }
+
+  onTypeaheadKey(ev: KeyboardEvent) {
+    const list = (this.searchResponsable ? this.responsableFiltrados : this.frecuentes);
+    const last = Math.max(0, list.length - 1);
+
+    if (ev.key === 'ArrowDown') {
+      ev.preventDefault();
+      if (list.length) this.highlightedIndex = Math.min(this.highlightedIndex + 1, last);
+    } else if (ev.key === 'ArrowUp') {
+      ev.preventDefault();
+      if (list.length) this.highlightedIndex = Math.max(this.highlightedIndex - 1, 0);
+    } else if (ev.key === 'Enter') {
+      ev.preventDefault()
+      if (list[this.highlightedIndex]) this.selectResponsable(list[this.highlightedIndex]);
+    } else if (ev.key === 'Escape') {
+      this.typeaheadOpen = false;
+    }
   }
 
 }

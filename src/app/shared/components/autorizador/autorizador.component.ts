@@ -7,6 +7,9 @@ import { StorageService } from 'src/app/services/storage.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { environment } from 'src/environments/environment.prod';
 
+/**
+ * Componente para autorizar documentos y asignar centros de costo.
+ */
 @Component({
   selector: 'app-autorizador',
   templateUrl: './autorizador.component.html',
@@ -14,29 +17,31 @@ import { environment } from 'src/environments/environment.prod';
   standalone: false
 })
 export class AutorizadorComponent implements OnInit {
-  @Input() documento: any
+  @Input() documento: any;
 
   selectedFileName: string = '';
   selectedFiles: File[] = [];
-  centros: any[] = []
+  centros: any[] = [];
   centrosFiltrados: any[] = [];
   searchCentro: string = '';
   documentos: any[] = [];
   usados: any[] = [];
   centrosPorItem: { [numeroItem: string]: string } = {};
-  cantidad = 0
-  costoIva = 0
-  costoBruto = 0
-  total = 0
+  cantidad = 0;
+  costoIva = 0;
+  costoBruto = 0;
+  total = 0;
   buscandoCentro = false;
   user = {} as any;
-  public adjuntos: boolean = false
-  public asignar: boolean = false
+  public adjuntos: boolean = false;
+  public asignar: boolean = false;
 
   typeaheadOpen = false;
   highlightedIndex = 0;
 
-
+  /**
+   * Formulario reactivo para los campos principales del documento.
+   */
   public inputs = new FormGroup({
     emisor: new FormControl(null, [Validators.required]),
     nombreEmisor: new FormControl(null, [Validators.required]),
@@ -52,32 +57,44 @@ export class AutorizadorComponent implements OnInit {
     ccostoNombre: new FormControl(null),
     observacionContable: new FormControl(null),
     observacionTesoreria: new FormControl(null)
-  })
+  });
 
-  constructor(private master: MasterService, private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService) { }
+  constructor(
+    private master: MasterService,
+    private masterTable: MasterTableService,
+    private modalCtrl: ModalController,
+    private toast: ToastService,
+    private storage: StorageService
+  ) { }
 
+  /**
+   * Inicializa el componente, carga usuario, centros y datos del documento.
+   */
   ngOnInit() {
-    this.user = this.storage.get('manzanares-user')
-    this.getCentro()
-    this.getDatos()
-    this.getjson()
-    this.getCcUsados()
+    this.user = this.storage.get('manzanares-user');
+    this.getCentro();
+    this.getDatos();
+    this.getjson();
+    this.getCcUsados();
   }
 
+  /**
+   * Maneja el cambio de archivos adjuntos.
+   */
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length > 0) {
       const nuevosArchivos: File[] = Array.from(event.target.files);
-
       this.selectedFiles = [...this.selectedFiles, ...nuevosArchivos];
-
-      // Elimina duplicados por nombre (opcional)
+      // Elimina duplicados por nombre
       const unique = new Map(this.selectedFiles.map(file => [file.name, file]));
       this.selectedFiles = Array.from(unique.values());
-
       this.selectedFileName = this.selectedFiles.map(f => f.name).join(', ');
     }
   }
 
+  /**
+   * Carga los datos del documento y los asigna al formulario.
+   */
   getDatos() {
     if (this.documento) {
       const codigoCentro = this.documento.ccosto;
@@ -101,11 +118,11 @@ export class AutorizadorComponent implements OnInit {
         observacionTesoreria: this.documento.observacionTesoreria
       });
 
-      // Si no hay centro asignado, mostrar solo el placeholder
+      // Muestra el centro en el input si existe
       if (centro) {
         this.searchCentro = `${nombreCentro} - ${codigoCentro}`;
       } else {
-        this.searchCentro = ''; // esto hará que se vea solo el placeholder
+        this.searchCentro = '';
       }
 
       this.buscandoCentro = false;
@@ -113,7 +130,9 @@ export class AutorizadorComponent implements OnInit {
     }
   }
 
-  //Centros mas usados por el responsable
+  /**
+   * Convierte la respuesta de la API en un array.
+   */
   private toArray<T = any>(resp: any): T[] {
     if (Array.isArray(resp)) return resp;
     if (Array.isArray(resp?.data)) return resp.data;
@@ -121,30 +140,31 @@ export class AutorizadorComponent implements OnInit {
     return [];
   }
 
+  /**
+   * Obtiene los centros de costo más usados por el responsable.
+   */
   getCcUsados() {
     const id = this.user.id;
     const nit = this.documento.empresa;
-
-    this.masterTable
-      .get(`compras_reportadas/centros-costo-por-responsable?responsableId=${id}&empresa=${nit}`)
-      .subscribe({
+    this.masterTable.get(`compras_reportadas/centros-costo-por-responsable?responsableId=${id}&empresa=${nit}`).subscribe({
         next: (resp) => {
-          this.usados = this.toArray(resp);          // 👈 aquí el cambio
+          this.usados = this.toArray(resp);
           console.log('Centros usados por el responsable:', this.usados);
         }
       });
   }
 
+  /**
+   * Obtiene los datos completos del documento y asigna centros a los ítems.
+   */
   getjson() {
     this.masterTable.get(`compras_reportadas/${this.documento.id}`).subscribe({
       next: (data) => {
         this.documento = data;
         this.documentos = data.items || [];
-
-        // Asignar centros ya guardados
+        // Asigna centros guardados a cada ítem
         this.documentos.forEach(item => {
           const centroAsignado = this.centros.find(c => c.codigo === item.CentroDeCosto);
-
           if (centroAsignado) {
             item.nombre = centroAsignado.nombre;
             item.codigo = centroAsignado.codigo;
@@ -155,46 +175,60 @@ export class AutorizadorComponent implements OnInit {
             this.centrosPorItem[item.numeroItem] = item.CentroDeCosto;
           }
         });
-
         this.getDatos();
       }
     });
   }
 
+  /**
+   * Cierra el modal actual.
+   */
   ngOut() {
-    this.modalCtrl.dismiss()
+    this.modalCtrl.dismiss();
   }
 
+  /**
+   * Abre el PDF desde el formulario.
+   */
   unionDesdeFormulario() {
     const pdf = this.inputs.controls.urlpdf.value;
     const item = { urlPdf: pdf };
     this.union(item);
   }
 
+  /**
+   * Abre el PDF en una nueva pestaña.
+   */
   union(item: any) {
     const url = environment.apiUrl;
     const pdf = item.urlPdf;
-
     if (pdf) {
       const urlpdf = url + pdf;
-      window.open(urlpdf, '_blank'); // Abre el PDF en nueva pestaña
+      window.open(urlpdf, '_blank');
     } else {
       console.warn('No hay URL de PDF disponible');
     }
   }
 
-  // Verifica si la observación contable tiene contenido
+  /**
+   * Verifica si la observación contable tiene contenido.
+   */
   mostrarObservacionContable(): boolean {
     const valor = this.inputs.controls.observacionContable?.value;
     return valor && valor.trim() !== '';
   }
 
-  // Verifica si la observación tesorería tiene contenido
+  /**
+   * Verifica si la observación tesorería tiene contenido.
+   */
   mostrarObservacionTesoreria(): boolean {
     const valor = this.inputs.controls.observacionTesoreria?.value;
     return valor && valor.trim() !== '';
   }
 
+  /**
+   * Obtiene todos los centros de costo de la empresa.
+   */
   getCentro() {
     const nit = this.documento.empresa;
     this.master.getWo('ccostos', nit).subscribe({
@@ -205,6 +239,9 @@ export class AutorizadorComponent implements OnInit {
     });
   }
 
+  /**
+   * Autoriza el documento y guarda los cambios.
+   */
   update() {
     if (this.inputs.invalid) {
       console.warn('Formulario inválido');
@@ -219,14 +256,13 @@ export class AutorizadorComponent implements OnInit {
     }
 
     const formData = new FormData();
-
-    const fields = ['observacionResponsable', 'ccosto']
+    const fields = ['observacionResponsable', 'ccosto'];
     fields.forEach(field => {
       if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
         formData.append(field, this.inputs.get(field).value);
       }
-    })
-    formData.append('id', this.documento.id)
+    });
+    formData.append('id', this.documento.id);
     formData.append('userMod', this.user.identificacion);
     formData.append('fechaAutorizacion', new Date().toISOString());
     formData.append('estadoId', '3');
@@ -249,14 +285,14 @@ export class AutorizadorComponent implements OnInit {
     } else {
       this.masterTable.update('compras_reportadas', formData).subscribe({
         next: (res) => {
-          this.toast.presentToast('checkmark-outline', 'Autorizado con exito', 'success', 'top')
-          this.modalCtrl.dismiss(true)
-          console.log(res)
+          this.toast.presentToast('checkmark-outline', 'Autorizado con exito', 'success', 'top');
+          this.modalCtrl.dismiss(true);
+          console.log(res);
         },
         error: (error) => {
-          console.error('Error al autorizar:', error)
+          console.error('Error al autorizar:', error);
         }
-      })
+      });
     }
 
     // Mostrar el contenido de FormData
@@ -264,29 +300,33 @@ export class AutorizadorComponent implements OnInit {
     formData.forEach((value, key) => {
       console.log(`${key}:`, value);
     });
-
   }
 
+  /**
+   * Elimina un archivo adjunto por nombre.
+   */
   removeFile(fileName: string) {
     this.selectedFiles = this.selectedFiles.filter(file => file.name !== fileName);
     this.selectedFileName = this.selectedFiles.map(f => f.name).join(', ');
   }
 
+  /**
+   * Rechaza el documento y guarda el cambio de estado.
+   */
   decline() {
     const formData = new FormData();
-
-    const fields = ['observacionResponsable']
+    const fields = ['observacionResponsable'];
     fields.forEach(field => {
       if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
         formData.append(field, this.inputs.get(field).value);
       }
-    })
+    });
 
-    formData.append('id', this.documento.id)
+    formData.append('id', this.documento.id);
     formData.append('userMod', this.user.identificacion);
     formData.append('estadoId', '1');
 
-    console.log('datos enviados', formData)
+    console.log('datos enviados', formData);
 
     this.masterTable.update('compras_reportadas', formData).subscribe({
       next: (res) => {
@@ -300,56 +340,60 @@ export class AutorizadorComponent implements OnInit {
     });
   }
 
+  /**
+   * Busca centros de costo por texto en el input principal.
+   */
   searchCentroCosto() {
     this.buscandoCentro = true;
     const search = this.searchCentro.toLowerCase();
-    this.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().includes(search) || centro.codigo.includes(search));
+    this.centrosFiltrados = this.centros.filter(centro =>
+      centro.nombre.toLowerCase().includes(search) || centro.codigo.includes(search)
+    );
   }
 
-  // selectCentro(centro: any) {
-  //   this.searchCentro = `${centro.nombre} - ${centro.codigo}`; // mostrar bonito en el input
-  //   this.inputs.get('ccosto')?.setValue(centro.codigo);         // guardar SOLO el codigo en el form
-  //   this.centrosFiltrados = [];                                // limpiar lista filtrada
-  //   this.buscandoCentro = false
-  // }
-
+  /**
+   * Busca centros de costo por nombre en los ítems del documento.
+   */
   search(valor: string, item: any) {
-    // item.centrosFiltrados = this.centros.filter(c => c.nombre.toLowerCase().includes(valor.toLowerCase()) ||
-    //   c.codigo.toLowerCase().includes(valor.toLowerCase()))
     const search = valor.toLowerCase();
-    item.centrosFiltrados = this.centros.filter(centro => centro.nombre.toLowerCase().includes(search));
+    item.centrosFiltrados = this.centros.filter(centro =>
+      centro.nombre.toLowerCase().includes(search)
+    );
   }
 
+  /**
+   * Selecciona un centro de costo para un ítem del documento.
+   */
   select(centro: any, item: any) {
     item.nombre = centro.nombre;
-    item.codigo = centro.codigo
-    item.centrosFiltrados = []
-
+    item.codigo = centro.codigo;
+    item.centrosFiltrados = [];
     this.centrosPorItem[item.numeroItem] = centro.codigo;
   }
 
+  /**
+   * Calcula la suma de cantidades y costos de los ítems.
+   */
   suma() {
     return {
       cantidad: this.documentos.reduce((acc, item) => acc + Number(item.cantidad || 0), 0),
       costoIVA: this.documentos.reduce((acc, item) => acc + Number(item.costoIva || 0), 0),
       costoBruto: this.documentos.reduce((acc, item) => acc + Number(item.costoBruto || 0), 0),
       total: this.documentos.reduce((acc, item) => acc + Number(item.costoTotal || 0), 0),
-    }
+    };
   }
 
+  /**
+   * Guarda los centros de costo asignados a los ítems del documento.
+   */
   save() {
     // Verificar que todos los ítems tengan centro asignado
-    console.log('Documentos', this.documentos)
+    console.log('Documentos', this.documentos);
     const sinCentro = this.documentos.filter(item =>
       !this.centrosPorItem[item.numeroItem]
     );
 
-    // if (sinCentro.length > 0) {
-    //   this.toast.presentToast('alert-circle-outline', 'Todos los ítems deben tener un centro de costo asignado.', 'danger', 'top');
-    //   return;
-    // }
-
-    // Recorre y construye un array con los objetos 
+    // Recorre y construye un array con los objetos
     const itemsFormateados = this.documentos.map(item => ({
       id: item.id,
       compraReportadaId: this.documento.id,
@@ -357,7 +401,6 @@ export class AutorizadorComponent implements OnInit {
     }));
 
     const payload = {
-      // id: this.documento.id,
       documentoId: this.documento.id,
       items: itemsFormateados
     };
@@ -367,7 +410,6 @@ export class AutorizadorComponent implements OnInit {
     this.masterTable.updateTwo('compras_reportadas_detalle/compra', payload).subscribe({
       next: () => {
         this.toast.presentToast('checkmark-outline', 'Centros de costo guardados correctamente', 'success', 'top');
-        // this.modalCtrl.dismiss(true);
       },
       error: (err) => {
         console.error('Error al guardar centros de costo:', err);
@@ -376,22 +418,29 @@ export class AutorizadorComponent implements OnInit {
     });
   }
 
+  /**
+   * Abre el panel de sugerencias de centros de costo (typeahead).
+   */
   openTypeahead() {
     this.typeaheadOpen = true;
-    // muestra usados si no hay texto; si hay, filtra
     this.onTypeaheadInput();
   }
 
+  /**
+   * Cierra el panel de sugerencias de centros de costo después de un breve tiempo.
+   */
   closeTypeaheadSoon() {
-    // deja tiempo para que el click en la opción ocurra antes de cerrar
     setTimeout(() => this.typeaheadOpen = false, 120);
   }
 
+  /**
+   * Filtra los centros de costo según el texto ingresado en el input.
+   */
   onTypeaheadInput() {
     const q = (this.searchCentro || '').trim().toLowerCase();
     if (!q) {
       this.highlightedIndex = 0;
-      return; // se mostrarán los "usados"
+      return;
     }
     this.centrosFiltrados = this.centros.filter(centro =>
       (centro.nombre || '').toLowerCase().includes(q) ||
@@ -400,6 +449,9 @@ export class AutorizadorComponent implements OnInit {
     this.highlightedIndex = 0;
   }
 
+  /**
+   * Maneja la navegación y selección con el teclado en el panel de sugerencias.
+   */
   onTypeaheadKey(ev: KeyboardEvent) {
     const list = (this.searchCentro ? this.centrosFiltrados : this.usados) || [];
     const last = Math.max(0, list.length - 1);
@@ -418,17 +470,15 @@ export class AutorizadorComponent implements OnInit {
     }
   }
 
+  /**
+   * Selecciona un centro de costo desde el panel de sugerencias y lo asigna al formulario.
+   */
   selectCentro(c: any) {
-    // muestra bonito en el input
     this.searchCentro = `${c.nombre} - ${c.codigo}`;
-
-    // guarda en tu FormGroup (lo que se envía en update())
     this.inputs.get('ccosto')?.setValue(c.codigo);
     this.inputs.get('ccostoNombre')?.setValue(c.nombre);
     this.inputs.get('ccosto')?.markAsDirty();
     this.inputs.get('ccosto')?.updateValueAndValidity();
-
-    // cierra panel y limpia filtro
     this.typeaheadOpen = false;
     this.centrosFiltrados = [];
   }

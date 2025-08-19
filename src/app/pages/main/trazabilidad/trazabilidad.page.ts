@@ -8,6 +8,7 @@ import { saveAs } from 'file-saver';
 import { LoadingService } from 'src/app/services/loading.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-trazabilidad',
@@ -29,6 +30,7 @@ export class TrazabilidadPage implements OnInit {
   user: any
   rol: number = 0;
   selectedDocs: any[] = [];
+  emisores: any[] = [];
   today = new Date().toISOString().slice(0, 10);
 
   // Filtros
@@ -38,6 +40,7 @@ export class TrazabilidadPage implements OnInit {
   filterTipoCompra: string = '';
   filterEstado: string = '';
   filterEmpresa: string = ''
+  filterEmisor: string = '';
 
 
   constructor(private master: MasterService, private modalService: ModalService, private toast: ToastService, private loading: LoadingService, private storage: StorageService, private masterTable: MasterTableService) { }
@@ -94,6 +97,11 @@ export class TrazabilidadPage implements OnInit {
           this.documentos = [...ordenados];
           console.log(this.documentos)
         }
+        this.emisores = Array.from(new Map(this.documentos.map(doc =>[doc.emisor, {
+          emisor: doc.emisor,
+          nombreEmisor: doc.nombreEmisor
+        }])).values()).sort((a, b) => a.nombreEmisor.localeCompare(b.nombreEmisor));
+        console.log(this.emisores)
       }
     });
   }
@@ -237,6 +245,15 @@ export class TrazabilidadPage implements OnInit {
       });
     }
 
+    // Filtro por emisor
+    if (this.filterEmisor) {
+      const filtro = this.filterEmisor.trim().toLowerCase();
+      filtered = filtered.filter(doc => {
+        const emisor = doc.emisor?.trim().toLowerCase();
+        return emisor === filtro;
+      });
+    }
+
     this.documentos = filtered;
 
     if (this.documentos.length === 0) {
@@ -251,6 +268,7 @@ export class TrazabilidadPage implements OnInit {
     this.filterResponsable = '';
     this.filterTipoCompra = '';
     this.filterEstado = '';
+    this.filterEmisor = '';
     this.get();
   }
 
@@ -309,11 +327,10 @@ export class TrazabilidadPage implements OnInit {
     const peticiones = this.selectedDocs.map(item => {
       const formData = new FormData();
       formData.append('id', item.id);
-      formData.append('userMod', item.user?.identificacion);
-      formData.append('fechaImpresion', this.today);
       formData.append('impreso', '1');
+      formData.append('fechaImpresion', this.today);
       // Retorna la promesa de la actualización
-      return this.masterTable.update('compras_reportadas', formData).toPromise();
+      return this.masterTable.update('compras_reportadas/impresion', formData).toPromise();
     });
     return Promise.all(peticiones);
   }
