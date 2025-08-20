@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { c } from '@angular/core/navigation_types.d-u4EOrrdZ';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { concatMap } from 'rxjs';
 import { MasterService } from 'src/app/services/gestion/master.service';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { LoadingService } from 'src/app/services/loading.service';
@@ -170,9 +172,19 @@ export class ContabilidadComponent implements OnInit {
     formData.append('estadoId', '5');
     formData.append('fechaContabilizacion', new Date().toISOString());
 
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Contabilización',
+      observacion: this.inputs.value.observacionContable
+    }
+
     console.log('datos enviados', formData)
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      // solo si el update fue OK, creamos auditoría
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
       next: (res) => {
         this.toast.presentToast('checkmark-outline', 'Enviado a tesoreria con exito', 'success', 'top')
         this.modalCtrl.dismiss(true)
@@ -200,7 +212,17 @@ export class ContabilidadComponent implements OnInit {
 
     console.log('datos enviados', formData)
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Rechazado por contabilidad',
+      observacion: this.inputs.value.observacionContable || 'Rechazado por contabilidad'
+    }
+
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      // solo si el update fue OK, creamos auditoría
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
       next: (res) => {
         this.toast.presentToast('close-circle-outline', 'Rechazado con éxito', 'warning', 'top');
         this.modalCtrl.dismiss(true);
@@ -228,7 +250,17 @@ export class ContabilidadComponent implements OnInit {
 
     console.log('datos enviados', formData)
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Cruzado',
+      observacion: this.inputs.value.observacionContable || 'Cruzado por contabilidad'
+    }
+
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      // solo si el update fue OK, creamos auditoría
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
       next: (res) => {
         this.toast.presentToast('repeat-outline', 'Cruzado con éxito', 'success', 'top');
         this.modalCtrl.dismiss(true);

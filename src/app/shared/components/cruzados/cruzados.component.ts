@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { concatMap } from 'rxjs';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { ToastService } from 'src/app/services/toast.service';
@@ -99,7 +100,17 @@ export class CruzadosComponent  implements OnInit {
 
     console.log('datos enviados', formData)
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Cruce cancelado',
+      observacion: 'Cruce cancelado por contabilidad'
+    }
+
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      // solo si el update fue OK, creamos auditoría
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
       next: (res) => {
         this.toast.presentToast('checkmark-outline', 'Enviado a contabilidad con exito', 'success', 'top')
         this.modalCtrl.dismiss(true)

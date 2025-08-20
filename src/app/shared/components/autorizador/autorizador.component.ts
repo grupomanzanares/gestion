@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { concatMap } from 'rxjs';
 import { MasterService } from 'src/app/services/gestion/master.service';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -267,12 +268,22 @@ export class AutorizadorComponent implements OnInit {
     formData.append('fechaAutorizacion', new Date().toISOString());
     formData.append('estadoId', '3');
 
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Autorización',
+      observacion: this.inputs.value.observacionResponsable || `Autorizado por ${this.user.name}`
+    }
+
     if (this.selectedFiles.length > 0) {
       this.selectedFiles.forEach(file => {
         formData.append('adjuntos', file, file.name);
       });
 
-      this.masterTable.update('compras_reportadas/autorizar', formData).subscribe({
+      this.masterTable.update('compras_reportadas/autorizar', formData).pipe(
+        // solo si el update fue OK, creamos auditoría
+        concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+      ).subscribe({
         next: (res) => {
           this.toast.presentToast('checkmark-outline', 'Autorizado con éxito', 'success', 'top');
           this.modalCtrl.dismiss(true);
@@ -283,7 +294,10 @@ export class AutorizadorComponent implements OnInit {
         }
       });
     } else {
-      this.masterTable.update('compras_reportadas', formData).subscribe({
+      this.masterTable.update('compras_reportadas', formData).pipe(
+        // solo si el update fue OK, creamos auditoría
+        concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+      ).subscribe({
         next: (res) => {
           this.toast.presentToast('checkmark-outline', 'Autorizado con exito', 'success', 'top');
           this.modalCtrl.dismiss(true);
@@ -328,7 +342,17 @@ export class AutorizadorComponent implements OnInit {
 
     console.log('datos enviados', formData);
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Rechazo de autorizador',
+      observacion: this.inputs.value.observacionResponsable || 'Rechazado por el autorizador'
+    }
+
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      // solo si el update fue OK, creamos auditoría
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
       next: (res) => {
         this.toast.presentToast('close-circle-outline', 'Rechazado con éxito', 'warning', 'top');
         this.modalCtrl.dismiss(true);

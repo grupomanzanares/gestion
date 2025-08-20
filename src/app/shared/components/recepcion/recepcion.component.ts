@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { concatMap, from } from 'rxjs';
 import { MasterService } from 'src/app/services/gestion/master.service';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -141,11 +142,24 @@ export class RecepcionComponent implements OnInit {
     formData.append('userMod', this.user.identificacion);
     formData.append('fechaAsignacion', new Date().toISOString());
 
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: '',
+      observacion: ''
+    }
+
+    const responsableId = this.inputs.get('responsableId')?.value;
+    const responsable = this.responsables.find(r => r.id === responsableId);
     const tipoCompraId = this.inputs.get('tipoCompraId')?.value;
     if (tipoCompraId === 1) {
       formData.append('estadoId', '2');
+      payload.evento = 'Asignado';
+      payload.observacion = `Asignada a responsable ${responsable.name}`;
     } else {
       formData.append('estadoId', '6');
+      payload.evento = 'Caja menor';
+      payload.observacion = 'Asignada a caja menor';
     }
 
 
@@ -154,16 +168,19 @@ export class RecepcionComponent implements OnInit {
       formData.append('archivo', this.selectedFile, this.selectedFile.name);
     }
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
-      next: (res) => {
-        this.toast.presentToast('checkmark-outline', 'Tipo de compra y Responsable añadidos correctamente', 'success', 'top')
-        this.modalCtrl.dismiss(true)
-        console.log(res)
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      // solo si el update fue OK, creamos auditoría
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
+      next: () => {
+        this.toast.presentToast('checkmark-outline', 'Tipo de compra y Responsable añadidos correctamente', 'success', 'top');
+        this.modalCtrl.dismiss(true);
       },
       error: (err) => {
-        console.error('Error al actualizar documento:', err);
+        console.error('Error en la actualización/auditoría:', err);
+        this.toast.presentToast('alert-circle-outline', 'No se pudo actualizar. Intenta de nuevo.', 'danger', 'top');
       }
-    })
+    });
   }
 
   onFileChange(event: any) {

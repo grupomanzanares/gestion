@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { concatMap } from 'rxjs';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { ToastService } from 'src/app/services/toast.service';
@@ -104,7 +105,16 @@ export class TesoreriaComponent implements OnInit {
 
     console.log('datos enviados', formData)
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Finalizado en tesorería',
+      observacion: this.inputs.value.observacionTesoreria || `Aceptado por ${this.user.name}`
+    }
+
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
       next: (res) => {
         this.toast.presentToast('checkmark-outline', 'Aceptado en tesoreria con exito', 'success', 'top')
         this.modalCtrl.dismiss(true)
@@ -132,7 +142,16 @@ export class TesoreriaComponent implements OnInit {
 
     console.log('datos enviados', formData)
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Rechazo por tesorería',
+      observacion: this.inputs.value.observacionTesoreria || 'Rechazado por tesorería'
+    }
+
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
       next: (res) => {
         this.toast.presentToast('close-circle-outline', 'Rechazado con éxito', 'warning', 'top');
         this.modalCtrl.dismiss(true);

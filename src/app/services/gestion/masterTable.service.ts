@@ -72,6 +72,28 @@ export class MasterTableService {
         );
     }
 
+    createTow(endPoint: string, payload: any): Observable<any> {
+        const url = `${this.apiUrl}${endPoint}/create`;
+        console.log(`Enviando ${payload} a la API`);
+        console.log("Contenido del payload JSON:", payload);
+        const headers = this.getHeaders(false); // ← JSON, no FormData
+        return this.http.post<any>(url, payload, {
+            headers: headers
+        }).pipe(
+            catchError((error) => {
+                console.error(`Error al crear ${endPoint} :`, error);
+
+                // Imprimir la respuesta del servidor para depuración
+                if (error.error) {
+                    console.error('Respuesta del servidor:', error.error);
+                }
+
+                // Devolver el error completo para que el componente pueda manejarlo
+                return throwError(() => error);
+            })
+        );
+    }
+
     update(endPoint: string, formulario: FormData): Observable<any> {
 
         // Obtener el ID del FormData ya que no se puede acceder como propiedad

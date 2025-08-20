@@ -8,7 +8,7 @@ import { saveAs } from 'file-saver';
 import { LoadingService } from 'src/app/services/loading.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
-import { map } from 'rxjs';
+import { concatMap, map } from 'rxjs';
 
 @Component({
   selector: 'app-trazabilidad',
@@ -101,7 +101,6 @@ export class TrazabilidadPage implements OnInit {
           emisor: doc.emisor,
           nombreEmisor: doc.nombreEmisor
         }])).values()).sort((a, b) => a.nombreEmisor.localeCompare(b.nombreEmisor));
-        console.log(this.emisores)
       }
     });
   }
@@ -330,7 +329,17 @@ export class TrazabilidadPage implements OnInit {
       formData.append('impreso', '1');
       formData.append('fechaImpresion', this.today);
       // Retorna la promesa de la actualización
-      return this.masterTable.update('compras_reportadas/impresion', formData).toPromise();
+      
+      const payload = {
+        compraReportadaId: item.id,
+        user: this.user.identificacion,
+        evento: 'Impresión',
+        observacion: `Impreso por ${this.user.name}`
+      }
+      return this.masterTable.update('compras_reportadas/impresion', formData).pipe(
+
+        concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+      ).toPromise();
     });
     return Promise.all(peticiones);
   }

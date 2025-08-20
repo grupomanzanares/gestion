@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { concatMap } from 'rxjs';
 import { MasterService } from 'src/app/services/gestion/master.service';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -77,8 +78,16 @@ export class AnulacionComponent implements OnInit {
     formData.append('observacionResponsable', this.inputs.value.observacionResponsable);
     formData.append('estadoId', '8');
 
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Anulación',
+      observacion: this.inputs.value.observacionResponsable || 'Anulación realizada'
+    }
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
       next: (data) => {
         this.toast.presentToast('checkmark-circle-outline', 'Anulación registrada correctamente.', 'success', 'top');
         this.modalCtrl.dismiss(true);
