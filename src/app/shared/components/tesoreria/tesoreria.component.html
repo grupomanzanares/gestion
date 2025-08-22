@@ -16,7 +16,7 @@
         <app-custom-input icon="id-card-outline" label="Identificacion del emisor" type="text" autocomplete="emisor"
           [control]="inputs.controls.emisor" [readonly]="true"></app-custom-input>
       </ion-col>
-      
+
       <ion-col size="6">
         <app-custom-input icon="person-outline" label="Emisor" type="text" autocomplete="nombreEmisor"
           [control]="inputs.controls.nombreEmisor" [readonly]="true"></app-custom-input>
@@ -27,13 +27,13 @@
           [control]="inputs.controls.tipo" [readonly]="true"></app-custom-input>
       </ion-col>
 
-      <ion-col size="6">      
+      <ion-col size="6">
         <ion-button fill="outline" expand="block" color="primary" class="ion-margin-top"
           (click)="unionDesdeFormulario()" [disabled]="!inputs.controls.urlpdf.value">
           Ver PDF
         </ion-button>
       </ion-col>
-      
+
       <ion-col size="6">
         <app-custom-input icon="barcode-outline" label="Numero de documento" type="text" autocomplete="numero"
           [control]="inputs.controls.numero" [readonly]="true"></app-custom-input>
@@ -46,19 +46,19 @@
 
       <ion-col size="6">
         <app-custom-input icon="business-outline" label="Centro de costo" type="text" autocomplete="ccosto"
-        [control]="inputs.controls.ccosto" [readonly]="true"></app-custom-input>
+          [control]="inputs.controls.ccosto" [readonly]="true"></app-custom-input>
       </ion-col>
 
       <ion-col size="6">
         <app-custom-input icon="person-circle-outline" label="Responsable" type="text" autocomplete="responsable"
-        [control]="inputs.controls.responsable" [readonly]="true">          
+          [control]="inputs.controls.responsable" [readonly]="true">
         </app-custom-input>
       </ion-col>
 
       <ion-col size="6">
         <app-custom-input icon="calendar-outline" label="Fecha
-        " type="text" autocomplete="fechaComercial"
-        [control]="inputs.controls.fechaComercial" [readonly]="true"></app-custom-input>
+        " type="text" autocomplete="fechaComercial" [control]="inputs.controls.fechaComercial"
+          [readonly]="true"></app-custom-input>
       </ion-col>
 
       <ion-col size="6">
@@ -66,15 +66,21 @@
           [control]="inputs.controls.observacionTesoreria"></app-custom-input>
       </ion-col>
 
-      <ion-col size="6">
-        <ion-button class="ion-margin-top" (click)="update()" expand="block" shape="round">
-          Aceptar
+      <ion-col size="4">
+        <ion-button class="ion-margin-top" (click)="decline()" expand="block" color="warning" shape="round">
+          rechazar
         </ion-button>
       </ion-col>
 
-      <ion-col size="6">
-        <ion-button class="ion-margin-top" (click)="decline()" expand="block" color="warning" shape="round">
-          rechazar
+      <ion-col size="4">
+        <ion-button class="ion-margin-top" (click)="declineRecepcion()" expand="block" color="success" shape="round">
+          Enviar a recepción
+        </ion-button>
+      </ion-col>
+
+      <ion-col size="4">
+        <ion-button class="ion-margin-top" (click)="update()" expand="block" shape="round">
+          Aceptar
         </ion-button>
       </ion-col>
 

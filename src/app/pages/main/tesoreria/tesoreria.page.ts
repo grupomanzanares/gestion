@@ -36,12 +36,12 @@ export class TesoreriaPage implements OnInit {
     })
   }
   
-  async modalAsignacion(item: any) {
+  modalAsignacion(item: any) {
     try {
-      let success = await this.modalService.openModal({
+      let success = this.modalService.openModal({
         component: TesoreriaComponent,
         componentProps: { documento: item },
-        cssClass: 'modal'
+        cssClass: 'modaltow'
       });
       if (success) this.get()
     } catch (error) {

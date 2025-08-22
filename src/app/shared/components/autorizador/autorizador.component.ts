@@ -27,10 +27,11 @@ export class AutorizadorComponent implements OnInit {
   searchCentro: string = '';
   documentos: any[] = [];
   usados: any[] = [];
+  auditorias: any[] = [];
   centrosPorItem: { [numeroItem: string]: string } = {};
   cantidad = 0;
   costoIva = 0;
-  costoBruto = 0;
+  costoBruto = 0
   total = 0;
   buscandoCentro = false;
   user = {} as any;
@@ -60,13 +61,7 @@ export class AutorizadorComponent implements OnInit {
     observacionTesoreria: new FormControl(null)
   });
 
-  constructor(
-    private master: MasterService,
-    private masterTable: MasterTableService,
-    private modalCtrl: ModalController,
-    private toast: ToastService,
-    private storage: StorageService
-  ) { }
+  constructor(private master: MasterService, private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService) { }
 
   /**
    * Inicializa el componente, carga usuario, centros y datos del documento.
@@ -77,6 +72,7 @@ export class AutorizadorComponent implements OnInit {
     this.getDatos();
     this.getjson();
     this.getCcUsados();
+    this.getAuditoria()
   }
 
   /**
@@ -129,6 +125,15 @@ export class AutorizadorComponent implements OnInit {
       this.buscandoCentro = false;
       console.log(this.documento);
     }
+  }
+
+  getAuditoria() {
+    this.master.getId('compras_reportadas_auditoria', this.documento.id).subscribe({
+      next: (data) => {
+        this.auditorias = data;
+        console.log('Auditoría cargada:', this.auditorias);
+      }
+    });
   }
 
   /**
@@ -346,7 +351,7 @@ export class AutorizadorComponent implements OnInit {
       compraReportadaId: this.documento.id,
       user: this.user.identificacion,
       evento: 'Rechazo de autorizador',
-      observacion: this.inputs.value.observacionResponsable || 'Rechazado por el autorizador'
+      observacion: this.inputs.value.observacionResponsable || `Rechazado por el autorizador ${this.user.name}`
     }
 
     this.masterTable.update('compras_reportadas', formData).pipe(

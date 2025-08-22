@@ -132,6 +132,7 @@
     <table class="sync-table">
       <thead>
         <tr>
+          <td>Historial Factura</td>
           <td *ngIf="rol === 1 || rol === 2">Impresiones</td>
           <td *ngIf="rol === 1 || rol === 2">Impreso</td>
           <th>Identificacion del emisor</th>
@@ -160,8 +161,11 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of documentos">
+          <td>
+            <ion-checkbox (click)="modalAuditoria(item)"></ion-checkbox>
+          </td>
           <td *ngIf="rol === 1 || rol === 2">
-            <ion-checkbox [ngModel]="item.selected ?? item.impreso" (ngModelChange)="item.selected = $event; onSelectDoc(item)">
+            <ion-checkbox [checked]="item.impreso" [disabled]="item.impreso" [ngModel]="item.selected ?? item.impreso" (ngModelChange)="item.selected = $event; onSelectDoc(item)">
             </ion-checkbox>
           </td>
           <td *ngIf="rol === 1 || rol === 2">{{ item.impreso }}</td>

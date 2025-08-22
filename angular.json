@@ -147,10 +147,10 @@
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {
-      "style": "scss" 
+      "style": "scss"
     },
     "@ionic/angular-toolkit:page": {
-      "style": "scss" 
+      "style": "scss"
     },
     "@schematics/angular:component": {
       "standalone": false,

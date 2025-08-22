@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { c } from '@angular/core/navigation_types.d-u4EOrrdZ';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { concatMap } from 'rxjs';
@@ -225,6 +224,43 @@ export class ContabilidadComponent implements OnInit {
     ).subscribe({
       next: (res) => {
         this.toast.presentToast('close-circle-outline', 'Rechazado con éxito', 'warning', 'top');
+        this.modalCtrl.dismiss(true);
+        console.log('Rechazo exitoso:', res);
+      },
+      error: (error) => {
+        console.error('Error al rechazar:', error);
+      }
+    });
+  }
+
+  declineRecepcion() {
+    const formData = new FormData();
+
+    const fields = ['observacionContable']
+    fields.forEach(field => {
+      if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
+        formData.append(field, this.inputs.get(field).value);
+      }
+    })
+
+    formData.append('id', this.documento.id)
+    formData.append('userMod', this.user.identificacion);
+    formData.append('estadoId', '1');
+
+    console.log('datos enviados', formData)
+
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Enviado a recepción',
+      observacion: this.inputs.value.observacionContable || 'Enviado por contabilidad'
+    }
+
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
+      next: (res) => {
+        this.toast.presentToast('close-circle-outline', 'Enviado a recepción con éxito', 'success', 'top');
         this.modalCtrl.dismiss(true);
         console.log('Rechazo exitoso:', res);
       },

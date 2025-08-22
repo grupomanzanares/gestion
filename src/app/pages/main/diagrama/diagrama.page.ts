@@ -247,17 +247,25 @@ export class DiagramaPage implements OnInit {
     });
 
     const fechaAntigua = new Date(facturaMasAntigua.fechaAsignacion);
-    const hoy = new Date();
 
-    const diferenciaMs = hoy.getTime() - fechaAntigua.getTime();
-    const diasPasados = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
-
+    // ✅ Mostrar fecha legible
     const fecha = fechaAntigua.toLocaleDateString('es-CO', {
-      year: 'numeric', month: 'long', day: 'numeric'
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
+
+    // ✅ Comparación sin horas
+    const hoy = new Date();
+    const fechaHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    const fechaAsignacion = new Date(fechaAntigua.getFullYear(), fechaAntigua.getMonth(), fechaAntigua.getDate());
+
+    const diferenciaMs = fechaHoy.getTime() - fechaAsignacion.getTime();
+    const diasPasados = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
 
     return { fecha, dias: diasPasados };
   }
+
 
   graficoTiemposPromedio(tiempos: any) {
     if (this.chartTiemposPromedio) this.chartTiemposPromedio.destroy();
@@ -339,8 +347,8 @@ export class DiagramaPage implements OnInit {
     const data = dataMapped.map(x => x.valor);
 
     const palette = [
-      '#1241A1', '#1454AE', '#1768BB', '#1A7DC9', '#1C94D6', '#22ACE0', 
-      '#31BFE1', '#40CFE2', '#4EDEE3', '#5DE5DF', '#6BE6D8', '#7AE8D2', 
+      '#1241A1', '#1454AE', '#1768BB', '#1A7DC9', '#1C94D6', '#22ACE0',
+      '#31BFE1', '#40CFE2', '#4EDEE3', '#5DE5DF', '#6BE6D8', '#7AE8D2',
       '#88E9CF', '#96EBCD', '#A4EDCE', '#B1F0D0', '#BFF2D4', '#CDF4DA',
     ];
     const backgroundColors = labels.map((_, i) => palette[i % palette.length]);

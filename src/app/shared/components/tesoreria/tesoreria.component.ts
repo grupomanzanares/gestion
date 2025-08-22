@@ -163,4 +163,41 @@ export class TesoreriaComponent implements OnInit {
     });
   }
 
+  declineRecepcion() {
+    const formData = new FormData();
+
+    const fields = ['observacionTesoreria']
+    fields.forEach(field => {
+      if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
+        formData.append(field, this.inputs.get(field).value);
+      }
+    })
+
+    formData.append('id', this.documento.id)
+    formData.append('userMod', this.user.identificacion);
+    formData.append('estadoId', '1');
+
+    console.log('datos enviados', formData)
+
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Enviado a recepción',
+      observacion: this.inputs.value.observacionTesoreria || 'Enviado por tesorería'
+    }
+
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      concatMap(() => this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
+      next: (res) => {
+        this.toast.presentToast('close-circle-outline', 'Enviado a recepción con éxito', 'success', 'top');
+        this.modalCtrl.dismiss(true);
+        console.log('Rechazo exitoso:', res);
+      },
+      error: (error) => {
+        console.error('Error al rechazar:', error);
+      }
+    });
+  }
+
 }

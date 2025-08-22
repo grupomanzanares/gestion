@@ -9,6 +9,7 @@ import { LoadingService } from 'src/app/services/loading.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { concatMap, map } from 'rxjs';
+import { AuditoriaComponent } from 'src/app/shared/components/auditoria/auditoria.component';
 
 @Component({
   selector: 'app-trazabilidad',
@@ -29,6 +30,7 @@ export class TrazabilidadPage implements OnInit {
   empresas: any[] = []
   user: any
   rol: number = 0;
+  id: number = 0
   selectedDocs: any[] = [];
   emisores: any[] = [];
   today = new Date().toISOString().slice(0, 10);
@@ -62,7 +64,8 @@ export class TrazabilidadPage implements OnInit {
 
     this.user = this.storage.get('manzanares-user')
     this.rol = this.user?.rolId
-    console.log(this.rol)
+    this.id = this.user?.id
+    // console.log(this.rol)
   }
 
   onShowForm() {
@@ -85,17 +88,17 @@ export class TrazabilidadPage implements OnInit {
     this.rol = this.user?.rolId
     this.master.get('compras_reportadas').subscribe({
       next: (data) => {
-        if (this.user.rolId === 3) {
+        if (this.user.rolId === 3 && this.user.id !== 4) {
           const filtrados = data.filter((item: any) => item.responsableId === this.user.id)
           const ordenados = filtrados.sort((a, b) => b.id - a.id)
           this.documentosOriginales = ordenados;
           this.documentos = [...ordenados];
-          console.log(this.documentos)
+          // console.log(this.documentos)
         } else {
           const ordenados = data.sort((a, b) => b.id - a.id)
           this.documentosOriginales = ordenados;
           this.documentos = [...ordenados];
-          console.log(this.documentos)
+          // console.log(this.documentos)
         }
         this.emisores = Array.from(new Map(this.documentos.map(doc =>[doc.emisor, {
           emisor: doc.emisor,
@@ -143,6 +146,19 @@ export class TrazabilidadPage implements OnInit {
         this.empresas = data
       }
     })
+  }
+
+  async modalAuditoria(item: any) {
+    try {
+      let success = await this.modalService.openModal({
+        component: AuditoriaComponent,
+        componentProps: { documento: item },
+        cssClass: 'modal'
+      });
+      if (success) this.get()
+    } catch (error) {
+      console.error('Error al abrir el modal:', error);
+    }
   }
 
   dian(item: any) {
@@ -333,8 +349,8 @@ export class TrazabilidadPage implements OnInit {
       const payload = {
         compraReportadaId: item.id,
         user: this.user.identificacion,
-        evento: 'Impresión',
-        observacion: `Impreso por ${this.user.name}`
+        evento: 'Entrega física',
+        observacion: `Entregado por ${this.user.name}`
       }
       return this.masterTable.update('compras_reportadas/impresion', formData).pipe(
 

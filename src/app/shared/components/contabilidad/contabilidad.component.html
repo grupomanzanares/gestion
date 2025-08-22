@@ -64,14 +64,14 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
-      
+
 
       <ion-col size="12">
         <app-custom-input icon="pencil-outline" label="Observación" type="text" autocomplete="observacionContable"
           [control]="inputs.controls.observacionContable"></app-custom-input>
       </ion-col>
 
-      <ion-col size="12">
+      <!-- <ion-col size="12">
         <div class="table-wrapper">
           <table class="sync-table">
             <thead>
@@ -139,23 +139,29 @@
             guardar
           </ion-button>
         </div>
-      </ion-col>
+      </ion-col> -->
 
-      <ion-col size="4">
+      <ion-col size="3">
         <ion-button class="ion-margin-top" (click)="update()" expand="block" shape="round">
           Tesoreria
         </ion-button>
       </ion-col>
 
-      <ion-col size="4">
+      <ion-col size="3">
         <ion-button class="ion-margin-top" (click)="decline()" expand="block" color="warning" shape="round">
           rechazar
         </ion-button>
       </ion-col>
 
-      <ion-col size="4">
+      <ion-col size="3">
         <ion-button class="ion-margin-top" (click)="cruzado()" expand="block" color="success" shape="round">
           Cruzar
+        </ion-button>
+      </ion-col>
+
+      <ion-col size="3">
+        <ion-button class="ion-margin-top" (click)="declineRecepcion()" expand="block" color="tertiary" shape="round">
+          Enviar a recepción
         </ion-button>
       </ion-col>
 

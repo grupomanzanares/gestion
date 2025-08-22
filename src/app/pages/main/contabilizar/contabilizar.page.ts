@@ -30,7 +30,7 @@ export class ContabilizarPage implements OnInit {
         const ordenados = filtrados.sort((a, b) => b.id - a.id)
 
         this.documentos = ordenados
-        console.log(this.documentos)
+        // console.log(this.documentos)
         // this.loading.hideLoading()
       }
     })
