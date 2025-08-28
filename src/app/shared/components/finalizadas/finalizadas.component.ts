@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { concatMap } from 'rxjs';
 import { MasterTableService } from 'src/app/services/gestion/masterTable.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { ToastService } from 'src/app/services/toast.service';
@@ -10,12 +11,11 @@ import { environment } from 'src/environments/environment.prod';
   selector: 'app-finalizadas',
   templateUrl: './finalizadas.component.html',
   styleUrls: ['./finalizadas.component.scss'],
-  standalone: false
+  standalone: false,
 })
-export class FinalizadasComponent  implements OnInit {
-
-  @Input() documento: any
-  user = {} as any
+export class FinalizadasComponent implements OnInit {
+  @Input() documento: any;
+  user = {} as any;
 
   public inputs = new FormGroup({
     emisor: new FormControl(null, [Validators.required]),
@@ -26,35 +26,47 @@ export class FinalizadasComponent  implements OnInit {
     numero: new FormControl(null, [Validators.required]),
     valor: new FormControl(null, [Validators.required]),
     urlpdf: new FormControl(null, [Validators.required]),
-    ccosto: new FormControl(null, [Validators.required])
-  })
+    ccosto: new FormControl(null, [Validators.required]),
+  });
 
-  constructor(private masterTable: MasterTableService, private modalCtrl: ModalController, private toast: ToastService, private storage: StorageService) { }
+  constructor(
+    private masterTable: MasterTableService,
+    private modalCtrl: ModalController,
+    private toast: ToastService,
+    private storage: StorageService
+  ) {}
 
   ngOnInit() {
-    this.user = this.storage.get('manzanares-user')
-    this.getDatos()
+    this.user = this.storage.get('manzanares-user');
+    this.getDatos();
   }
 
   getDatos() {
-    console.log(this.documento)
+    console.log(this.documento);
     if (this.documento) {
       this.inputs.patchValue({
         emisor: this.documento.emisor,
         nombreEmisor: this.documento.nombreEmisor,
         empresa: this.documento.empresa,
-        empresaInfo: this.documento.empresaInfo?.nombre || this.documento.empresa,
+        empresaInfo:
+          this.documento.empresaInfo?.nombre || this.documento.empresa,
         tipo: this.documento.tipo,
         numero: this.documento.numero,
-        valor: this.documento.valor ? Number(this.documento.valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) : '',
+        valor: this.documento.valor
+          ? Number(this.documento.valor).toLocaleString('es-CO', {
+              style: 'currency',
+              currency: 'COP',
+              minimumFractionDigits: 0,
+            })
+          : '',
         urlpdf: this.documento.urlPdf,
-        ccosto: this.documento.ccostoNombre
+        ccosto: this.documento.ccostoNombre,
       });
     }
   }
 
   ngOut() {
-    this.modalCtrl.dismiss()
+    this.modalCtrl.dismiss();
   }
 
   unionDesdeFormulario() {
@@ -75,38 +87,59 @@ export class FinalizadasComponent  implements OnInit {
     }
   }
 
-  update(){
+  update() {
     if (this.inputs.invalid) {
       console.warn('Formulario inválido');
-      this.toast.presentToast('alert-circle-outline', 'Por favor completa todos los campos correctamente.', 'danger', 'top');
+      this.toast.presentToast(
+        'alert-circle-outline',
+        'Por favor completa todos los campos correctamente.',
+        'danger',
+        'top'
+      );
       return;
     }
 
     const formData = new FormData();
 
-    const fields = ['observacionContable']
-    fields.forEach(field => {
-      if (this.inputs.get(field)?.value !== null && this.inputs.get(field)?.value !== undefined) {
+    const fields = ['observacionContable'];
+    fields.forEach((field) => {
+      if (
+        this.inputs.get(field)?.value !== null &&
+        this.inputs.get(field)?.value !== undefined
+      ) {
         formData.append(field, this.inputs.get(field).value);
       }
-    })
+    });
 
-    formData.append('id', this.documento.id)
+    formData.append('id', this.documento.id);
     formData.append('userMod', this.user.identificacion);
     formData.append('estadoId', '5');
 
-    console.log('datos enviados', formData)
+    console.log('datos enviados', formData);
 
-    this.masterTable.update('compras_reportadas', formData).subscribe({
+    const payload = {
+      compraReportadaId: this.documento.id,
+      user: this.user.identificacion,
+      evento: 'Devolución a tesorería',
+      observacion: `Enviado a tesorería por ${this.user.name}`,
+    };
+
+    this.masterTable.update('compras_reportadas', formData).pipe(
+      concatMap(() =>this.masterTable.createTow('compras_reportadas_auditoria', payload))
+    ).subscribe({
       next: (res) => {
-        this.toast.presentToast('checkmark-outline', 'Enviado a contabilidad con exito', 'success', 'top')
-        this.modalCtrl.dismiss(true)
-        console.log(res)
+        this.toast.presentToast(
+          'checkmark-outline',
+          'Enviado a contabilidad con exito',
+          'success',
+          'top'
+        );
+        this.modalCtrl.dismiss(true);
+        console.log(res);
       },
       error: (error) => {
-        console.error('Error al autorizar:', error)
-      }
-    })
+        console.error('Error al autorizar:', error);
+      },
+    });
   }
-
 }

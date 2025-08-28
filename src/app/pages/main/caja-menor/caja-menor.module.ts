@@ -1,24 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { IonicModule } from '@ionic/angular';
-import { AuthPageRoutingModule } from './auth-routing.module';
-import { AuthPage } from './auth.page';
+
+import { CajaMenorPageRoutingModule } from './caja-menor-routing.module';
+
+import { CajaMenorPage } from './caja-menor.page';
 import { SharedModule } from 'src/app/shared/shared.module';
-
-
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    AuthPageRoutingModule,
+    CajaMenorPageRoutingModule,
     SharedModule
   ],
-  declarations: [AuthPage]
+  declarations: [CajaMenorPage]
 })
-export class AuthPageModule {}
-
-
-// tippoCompraId estadoId
+export class CajaMenorPageModule {}

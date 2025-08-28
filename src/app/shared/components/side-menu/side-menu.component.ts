@@ -28,6 +28,7 @@ export class SideMenuComponent implements OnInit {
         this.menuItems = [
           { label: 'Inicio', icon: 'home-outline', route: '/main' },
           { label: 'Mi Perfil', icon: 'person-outline', route: '/main/profile' },
+          { label: 'Usuarios', icon: 'people-outline', route: '/main/usuarios' },
           { label: 'Subir Documentos', icon: 'document-text-outline', route: '/main/documentos' },
           { label: 'Autorizaciones', icon: 'create-outline', route: '/main/autorizar' },
           { label: 'Contabilizar', icon: 'calculator-outline', route: '/main/contabilizar' },
@@ -38,7 +39,7 @@ export class SideMenuComponent implements OnInit {
           { label: 'Conciliar', icon: 'sync-outline', route: '/main/conciliacion' },
           { label: 'Diagrama', icon: 'stats-chart-outline', route: '/main/diagrama' },
           { label: 'Finalizadas', icon: 'checkmark-done-outline', route: '/main/finalizadas' },
-          { label: 'Usuarios', icon: 'people-outline', route: '/main/usuarios' },
+          { label: 'Caja Menor', icon: 'cash-outline', route: '/main/caja-menor' },
         ];
         break;
 
@@ -50,7 +51,7 @@ export class SideMenuComponent implements OnInit {
           { label: 'Conciliar', icon: 'sync-outline', route: '/main/conciliacion' },
           { label: 'Trazabilidad', icon: 'analytics-outline', route: '/main/trazabilidad' },
           { label: 'Diagrama', icon: 'stats-chart-outline', route: '/main/diagrama' },
-
+          { label: 'Caja Menor', icon: 'cash-outline', route: '/main/caja-menor' }, 
         ]
         break;
 

@@ -56,7 +56,11 @@ const routes: Routes = [
   {
     path: 'finalizadas',
     loadChildren: () => import('./finalizadas/finalizadas.module').then( m => m.FinalizadasPageModule)
+  },  {
+    path: 'caja-menor',
+    loadChildren: () => import('./caja-menor/caja-menor.module').then( m => m.CajaMenorPageModule)
   }
+
 ];
 
 @NgModule({

@@ -25,6 +25,22 @@
         </ion-card>
       </ion-col>
 
+      <ion-col size="6" *ngIf="rol === 1">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="people-outline" size="large"></ion-icon>
+            <ion-card-title>Usarios</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['usuarios']" routerLinkActive="router-link-active" expand="block"
+              shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a Usuarios
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
       <ion-col size="6" *ngIf="rol === 1 || rol === 2">
         <ion-card class="ion-padding">
           <ion-card-header class="ion-align-items-center">
@@ -159,6 +175,38 @@
             <ion-button [routerLink]="['diagrama']" routerLinkActive="router-link-active" expand="block" shape="round">
               <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
               Ir a Diagramas
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" *ngIf="rol === 1 || rol === 2">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="cube-outline" size="large"></ion-icon>
+            <ion-card-title>Caja Menor</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['caja-menor']" routerLinkActive="router-link-active" expand="block"
+              shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a caja menor
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" *ngIf="rol === 1">
+        <ion-card class="ion-padding">
+          <ion-card-header class="ion-align-items-center">
+            <ion-icon name="checkmark-done-outline" size="large"></ion-icon>
+            <ion-card-title>Finalizadas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button [routerLink]="['finalizadas']" routerLinkActive="router-link-active" expand="block"
+              shape="round">
+              <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+              Ir a finalizadas
             </ion-button>
           </ion-card-content>
         </ion-card>
